@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="47">
+    <author>Wopster</author>
+    <version>1.0.0.0</version>
+    <title>
+        <en>Seeding</en>
+    </title>
+    <description>
+        <en>
+            <![CDATA[My cool mod]]>
+        </en>
+    </description>
+    <iconFilename>icon.png</iconFilename>
+    <multiplayer supported="true"/>
+
+    <extraSourceFiles>
+        <sourceFile filename="src/loader.lua"/>
+    </extraSourceFiles>
+</modDesc>
