@@ -32,5 +32,12 @@ end
 function GuidanceSeeding:delete()
 end
 
-function ManureSystem.installSpecializations(vehicleTypeManager, specializationManager, modDirectory, modName)
+function GuidanceSeeding.installSpecializations(vehicleTypeManager, specializationManager, modDirectory, modName)
+    specializationManager:addSpecialization("guidanceSeedingTramLines", "GuidanceSeedingTramLines", Utils.getFilename("src/vehicle/GuidanceSeedingTramLines.lua", modDirectory), nil)
+
+    for typeName, typeEntry in pairs(vehicleTypeManager:getVehicleTypes()) do
+        if SpecializationUtil.hasSpecialization(SowingMachine, typeEntry.specializations) then
+            vehicleTypeManager:addSpecialization(typeName, modName .. ".guidanceSeedingTramLines")
+        end
+    end
 end
