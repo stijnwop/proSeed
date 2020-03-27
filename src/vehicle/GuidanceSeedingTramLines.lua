@@ -31,10 +31,6 @@ function GuidanceSeedingTramLines.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
 end
 
-function GuidanceSeedingTramLines.registerFunctions(vehicleType)
-    SpecializationUtil.registerFunction(vehicleType, "onGuidanceDataChanged", GuidanceSeedingTramLines.onGuidanceDataChanged)
-end
-
 function GuidanceSeedingTramLines.registerOverwrittenFunctions(vehicleType)
     SpecializationUtil.registerOverwrittenFunction(vehicleType, "processSowingMachineArea", GuidanceSeedingTramLines.processSowingMachineArea)
 end
