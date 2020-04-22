@@ -6,6 +6,13 @@
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
+local function createGuideNode(name, linkNode)
+    local node = createTransformGroup(name)
+    link(linkNode, node)
+    setTranslation(node, 0, 0, 0)
+    return node
+end
+
 ---Debug line area.
 local function drawArea(area, r, g, b, a)
     local x0, _, z0 = getWorldTranslation(area.start)
@@ -51,7 +58,7 @@ function GuidanceSeedingTramLines:onLoad(savegame)
     spec.createTramLines = false
 
     local width, center, workAreaIndex = GuidanceSeedingTramLines.getMaxWorkAreaWidth(self)
-    spec.workingWidth = width
+    spec.workingWidth = MathUtil.round(width * 2) / 2 -- round to the nearest 0.5
     spec.currentLane = 1
     spec.lanesTillTramLine = 3
     spec.lanesDistanceMultiplier = 1
@@ -63,17 +70,18 @@ function GuidanceSeedingTramLines:onUpdate(dt)
     local spec = self.spec_guidanceSeedingTramLines
 
     if self:getIsActiveForInput() then
+        local lanesForDistance = spec.lanesDistance / spec.workingWidth
+
         local rootVehicle = self:getRootVehicle()
         if rootVehicle.getGuidanceData ~= nil then
             local data = rootVehicle:getGuidanceData()
-            spec.currentLane = math.abs(data.currentLane)
+
+            spec.currentLane = (math.abs(data.currentLane) % lanesForDistance) + 1
 
             if spec.workingWidth ~= data.width then
-                spec.workingWidth = data.width
+                spec.workingWidth = MathUtil.round(data.width * 2) / 2 -- round to the nearest 0.5
             end
         end
-
-        local lanesForDistance = spec.lanesDistance / spec.workingWidth
 
         --Offset currentLane with 1 cause we don't want to start at the first lane.
         local lanesPassed = (spec.currentLane + 1) % spec.lanesTillTramLine
@@ -115,7 +123,7 @@ end
 
 function GuidanceSeedingTramLines.createTramLineAreas(object, width, center, workAreaIndex)
     local lineAreas = {}
-    local workArea = object.spec_workArea.workAreas[workAreaIndex]
+    local workArea = object:getWorkAreaByIndex(workAreaIndex)
     local _, start, _ = worldToLocal(object.rootNode, getWorldTranslation(workArea.start))
     local _, _, height = worldToLocal(object.rootNode, getWorldTranslation(workArea.height))
 
@@ -149,13 +157,6 @@ end
 function GuidanceSeedingTramLines.getMaxWorkAreaWidth(object)
     local workAreaSpec = object.spec_workArea
     local maxWidth, minWidth = 0, 0
-
-    local function createGuideNode(name, linkNode)
-        local node = createTransformGroup(name)
-        link(linkNode, node)
-        setTranslation(node, 0, 0, 0)
-        return node
-    end
 
     local node = createGuideNode("width_node", object.rootNode)
 
