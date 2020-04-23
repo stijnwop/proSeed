@@ -29,15 +29,17 @@ end
 GuidanceSeedingTramLines = {}
 GuidanceSeedingTramLines.MOD_NAME = g_currentModName
 
-GuidanceSeedingTramLines.MAX_CTF_WIDTH = 72 -- m
+GuidanceSeedingTramLines.TRAMLINE_MAX_WIDTH = 72 -- m
 
-GuidanceSeedingTramLines.LINE_WIDTH = 1.6
-GuidanceSeedingTramLines.LANE_WIDTH = 0.6
-GuidanceSeedingTramLines.LANE_HEIGHT_OFFSET = 0.3 -- offset to drop our workArea behind the seeder
+GuidanceSeedingTramLines.TRAMLINE_SPACING = 1.6 -- m
+GuidanceSeedingTramLines.TRAMELINE_WIDTH = 0.6 -- m
+GuidanceSeedingTramLines.TRAMELINE_HEIGHT_OFFSET = 0.3 -- offset to drop our workArea behind the seeder
 
 GuidanceSeedingTramLines.SHUTOFF_MODE_OFF = 0
 GuidanceSeedingTramLines.SHUTOFF_MODE_LEFT = 1
 GuidanceSeedingTramLines.SHUTOFF_MODE_RIGHT = 2
+
+GuidanceSeedingTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE = 2 -- minimum sequence is 2.
 
 function GuidanceSeedingTramLines.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
@@ -73,9 +75,10 @@ function GuidanceSeedingTramLines:onLoad(savegame)
     spec.createTramLines = false
     spec.currentLane = 0
     spec.shutoffMode = GuidanceSeedingTramLines.SHUTOFF_MODE_OFF
-    spec.lanesTillTramLine = 3
-    spec.lanesDistanceMultiplier = 1
-    spec.lanesDistance = width * spec.lanesDistanceMultiplier
+    --periodic sequence
+    spec.tramLinePeriodicSequence = GuidanceSeedingTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
+    spec.tramLineDistanceMultiplier = 1
+    spec.tramLineDistance = width * spec.tramLineDistanceMultiplier
 
     local originalAreas = {}
     local node = createGuideNode("width_node", self.rootNode)
@@ -97,7 +100,7 @@ function GuidanceSeedingTramLines:onUpdate(dt)
     local spec = self.spec_guidanceSeedingTramLines
 
     if self.isServer then
-        local lanesForDistance = spec.lanesDistance / spec.workingWidthRounded
+        local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
 
         local rootVehicle = self:getRootVehicle()
         --Get GuidanceSteering information when active.
@@ -107,7 +110,7 @@ function GuidanceSeedingTramLines:onUpdate(dt)
         end
 
         --Offset currentLane with 1 cause we don't want to start at the first lane.
-        local lanesPassed = (spec.currentLane + 1) % spec.lanesTillTramLine
+        local lanesPassed = (spec.currentLane + 1) % spec.tramLinePeriodicSequence
         spec.createTramLines = lanesPassed == 0 --We create lines when we can divide.
 
         if spec.createTramLines then
@@ -122,10 +125,10 @@ function GuidanceSeedingTramLines:onUpdate(dt)
                 { name = "working width", value = spec.workingWidth },
                 { name = "rounded width", value = spec.workingWidthRounded },
                 { name = "currentLane", value = spec.currentLane },
-                { name = "lanesPassed", value = lanesPassed },
-                { name = "lanesDistance", value = spec.lanesDistance },
+                { name = "tramLineDistance", value = spec.tramLineDistance },
                 { name = "lanesForDistance", value = lanesForDistance },
-                { name = "lanesTillTramLine", value = spec.lanesTillTramLine },
+                { name = "tramLinePeriodicSequence", value = spec.tramLinePeriodicSequence },
+                { name = "shutoff (0=off)", value = spec.shutoffMode },
                 { name = "createTramLine", value = tostring(spec.createTramLines) },
             }
             DebugUtil.renderTable(0.5, 0.95, 0.012, data, 0.1)
@@ -214,10 +217,10 @@ function GuidanceSeedingTramLines.createTramLineAreas(object, width, center, wor
     local _, start, _ = worldToLocal(object.rootNode, getWorldTranslation(workArea.start))
     local _, _, height = worldToLocal(object.rootNode, getWorldTranslation(workArea.height))
 
-    local x = center + GuidanceSeedingTramLines.LINE_WIDTH
+    local x = center + GuidanceSeedingTramLines.TRAMLINE_SPACING
     local y = start
-    local z = height - GuidanceSeedingTramLines.LANE_HEIGHT_OFFSET --Put ourselves 0.3 meter behind the seed workArea
-    local hz = z - GuidanceSeedingTramLines.LANE_WIDTH
+    local z = height - GuidanceSeedingTramLines.TRAMELINE_HEIGHT_OFFSET --Put ourselves 0.3 meter behind the seed workArea
+    local hz = z - GuidanceSeedingTramLines.TRAMELINE_WIDTH
 
     local function createLineAreaNode(name, linkNode, lx, ly, lz)
         local node = createTransformGroup(name)
@@ -232,9 +235,9 @@ function GuidanceSeedingTramLines.createTramLineAreas(object, width, center, wor
     for i = 1, 2 do
         local startNode = createLineAreaNode(("startNode(%d)"):format(i), linkNode, x, y, z)
         local heightNode = createLineAreaNode(("heightNode(%d)"):format(i), linkNode, x, y, hz)
-        x = x - GuidanceSeedingTramLines.LANE_WIDTH
+        x = x - GuidanceSeedingTramLines.TRAMELINE_WIDTH
         local widthNode = createLineAreaNode(("widthNode(%d)"):format(i), linkNode, x, y, hz)
-        x = center - (GuidanceSeedingTramLines.LINE_WIDTH - GuidanceSeedingTramLines.LANE_WIDTH)
+        x = center - (GuidanceSeedingTramLines.TRAMLINE_SPACING - GuidanceSeedingTramLines.TRAMELINE_WIDTH)
         table.insert(lineAreas, { start = startNode, height = heightNode, width = widthNode })
     end
 
@@ -321,27 +324,27 @@ end
 
 function GuidanceSeedingTramLines.actionEventToggleTramlines(self, actionName, inputValue, callbackState, isAnalog)
     local spec = self.spec_guidanceSeedingTramLines
-    spec.lanesDistanceMultiplier = spec.lanesDistanceMultiplier + 1
+    spec.tramLineDistanceMultiplier = spec.tramLineDistanceMultiplier + 1
 
-    local distance = spec.workingWidthRounded * spec.lanesDistanceMultiplier
-    if distance >= GuidanceSeedingTramLines.MAX_CTF_WIDTH then
-        spec.lanesDistanceMultiplier = 0
+    local distance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
+    if distance >= GuidanceSeedingTramLines.TRAMLINE_MAX_WIDTH then
+        spec.tramLineDistanceMultiplier = 0
     end
 
-    spec.lanesDistance = distance
-    log("lanesDistance: " .. tostring(distance))
+    spec.tramLineDistance = distance
+    log("tramLineDistance: " .. tostring(distance))
 end
 
 function GuidanceSeedingTramLines.actionEventSetTramlines(self, actionName, inputValue, callbackState, isAnalog)
     local spec = self.spec_guidanceSeedingTramLines
-    spec.lanesTillTramLine = spec.lanesTillTramLine + 1
+    spec.tramLinePeriodicSequence = spec.tramLinePeriodicSequence + 1
 
-    local lanesForDistance = spec.lanesDistance / spec.workingWidthRounded
-    if spec.lanesTillTramLine > lanesForDistance then
-        spec.lanesTillTramLine = 1
+    local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
+    if spec.tramLinePeriodicSequence > lanesForDistance then
+        spec.tramLinePeriodicSequence = GuidanceSeedingTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
     end
 
-    log("lanesTillTramLine: " .. tostring(spec.lanesTillTramLine))
+    log("tramLinePeriodicSequence: " .. tostring(spec.tramLinePeriodicSequence))
 end
 
 function GuidanceSeedingTramLines.actionEventToggleHalfSideShutoff(self, actionName, inputValue, callbackState, isAnalog)
