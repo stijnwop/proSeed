@@ -19,6 +19,7 @@
 
     <actions>
         <action name="GS_SET_LANES_TILL_TRAMLINE" axisType="HALF"/>
+        <action name="GS_SET_HALF_SIDE_SHUTOFF" axisType="HALF"/>
     </actions>
 
     <inputBinding>
@@ -28,7 +29,7 @@
         </actionBinding>
         <actionBinding action="GS_SET_HALF_SIDE_SHUTOFF">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_t"/>
-            <binding device="GAMEPAD_DEFAULT" input="BUTTON_12"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
         </actionBinding>
     </inputBinding>
 

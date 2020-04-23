@@ -25,6 +25,7 @@ local function drawArea(area, r, g, b, a)
     DebugUtil.drawDebugParallelogram(x, z, widthX, widthZ, heightX, heightZ, 0, r, g, b, a)
 end
 
+---@class GuidanceSeedingTramLines
 GuidanceSeedingTramLines = {}
 GuidanceSeedingTramLines.MOD_NAME = g_currentModName
 
@@ -65,11 +66,12 @@ function GuidanceSeedingTramLines:onLoad(savegame)
 
     local width, center, workAreaIndex = GuidanceSeedingTramLines.getMaxWorkAreaWidth(self)
 
-    spec.workingWidth = MathUtil.round(width * 2) / 2 -- round to the nearest 0.5
+    spec.workingWidth = width
+    spec.workingWidthRounded = MathUtil.round(width * 2) / 2 -- round to the nearest 0.5
     spec.tramlinesAreas, spec.tramlinesWorkAreaIndex = GuidanceSeedingTramLines.createTramLineAreas(self, width, center, workAreaIndex)
 
     spec.createTramLines = false
-    spec.currentLane = 1
+    spec.currentLane = 0
     spec.shutoffMode = GuidanceSeedingTramLines.SHUTOFF_MODE_OFF
     spec.lanesTillTramLine = 3
     spec.lanesDistanceMultiplier = 1
@@ -95,18 +97,13 @@ function GuidanceSeedingTramLines:onUpdate(dt)
     local spec = self.spec_guidanceSeedingTramLines
 
     if self.isServer then
-        local lanesForDistance = spec.lanesDistance / spec.workingWidth
+        local lanesForDistance = spec.lanesDistance / spec.workingWidthRounded
 
         local rootVehicle = self:getRootVehicle()
         --Get GuidanceSteering information when active.
         if rootVehicle.getHasGuidanceSystem ~= nil and rootVehicle:getHasGuidanceSystem() then
             local data = rootVehicle:getGuidanceData()
-
             spec.currentLane = (math.abs(data.currentLane) % lanesForDistance) + 1
-
-            if spec.workingWidth ~= data.width then
-                spec.workingWidth = MathUtil.round(data.width * 2) / 2 -- round to the nearest 0.5
-            end
         end
 
         --Offset currentLane with 1 cause we don't want to start at the first lane.
@@ -123,6 +120,7 @@ function GuidanceSeedingTramLines:onUpdate(dt)
         if self:getIsActiveForInput() then
             local data = {
                 { name = "working width", value = spec.workingWidth },
+                { name = "rounded width", value = spec.workingWidthRounded },
                 { name = "currentLane", value = spec.currentLane },
                 { name = "lanesPassed", value = lanesPassed },
                 { name = "lanesDistance", value = spec.lanesDistance },
@@ -157,10 +155,13 @@ function GuidanceSeedingTramLines:processSowingMachineArea(superFunc, workArea, 
     return changedArea, totalArea
 end
 
-function GuidanceSeedingTramLines:setHalfSideShutoffMode(mode)
+---Sets the half side shutoff mode.
+function GuidanceSeedingTramLines:setHalfSideShutoffMode(mode, noEventSend)
     local spec = self.spec_guidanceSeedingTramLines
 
     if mode ~= spec.shutoffMode then
+        GuidanceSeedingHalfSideShutoffEvent.sendEvent(self, mode, noEventSend)
+
         for workAreaIndex, area in ipairs(spec.originalAreas) do
             local workArea = self:getWorkAreaByIndex(workAreaIndex)
             local sx, sy, sz = unpack(area.start)
@@ -322,7 +323,7 @@ function GuidanceSeedingTramLines.actionEventToggleTramlines(self, actionName, i
     local spec = self.spec_guidanceSeedingTramLines
     spec.lanesDistanceMultiplier = spec.lanesDistanceMultiplier + 1
 
-    local distance = spec.workingWidth * spec.lanesDistanceMultiplier
+    local distance = spec.workingWidthRounded * spec.lanesDistanceMultiplier
     if distance >= GuidanceSeedingTramLines.MAX_CTF_WIDTH then
         spec.lanesDistanceMultiplier = 0
     end
@@ -335,7 +336,7 @@ function GuidanceSeedingTramLines.actionEventSetTramlines(self, actionName, inpu
     local spec = self.spec_guidanceSeedingTramLines
     spec.lanesTillTramLine = spec.lanesTillTramLine + 1
 
-    local lanesForDistance = spec.lanesDistance / spec.workingWidth
+    local lanesForDistance = spec.lanesDistance / spec.workingWidthRounded
     if spec.lanesTillTramLine > lanesForDistance then
         spec.lanesTillTramLine = 1
     end
