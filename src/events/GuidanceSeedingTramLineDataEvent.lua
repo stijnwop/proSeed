@@ -31,8 +31,8 @@ end
 
 function GuidanceSeedingTramLineDataEvent:readStream(streamId, connection)
     self.object = NetworkUtil.readNodeObject(streamId)
-    self.tramLineDistance = streamReadInt8(streamId)
-    self.tramLinePeriodicSequence = streamReadFloat32(streamId)
+    self.tramLineDistance = streamReadFloat32(streamId)
+    self.tramLinePeriodicSequence = streamReadInt8(streamId)
     self:run(connection)
 end
 
