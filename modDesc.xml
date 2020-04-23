@@ -3,7 +3,7 @@
     <author>Wopster</author>
     <version>1.0.0.0</version>
     <title>
-        <en>Seeding</en>
+        <en>Guidance Seeding</en>
     </title>
     <description>
         <en>
@@ -16,4 +16,43 @@
     <extraSourceFiles>
         <sourceFile filename="src/loader.lua"/>
     </extraSourceFiles>
+
+    <actions>
+        <action name="GS_SET_LANES_TILL_TRAMLINE" axisType="HALF"/>
+    </actions>
+
+    <inputBinding>
+        <actionBinding action="GS_SET_LANES_TILL_TRAMLINE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_r"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
+        </actionBinding>
+        <actionBinding action="GS_SET_HALF_SIDE_SHUTOFF">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_t"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_12"/>
+        </actionBinding>
+    </inputBinding>
+
+    <l10n>
+
+        <text name="input_GS_SET_HALF_SIDE_SHUTOFF">
+            <en>GS: Toggle halfside shutoff</en>
+            <de>GS: Halbseitige Abschaltung</de>
+        </text>
+        <text name="input_GS_SET_LANES_TILL_TRAMLINE">
+            <en>GS: Lines till tramline</en>
+            <de>GS: Lines till tramline</de>
+        </text>
+        <text name="function_toggleHalfSideShutoff">
+            <en>Toggle halfside shutoff</en>
+            <de>Halbseitige Abschaltung</de>
+        </text>
+        <text name="function_setLinesTillTramline">
+            <en>Set lines till tramline</en>
+            <de>Set lines till tramline</de>
+        </text>
+        <text name="function_setTramlineDistance">
+            <en>Set line distance</en>
+            <de>Fahrgassen Abstand</de>
+        </text>
+    </l10n>
 </modDesc>
