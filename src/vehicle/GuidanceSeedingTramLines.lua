@@ -6,10 +6,10 @@
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
-local function createGuideNode(name, linkNode)
+local function createGuideNode(name, linkNode, x, y, z)
     local node = createTransformGroup(name)
     link(linkNode, node)
-    setTranslation(node, 0, 0, 0)
+    setTranslation(node, x or 0, y or 0, z or 0)
     return node
 end
 
@@ -109,8 +109,8 @@ function GuidanceSeedingTramLines:onReadStream(streamId, connection)
     local spec = self.spec_guidanceSeedingTramLines
     spec.createTramLines = streamReadBool(streamId)
 
-    local tramLineDistance = streamReadInt8(streamId)
-    local tramLinePeriodicSequence = streamReadFloat32(streamId)
+    local tramLineDistance = streamReadFloat32(streamId)
+    local tramLinePeriodicSequence = streamReadInt8(streamId)
     self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, true)
 
     local shutoffMode = streamReadUIntN(streamId, 2)
@@ -271,7 +271,7 @@ function GuidanceSeedingTramLines:canActivateHalfSideShutoff()
 end
 
 ---Creates the tram lines centered in the workArea.
-function GuidanceSeedingTramLines:createTramLineAreas(width, center, workAreaIndex)
+function GuidanceSeedingTramLines:createTramLineAreas(center, workAreaIndex)
     local lineAreas = {}
     local workArea = self:getWorkAreaByIndex(workAreaIndex)
     local _, start, _ = worldToLocal(self.rootNode, getWorldTranslation(workArea.start))
@@ -282,21 +282,14 @@ function GuidanceSeedingTramLines:createTramLineAreas(width, center, workAreaInd
     local z = height - GuidanceSeedingTramLines.TRAMELINE_HEIGHT_OFFSET --Put ourselves 0.3 meter behind the seed workArea
     local hz = z - GuidanceSeedingTramLines.TRAMELINE_WIDTH
 
-    local function createLineAreaNode(name, linkNode, lx, ly, lz)
-        local node = createTransformGroup(name)
-        link(linkNode, node)
-        setTranslation(node, lx, ly, lz)
-        return node
-    end
-
     local linkNode = self.rootNode
 
     --We only need 2 lanes.
     for i = 1, 2 do
-        local startNode = createLineAreaNode(("startNode(%d)"):format(i), linkNode, x, y, z)
-        local heightNode = createLineAreaNode(("heightNode(%d)"):format(i), linkNode, x, y, hz)
+        local startNode = createGuideNode(("startNode(%d)"):format(i), linkNode, x, y, z)
+        local heightNode = createGuideNode(("heightNode(%d)"):format(i), linkNode, x, y, hz)
         x = x - GuidanceSeedingTramLines.TRAMELINE_WIDTH
-        local widthNode = createLineAreaNode(("widthNode(%d)"):format(i), linkNode, x, y, hz)
+        local widthNode = createGuideNode(("widthNode(%d)"):format(i), linkNode, x, y, hz)
         x = center - (GuidanceSeedingTramLines.TRAMLINE_SPACING - GuidanceSeedingTramLines.TRAMELINE_WIDTH)
         table.insert(lineAreas, { start = startNode, height = heightNode, width = widthNode })
     end
@@ -308,11 +301,9 @@ end
 function GuidanceSeedingTramLines:setTramLineData(tramLineDistance, tramLinePeriodicSequence, noEventSend)
     local spec = self.spec_guidanceSeedingTramLines
 
-    if spec.tramLineDistance ~= tramLineDistance or spec.tramLinePeriodicSequence ~= tramLinePeriodicSequence then
-        GuidanceSeedingTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, noEventSend)
-        spec.tramLineDistance = tramLineDistance
-        spec.tramLinePeriodicSequence = tramLinePeriodicSequence
-    end
+    GuidanceSeedingTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, noEventSend)
+    spec.tramLineDistance = tramLineDistance
+    spec.tramLinePeriodicSequence = tramLinePeriodicSequence
 end
 
 function GuidanceSeedingTramLines.getMaxWorkAreaWidth(object)
