@@ -10,6 +10,7 @@ local directory = g_currentModDirectory
 local modName = g_currentModName
 
 source(Utils.getFilename("src/events/GuidanceSeedingHalfSideShutoffEvent.lua", directory))
+source(Utils.getFilename("src/events/GuidanceSeedingTramLineDataEvent.lua", directory))
 
 source(Utils.getFilename("src/stream.lua", directory))
 source(Utils.getFilename("src/GuidanceSeeding.lua", directory))
