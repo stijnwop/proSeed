@@ -159,6 +159,20 @@ function GuidanceSeedingTramLines:onUpdate(dt)
                 g_inputBinding:setActionEventActive(actionEvent.actionEventId, self:canActivateHalfSideShutoff())
             end
         end
+
+        if self:getIsActiveForInput() then
+            local data = {
+                { name = "working width", value = spec.workingWidth },
+                { name = "rounded width", value = spec.workingWidthRounded },
+                { name = "currentLane", value = spec.currentLane },
+                { name = "tramLineDistance", value = spec.tramLineDistance },
+                { name = "lanesForDistance", value = lanesForDistance },
+                { name = "tramLinePeriodicSequence", value = spec.tramLinePeriodicSequence },
+                { name = "shutoff (0=off)", value = spec.shutoffMode },
+                { name = "createTramLine", value = tostring(spec.createTramLines) },
+            }
+            DebugUtil.renderTable(0.5, 0.95, 0.012, data, 0.1)
+        end
     end
 end
 
@@ -189,22 +203,6 @@ function GuidanceSeedingTramLines:onUpdateTick(dt)
         if spec.createTramLines ~= spec.createTramLinesSent then
             spec.createTramLinesSent = spec.createTramLines
             self:raiseDirtyFlags(spec.dirtyFlag)
-        end
-    end
-
-    if self.isClient then
-        if self:getIsActiveForInput() then
-            local data = {
-                { name = "working width", value = spec.workingWidth },
-                { name = "rounded width", value = spec.workingWidthRounded },
-                { name = "currentLane", value = spec.currentLane },
-                { name = "tramLineDistance", value = spec.tramLineDistance },
-                { name = "lanesForDistance", value = lanesForDistance },
-                { name = "tramLinePeriodicSequence", value = spec.tramLinePeriodicSequence },
-                { name = "shutoff (0=off)", value = spec.shutoffMode },
-                { name = "createTramLine", value = tostring(spec.createTramLines) },
-            }
-            DebugUtil.renderTable(0.5, 0.95, 0.012, data, 0.1)
         end
     end
 end
