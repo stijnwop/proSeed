@@ -390,7 +390,8 @@ function GuidanceSeedingTramLines.actionEventToggleTramlines(self, actionName, i
 
     local tramLineDistance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
     if tramLineDistance >= GuidanceSeedingTramLines.TRAMLINE_MAX_WIDTH then
-        spec.tramLineDistanceMultiplier = 0
+        spec.tramLineDistanceMultiplier = 1
+        tramLineDistance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
     end
 
     self:setTramLineData(tramLineDistance, spec.tramLinePeriodicSequence)
