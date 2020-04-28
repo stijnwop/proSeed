@@ -1,0 +1,12 @@
+<vehicle>
+    <sounds>
+        <lowered template="ROLLBELT_ALARM" file="resources/sounds/lowered.wav">
+        </lowered>
+        <highered template="ROLLBELT_ALARM" file="resources/sounds/highered.wav">
+        </highered>
+        <empty template="ROLLBELT_ALARM" file="resources/sounds/empty.wav">
+        </empty>
+        <tramline template="ROLLBELT_ALARM" file="resources/sounds/tramline.wav">
+        </tramline>
+    </sounds>
+</vehicle>
