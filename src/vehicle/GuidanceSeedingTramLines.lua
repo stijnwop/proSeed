@@ -64,6 +64,7 @@ function GuidanceSeedingTramLines.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", GuidanceSeedingTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", GuidanceSeedingTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GuidanceSeedingTramLines)
+    SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", GuidanceSeedingTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GuidanceSeedingTramLines)
 end
 
@@ -149,6 +150,19 @@ function GuidanceSeedingTramLines:onWriteUpdateStream(streamId, connection, dirt
 end
 
 function GuidanceSeedingTramLines:onUpdate(dt)
+    local spec = self.spec_guidanceSeedingTramLines
+
+    if self.isClient then
+        if spec.actionEvents ~= nil then
+            local actionEvent = spec.actionEvents[InputAction.GS_SET_HALF_SIDE_SHUTOFF]
+            if actionEvent ~= nil then
+                g_inputBinding:setActionEventActive(actionEvent.actionEventId, self:canActivateHalfSideShutoff())
+            end
+        end
+    end
+end
+
+function GuidanceSeedingTramLines:onUpdateTick(dt)
     local spec = self.spec_guidanceSeedingTramLines
 
     local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
