@@ -1,12 +1,16 @@
 <vehicle>
     <sounds>
-        <lowered template="ROLLBELT_ALARM" file="resources/sounds/lowered.wav">
+        <lowered template="ROLLBELT_ALARM" file="resources/sounds/lowered.wav" innerRadius="5.0">
+            <volume indoor="0.8" outdoor="1.00" />
         </lowered>
-        <highered template="ROLLBELT_ALARM" file="resources/sounds/highered.wav">
+        <highered template="ROLLBELT_ALARM" file="resources/sounds/highered.wav" innerRadius="5.0">
+            <volume indoor="0.8" outdoor="1.00" />
         </highered>
-        <empty template="ROLLBELT_ALARM" file="resources/sounds/empty.wav">
+        <empty template="ROLLBELT_ALARM" file="resources/sounds/empty.wav" innerRadius="5.0">
+            <volume indoor="0.8" outdoor="1.00" />
         </empty>
-        <tramline template="ROLLBELT_ALARM" file="resources/sounds/tramline.wav">
+        <tramline template="ROLLBELT_ALARM" file="resources/sounds/tramline.wav" innerRadius="5.0">
+            <volume indoor="1" outdoor="1.20" />
         </tramline>
     </sounds>
 </vehicle>
