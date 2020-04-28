@@ -26,18 +26,39 @@ function GuidanceSeeding:new(mission, input, soundManager, modDirectory, modName
     self.mission = mission
     self.soundManager = soundManager
 
+    self:loadGuidanceSeedingSamples()
+
     return self
 end
 
 function GuidanceSeeding:delete()
+    self.soundManager:deleteSamples(self.samples)
+end
+
+function GuidanceSeeding:loadGuidanceSeedingSamples()
+    self.samples = {}
+
+    local xmlFile = loadXMLFile("GuidanceSeedingSamples", Utils.getFilename("resources/sounds/sounds.xml", self.modDirectory))
+    if xmlFile ~= nil then
+        local soundsNode = getRootNode()
+
+        self.samples.lowered = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "lowered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.highered = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "highered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.empty = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "empty", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.tramline = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "tramline", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+
+        delete(xmlFile)
+    end
 end
 
 function GuidanceSeeding.installSpecializations(vehicleTypeManager, specializationManager, modDirectory, modName)
     specializationManager:addSpecialization("guidanceSeedingTramLines", "GuidanceSeedingTramLines", Utils.getFilename("src/vehicle/GuidanceSeedingTramLines.lua", modDirectory), nil)
+    specializationManager:addSpecialization("guidanceSeedingSowingExtension", "GuidanceSeedingSowingExtension", Utils.getFilename("src/vehicle/GuidanceSeedingSowingExtension.lua", modDirectory), nil)
 
     for typeName, typeEntry in pairs(vehicleTypeManager:getVehicleTypes()) do
         if SpecializationUtil.hasSpecialization(SowingMachine, typeEntry.specializations) then
             vehicleTypeManager:addSpecialization(typeName, modName .. ".guidanceSeedingTramLines")
+            vehicleTypeManager:addSpecialization(typeName, modName .. ".guidanceSeedingSowingExtension")
         end
     end
 end
