@@ -11,3 +11,9 @@ function HUDButtonElement:new(overlay)
 
     return instance
 end
+
+---Set the callback function
+function HUDButtonElement:setButtonCallback(func)
+    self.onClickCallback = func
+end
+

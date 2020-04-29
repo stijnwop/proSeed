@@ -12,14 +12,10 @@ function HUDElementBase:new(overlay, mt)
     instance.focusActive = false
     instance.mouseDown = false
     instance.mouseEntered = false
-    instance.onClickCallback = self.testCallback
+    instance.onClickCallback = nil
     instance.clickSoundName = GuiSoundPlayer.SOUND_SAMPLES.CLICK
 
     return instance
-end
-
-function HUDElementBase:testCallback()
-    log("YES works")
 end
 
 function HUDElementBase:getIsActive()
