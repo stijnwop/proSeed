@@ -12,6 +12,7 @@ function HUDElementBase:new(overlay, mt)
     instance.focusActive = false
     instance.mouseDown = false
     instance.mouseEntered = false
+    instance.target = nil
     instance.onClickCallback = nil
     instance.clickSoundName = GuiSoundPlayer.SOUND_SAMPLES.CLICK
 
