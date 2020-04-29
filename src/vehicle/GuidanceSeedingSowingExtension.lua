@@ -15,6 +15,7 @@ function GuidanceSeedingSowingExtension.prerequisitesPresent(specializations)
 end
 
 function GuidanceSeedingSowingExtension.registerFunctions(vehicleType)
+    SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", GuidanceSeedingSowingExtension.toggleSowingSounds)
 end
 
 function GuidanceSeedingSowingExtension.registerOverwrittenFunctions(vehicleType)
@@ -25,6 +26,7 @@ function GuidanceSeedingSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onDelete", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", GuidanceSeedingSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GuidanceSeedingSowingExtension)
 end
 
 ---Called onLoad.
@@ -45,6 +47,8 @@ function GuidanceSeedingSowingExtension:onLoad(savegame)
     if fillUnitIndexLiquidFertilizer ~= nil then
         table.insert(spec.fillUnitsToCheck, { fillUnitIndex = fillUnitIndexLiquidFertilizer, didPlay = false })
     end
+
+    spec.allowSound = true
 
     if self.isClient then
         --TODO: cleanup with better loading.
@@ -101,7 +105,7 @@ function GuidanceSeedingSowingExtension:onUpdate(dt)
     local spec = self.spec_guidanceSeedingSowingExtension
 
     if self.isClient then
-        if self:getIsActiveForInput() and self:getIsTurnedOn() then
+        if self:getIsActiveForInput() and self:getIsTurnedOn() and spec.allowSound then
             local isLowered = self:getIsLowered()
 
             ---TODO: cleanup with function playing.
@@ -181,7 +185,6 @@ function GuidanceSeedingSowingExtension:onUpdate(dt)
     end
 end
 
-
 function GuidanceSeedingSowingExtension:onDeactivate()
     local spec = self.spec_guidanceSeedingSowingExtension
     if self.isClient then
@@ -189,4 +192,39 @@ function GuidanceSeedingSowingExtension:onDeactivate()
         spec.playedTramline = false
         spec.playedLowered = false
     end
+end
+
+function GuidanceSeedingSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
+    if self.isClient then
+        local spec = self.spec_guidanceSeedingSowingExtension
+
+        self:clearActionEventsTable(spec.actionEvents)
+
+        if isActiveForInput then
+            local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.GS_TOGGLE_MOUSE_CURSOR, self, GuidanceSeedingSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
+
+            g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("function_toggleMouseCursor"))
+            g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, true)
+            g_inputBinding:setActionEventTextPriority(actionEventToggleMouseCursor, GS_PRIO_LOW)
+        end
+    end
+end
+
+function GuidanceSeedingSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
+    g_guidanceSeeding.hud:toggleMouseCursor()
+end
+
+function GuidanceSeedingSowingExtension:toggleSowingSounds()
+    local spec = self.spec_guidanceSeedingSowingExtension
+    spec.allowSound = not spec.allowSound
+
+    if not spec.allowSound then
+        if self.isClient then
+            g_soundManager:stopSamples(spec.samples)
+            spec.playedTramline = false
+            spec.playedLowered = false
+        end
+    end
+
+    return spec.allowSound
 end
