@@ -11,7 +11,7 @@ GuidanceSeeding = {}
 
 local GuidanceSeeding_mt = Class(GuidanceSeeding)
 
-function GuidanceSeeding:new(mission, input, soundManager, modDirectory, modName)
+function GuidanceSeeding:new(mission, i18n, inputBinding, gui, soundManager, modDirectory, modName)
     local self = setmetatable({}, GuidanceSeeding_mt)
 
     self.version = 1.0
@@ -25,6 +25,7 @@ function GuidanceSeeding:new(mission, input, soundManager, modDirectory, modName
 
     self.mission = mission
     self.soundManager = soundManager
+    self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui)
 
     self:loadGuidanceSeedingSamples()
 
@@ -33,6 +34,15 @@ end
 
 function GuidanceSeeding:delete()
     self.soundManager:deleteSamples(self.samples)
+    self.hud:delete()
+end
+
+function GuidanceSeeding:onMissionLoaded()
+    self.hud:load()
+end
+
+function GuidanceSeeding:mouseEvent(posX, posY, isDown, isUp, button)
+    self.hud:mouseEvent(posX, posY, isDown, isUp, button)
 end
 
 function GuidanceSeeding:loadGuidanceSeedingSamples()
