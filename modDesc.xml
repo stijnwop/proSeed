@@ -20,6 +20,7 @@
     <actions>
         <action name="GS_SET_LANES_TILL_TRAMLINE" axisType="HALF"/>
         <action name="GS_SET_HALF_SIDE_SHUTOFF" axisType="HALF"/>
+        <action name="GS_TOGGLE_MOUSE_CURSOR" axisType="HALF"/>
     </actions>
 
     <inputBinding>
@@ -29,6 +30,10 @@
         </actionBinding>
         <actionBinding action="GS_SET_HALF_SIDE_SHUTOFF">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_t"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
+        </actionBinding>
+        <actionBinding action="GS_TOGGLE_MOUSE_CURSOR">
+            <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_MIDDLE"/>
             <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
         </actionBinding>
     </inputBinding>
@@ -42,6 +47,14 @@
         <text name="input_GS_SET_LANES_TILL_TRAMLINE">
             <en>GS: Lines till tramline</en>
             <de>GS: Lines till tramline</de>
+        </text>
+        <text name="input_GS_TOGGLE_MOUSE_CURSOR">
+            <en>GS: Toggle mouse cursor</en>
+            <de>GS: Toggle mouse cursor</de>
+        </text>
+        <text name="function_toggleMouseCursor">
+            <en>Toggle mouse cursor</en>
+            <de>Toggle mouse cursor</de>
         </text>
         <text name="function_toggleHalfSideShutoff">
             <en>Toggle halfside shutoff</en>

@@ -8,17 +8,19 @@
 
 ---@class InteractiveHUD
 InteractiveHUD = {}
+InteractiveHUD.INPUT_CONTEXT_NAME = "INTERACTIVE_HUD"
 
 local InteractiveHUD_mt = Class(InteractiveHUD)
 
 ---Creates a new instance of the InteractiveHUD.
 ---@return InteractiveHUD
-function InteractiveHUD:new(mission, i18n, inputBinding, gui, uiFilename)
+function InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
     local instance = setmetatable({}, InteractiveHUD_mt)
 
     instance.gui = gui
     instance.inputBinding = inputBinding
     instance.i18n = i18n
+    instance.modDirectory = modDirectory
     instance.uiFilename = uiFilename
 
     instance.speedMeterDisplay = mission.hud.speedMeter
@@ -40,6 +42,25 @@ function InteractiveHUD:load()
     self:setVehicle(nil)
 end
 
+---Toggle mouse cursor mode and go into a context to block any other input.
+function InteractiveHUD:toggleMouseCursor()
+    local isActive = not g_inputBinding:getShowMouseCursor()
+    g_inputBinding:setShowMouseCursor(isActive)
+
+    if not self.isCustomInputActive and isActive then
+        self.inputBinding:setContext(InteractiveHUD.INPUT_CONTEXT_NAME, true, false)
+
+        local _, eventId = self.inputBinding:registerActionEvent(InputAction.GS_TOGGLE_MOUSE_CURSOR, self, self.toggleMouseCursor, false, true, false, true)
+        self.inputBinding:setActionEventTextVisibility(eventId, false)
+
+        self.isCustomInputActive = true
+    elseif self.isCustomInputActive and not isActive then
+        self.inputBinding:removeActionEventsByTarget(self)
+        self.inputBinding:revertContext(true) -- revert and clear message context
+        self.isCustomInputActive = false
+    end
+end
+
 function InteractiveHUD:setVehicle(vehicle)
     self.vehicle = vehicle
     if self.base ~= nil then
@@ -50,17 +71,30 @@ end
 ---Called on mouse event.
 function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
     if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.inputBinding:getShowMouseCursor() then
-        local isLeftButton = button == Input.MOUSE_BUTTON_LEFT
-        if self.isDirty then
-            if isLeftButton and isUp then
-                self:setIsPositionDirty(false)
-            else
-                self:setPositionByMousePosition(posX, posY)
+        local eventUsed = false
+        for _, child in ipairs(self.base.children) do
+            if child.mouseEvent ~= nil then
+                eventUsed = child:mouseEvent(posX, posY, isDown, isUp, button)
             end
-        else
-            local x, y = self:getPosition()
-            if isLeftButton and isDown and GuiUtils.checkOverlayOverlap(posX, posY, x, y, self.base:getWidth(), self.base:getHeight()) then
-                self:setIsPositionDirty(true, posX, posY)
+
+            if eventUsed then
+                break
+            end
+        end
+
+        if not eventUsed then
+            local isLeftButton = button == Input.MOUSE_BUTTON_LEFT
+            if self.isDirty then
+                if isLeftButton and isUp then
+                    self:setIsPositionDirty(false)
+                else
+                    self:setPositionByMousePosition(posX, posY)
+                end
+            else
+                local x, y = self:getPosition()
+                if isLeftButton and isDown and GuiUtils.checkOverlayOverlap(posX, posY, x, y, self.base:getWidth(), self.base:getHeight()) then
+                    self:setIsPositionDirty(true, posX, posY)
+                end
             end
         end
     end
@@ -101,16 +135,51 @@ function InteractiveHUD:scalePixelToScreenVector(vector2D)
     return self.speedMeterDisplay:scalePixelToScreenVector(vector2D)
 end
 
+function InteractiveHUD:toggleVehicleSound(buttonElement)
+    if self.vehicle ~= nil then
+        if self.vehicle.toggleSowingSounds ~= nil then
+            local state = self.vehicle:toggleSowingSounds()
+            local color = state and InteractiveHUD.COLOR.ACTIVE or InteractiveHUD.COLOR.INACTIVE
+            buttonElement:setColor(unpack(color))
+        end
+    end
+end
+
 function InteractiveHUD:createElements()
     local rightX = 1 - g_safeFrameOffsetX -- right of screen.
     local bottomY = g_safeFrameOffsetY
 
     local marginWidth, marginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX_MARGIN)
-    local baseBox = self:createBaseBox(g_baseUIFilename, rightX - marginWidth, bottomY - marginHeight)
+
+    local iconWidth, iconHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON)
+
+    local baseBox = self:createBaseBox(self.uiFilename, rightX - marginWidth, bottomY - marginHeight)
 
     self.base = baseBox
     self.base:setVisible(true)
     self.speedMeterDisplay:addChild(baseBox)
+
+    local posX, posY = self:getPosition()
+    self.icon = self:createIcon(self.uiFilename, posX, posY, iconWidth, iconHeight, InteractiveHUD.UV.TRAM_LINE)
+    self.icon:setIsVisible(true)
+
+    self.button = HUDButtonElement:new(self.icon)
+
+    self.base:addChild(self.button)
+
+    self.icon1 = self:createIcon(self.uiFilename, posX, posY + iconHeight, iconWidth, iconHeight, InteractiveHUD.UV.FERTILIZER)
+    self.icon1:setIsVisible(true)
+
+    self.button1 = HUDButtonElement:new(self.icon1)
+    self.base:addChild(self.button1)
+
+    self.iconSound = self:createIcon(self.uiFilename, posX + iconWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.SOUND)
+    self.iconSound:setIsVisible(true)
+
+    self.buttonSound = HUDButtonElement:new(self.iconSound)
+    self.buttonSound:setButtonCallback(self, self.toggleVehicleSound)
+    self.buttonSound:setColor(unpack(InteractiveHUD.COLOR.ACTIVE)) -- TODO: remove
+    self.base:addChild(self.buttonSound)
 end
 
 --- Create the box with the HUD icons.
@@ -122,13 +191,35 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
     local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDElement:new(boxOverlay)
 
-    boxElement:setColor(1, 1, 1, 0.8) -- TODO: remove later.
-    boxElement:setUVs(getNormalizedUVs(HUDElement.UV.FILL))
+    boxElement:setColor(0, 0, 0, 0.9)
+    boxElement:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
 
     return boxElement
+end
+
+function InteractiveHUD:createIcon(imagePath, baseX, baseY, width, height, uvs)
+    local iconOverlay = Overlay:new(imagePath, baseX, baseY, width, height)
+    iconOverlay:setColor(unpack(InteractiveHUD.COLOR.INACTIVE))
+    iconOverlay:setUVs(getNormalizedUVs(uvs))
+
+    return iconOverlay
 end
 
 InteractiveHUD.SIZE = {
     BOX = { 300, 150 },
     BOX_MARGIN = { 20, 40 },
+    ICON = { 54, 54 },
+}
+
+InteractiveHUD.UV = {
+    TRAM_LINE = { 0, 0, 65, 65 },
+    FILL = { 0, 65, 65, 65 },
+    FERTILIZER = { 65, 0, 65, 65 },
+    SOUND = { 65, 65, 65, 65 },
+}
+
+
+InteractiveHUD.COLOR = {
+    INACTIVE = { 1, 1, 1, 0.75 },
+    ACTIVE = { 0.0953, 1, 0.0685, 0.75 }
 }

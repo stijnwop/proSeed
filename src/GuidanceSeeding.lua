@@ -25,7 +25,10 @@ function GuidanceSeeding:new(mission, i18n, inputBinding, gui, soundManager, mod
 
     self.mission = mission
     self.soundManager = soundManager
-    self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui)
+
+
+    local uiFilename = Utils.getFilename("resources/hud/guidanceSeeding_1080p.png", modDirectory)
+    self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
 
     self:loadGuidanceSeedingSamples()
 
