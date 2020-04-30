@@ -87,7 +87,7 @@ function GuidanceSeedingTramLines:onLoad(savegame)
 
     spec.tramLinePeriodicSequence = GuidanceSeedingTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
     spec.tramLineDistanceMultiplier = 1
-    spec.tramLineDistance = width * spec.tramLineDistanceMultiplier
+    spec.tramLineDistance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
 
     local originalAreas = {}
     local node = createGuideNode("width_node", self.rootNode)
@@ -161,6 +161,7 @@ function GuidanceSeedingTramLines:onUpdate(dt)
         end
 
         if self:getIsActiveForInput() then
+            local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
             local data = {
                 { name = "working width", value = spec.workingWidth },
                 { name = "rounded width", value = spec.workingWidthRounded },
