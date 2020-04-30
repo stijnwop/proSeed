@@ -406,8 +406,6 @@ function GuidanceSeedingTramLines.actionEventToggleTramlines(self, actionName, i
     end
 
     self:setTramLineData(tramLineDistance, spec.tramLinePeriodicSequence)
-
-    log("tramLineDistance: " .. tostring(tramLineDistance))
 end
 
 function GuidanceSeedingTramLines.actionEventSetTramlines(self, actionName, inputValue, callbackState, isAnalog)
@@ -420,7 +418,6 @@ function GuidanceSeedingTramLines.actionEventSetTramlines(self, actionName, inpu
     end
 
     self:setTramLineData(spec.tramLineDistance, tramLinePeriodicSequence)
-    log("tramLinePeriodicSequence: " .. tostring(tramLinePeriodicSequence))
 end
 
 function GuidanceSeedingTramLines.actionEventToggleHalfSideShutoff(self, actionName, inputValue, callbackState, isAnalog)
@@ -432,7 +429,6 @@ function GuidanceSeedingTramLines.actionEventToggleHalfSideShutoff(self, actionN
             mode = GuidanceSeedingTramLines.SHUTOFF_MODE_OFF
         end
 
-        log("MODE: " .. mode)
         self:setHalfSideShutoffMode(mode)
     end
 end
