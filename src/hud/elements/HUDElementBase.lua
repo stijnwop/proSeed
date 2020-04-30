@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------------------------
+-- HUDElementBase
+----------------------------------------------------------------------------------------------------
+-- Purpose: Base class for a HUD element.
+--
+-- Copyright (c) Wopster, 2020
+----------------------------------------------------------------------------------------------------
 
 ---@class HUDElementBase
 HUDElementBase = {}
@@ -9,20 +16,30 @@ local HUDElementBase_mt = Class(HUDElementBase, HUDElement)
 function HUDElementBase:new(overlay, mt)
     local instance = HUDElement.new(mt or HUDElementBase_mt, overlay)
 
-    instance.focusActive = false
+    instance.isElementActive = true
+
     instance.mouseDown = false
     instance.mouseEntered = false
     instance.target = nil
     instance.onClickCallback = nil
     instance.clickSoundName = GuiSoundPlayer.SOUND_SAMPLES.CLICK
 
+    instance.hasBorders = false
+
     return instance
 end
 
-function HUDElementBase:getIsActive()
-    return self.onClickCallback ~= nil
+---Set target class.
+function HUDElementBase:setTarget(target)
+    self.target = target
 end
 
+---Returns current active state.
+function HUDElementBase:isActive()
+    return self.isElementActive
+end
+
+---Function to handle callbacks for e.g. buttons.
 function HUDElementBase:raiseCallback(name, ...)
     if self[name] ~= nil then
         if self.target ~= nil then
@@ -35,49 +52,109 @@ function HUDElementBase:raiseCallback(name, ...)
     return nil
 end
 
+---Called on mouse event by the HUD controller.
 function HUDElementBase:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
-    if self:getIsActive() then
-        local x, y = self:getPosition()
-        local cursorInElement = GuiUtils.checkOverlayOverlap(posX, posY, x, y, self:getWidth(), self:getHeight())
+    return eventUsed
+end
 
-        if cursorInElement then
-            if not self.mouseEntered and not self.focusActive then
+---Called on draw
+function HUDElementBase:draw()
+    HUDElementBase:superClass().draw(self)
 
-                self.mouseEntered = true
-            end
-        else
-            -- mouse event outside button
-            --self:restoreOverlayState()
-            self.mouseDown = false
-            self.mouseEntered = false
-        end
-
-        -- handle click/activate only if event has not been consumed, yet
-        if not eventUsed then
-            if cursorInElement and not FocusManager:isLocked() then
-                if isDown and button == Input.MOUSE_BUTTON_LEFT then
-                        eventUsed = true
-                    self.mouseDown = true
-                end
-
-                -- if needed, set state to PRESSED and store current overlay state for restoration
-                --if self.mouseDown and self:getOverlayState() ~= GuiOverlay.STATE_PRESSED then
-                    --self:storeOverlayState()
-                    --self:setOverlayState(GuiOverlay.STATE_PRESSED)
-                --end
-
-                if isUp and button == Input.MOUSE_BUTTON_LEFT and self.mouseDown then
-                    g_gui.soundPlayer:playSample(self.clickSoundName)
-
-                    --self:restoreOverlayState()
-                    self.mouseDown = false
-                    self:raiseCallback("onClickCallback", self)
-
-                    eventUsed = true
-                end
-            end
+    if self.hasBorders then
+        for _, frameOverlay in pairs(self.frameOverlays) do
+            frameOverlay:render()
         end
     end
+end
 
-    return eventUsed
+---Set position of the HUD element.
+function HUDElementBase:setPosition(x, y)
+    HUDElementBase:superClass().setPosition(self, x, y)
+
+    --Update borders when position is changed.
+    if self.hasBorders then
+        self:updateBordersPosition()
+    end
+end
+
+---Set element borders.
+function HUDElementBase:setBorders(thickness, color)
+    self.borderThickness = GuiUtils.getNormalizedValues(thickness)
+    self.borderColor = color
+
+    local leftOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    leftOverlay:setColor(unpack(self.borderColor))
+    leftOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_LEFT)
+    local topOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    topOverlay:setColor(unpack(self.borderColor))
+    topOverlay:setAlignment(Overlay.ALIGN_VERTICAL_TOP, Overlay.ALIGN_HORIZONTAL_LEFT)
+    local rightOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    rightOverlay:setColor(unpack(self.borderColor))
+    rightOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_RIGHT)
+    local bottomOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    bottomOverlay:setColor(unpack(self.borderColor))
+    bottomOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_LEFT)
+
+    self.frameOverlays = { leftOverlay, topOverlay, rightOverlay, bottomOverlay }
+    for _, frameOverlay in pairs(self.frameOverlays) do
+        frameOverlay:setUVs(g_colorBgUVs)
+    end
+
+    self.hasBorders = true
+    self:updateBordersPosition()
+end
+
+---Updates the position of the borders.
+function HUDElementBase:updateBordersPosition()
+    local x, y = self:getPosition()
+    local width, height = self:getWidth(), self:getHeight()
+
+    local left, top, right, bottom = 1, 2, 3, 4
+    local partBorders = {
+        [left] = { x = x, y = y, width = self.borderThickness[left], height = height },
+        [top] = { x = x, y = y + height, width = width, height = self.borderThickness[top] },
+        [right] = { x = x + width, y = y, width = self.borderThickness[right], height = height },
+        [bottom] = { x = x, y = y, width = width, height = self.borderThickness[bottom] },
+    }
+
+    self:cutBordersHorizontal(partBorders[left], partBorders[top], true)
+    self:cutBordersHorizontal(partBorders[left], partBorders[bottom], true)
+    self:cutBordersHorizontal(partBorders[right], partBorders[top], false)
+    self:cutBordersHorizontal(partBorders[right], partBorders[bottom], false)
+
+    self:cutBordersVertical(partBorders[bottom], partBorders[left], true)
+    self:cutBordersVertical(partBorders[bottom], partBorders[right], true)
+    self:cutBordersVertical(partBorders[top], partBorders[left], false)
+    self:cutBordersVertical(partBorders[top], partBorders[right], false)
+
+    for side = left, bottom do
+        -- from left to bottom in order
+        self.frameOverlays[side]:setPosition(partBorders[side].x, partBorders[side].y)
+        self.frameOverlays[side]:setDimension(partBorders[side].width, partBorders[side].height)
+    end
+end
+
+---Cut horizontal borders to fit.
+function HUDElementBase:cutBordersHorizontal(verticalPart, horizontalPart, isLeft)
+    if verticalPart.width > horizontalPart.height then
+        -- equals test for thickness
+        if isLeft then
+            horizontalPart.x = horizontalPart.x + verticalPart.width
+        end
+
+        horizontalPart.width = horizontalPart.width - verticalPart.width
+    end
+end
+
+---Cut vertical borders to fit.
+function HUDElementBase:cutBordersVertical(horizontalPart, verticalPart, isBottom)
+    if horizontalPart.width >= verticalPart.height then
+        -- test for greater or equals here to avoid overlaps when thickness is the same
+        if isBottom then
+            verticalPart.y = verticalPart.y + horizontalPart.height
+        end
+
+        verticalPart.height = verticalPart.height - horizontalPart.height
+    end
 end
