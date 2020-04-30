@@ -149,6 +149,7 @@ function InteractiveHUD:createElements()
     local rightX = 1 - g_safeFrameOffsetX -- right of screen.
     local bottomY = g_safeFrameOffsetY
 
+    local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
     local marginWidth, marginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX_MARGIN)
 
     local iconWidth, iconHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON)
@@ -173,13 +174,24 @@ function InteractiveHUD:createElements()
     self.button1 = HUDButtonElement:new(self.icon1)
     self.base:addChild(self.button1)
 
-    self.iconSound = self:createIcon(self.uiFilename, posX + iconWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.SOUND)
+    self:createSeederIcon(posX + iconWidth, posY)
+
+    --SOUND ICON
+    self.iconSound = self:createIcon(self.uiFilename, posX + boxWidth - iconWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.SOUND)
     self.iconSound:setIsVisible(true)
 
     self.buttonSound = HUDButtonElement:new(self.iconSound)
     self.buttonSound:setButtonCallback(self, self.toggleVehicleSound)
     self.buttonSound:setColor(unpack(InteractiveHUD.COLOR.ACTIVE)) -- TODO: remove
     self.base:addChild(self.buttonSound)
+
+    self.iconGuidanceSteering = self:createIcon(self.uiFilename, posX + boxWidth - iconWidth, posY+ iconHeight, iconWidth, iconHeight, InteractiveHUD.UV.GPS)
+    self.iconGuidanceSteering:setIsVisible(true)
+
+    self.buttonGuidanceSteering = HUDButtonElement:new(self.iconGuidanceSteering)
+    self.buttonGuidanceSteering:setButtonCallback(self, self.toggleVehicleSound)
+    self.buttonGuidanceSteering:setColor(unpack(InteractiveHUD.COLOR.ACTIVE)) -- TODO: remove
+    self.base:addChild(self.buttonGuidanceSteering)
 end
 
 --- Create the box with the HUD icons.
@@ -191,7 +203,7 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
     local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDElement:new(boxOverlay)
 
-    boxElement:setColor(0, 0, 0, 0.9)
+    boxElement:setColor(0.013, 0.013, 0.013, 0.7)
     boxElement:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
 
     return boxElement
@@ -205,19 +217,40 @@ function InteractiveHUD:createIcon(imagePath, baseX, baseY, width, height, uvs)
     return iconOverlay
 end
 
+
+function InteractiveHUD:createSeederIcon(posX, posY)
+    local seederWidth, seederHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEEDER)
+    local seederMarginWidth, seederMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEEDER_MARGIN)
+    self.iconSeeder = self:createIcon(self.uiFilename, posX + seederMarginWidth, posY + seederMarginHeight, seederWidth, seederHeight, InteractiveHUD.UV.SEEDER)
+    self.iconSeeder:setIsVisible(true)
+
+    self.buttonSeeder = HUDElement:new(self.iconSeeder)
+
+    self.iconTramLineActive = self:createIcon(self.uiFilename, posX + seederMarginWidth, posY, seederWidth, seederHeight, InteractiveHUD.UV.TRAM_LINE_ACTIVE)
+    self.iconTramLineActive:setIsVisible(true)
+
+    self.tramLineActive = HUDElement:new(self.iconTramLineActive)
+    self.base:addChild(self.buttonSeeder)
+    self.base:addChild(self.tramLineActive)
+end
+
 InteractiveHUD.SIZE = {
-    BOX = { 300, 150 },
+    BOX = { 308, 150 },
     BOX_MARGIN = { 20, 40 },
     ICON = { 54, 54 },
+    SEEDER = { 100, 100 },
+    SEEDER_MARGIN = { 50, 8 },
 }
 
 InteractiveHUD.UV = {
     TRAM_LINE = { 0, 0, 65, 65 },
+    TRAM_LINE_ACTIVE = { 130, 0, 65, 65 },
     FILL = { 0, 65, 65, 65 },
     FERTILIZER = { 65, 0, 65, 65 },
     SOUND = { 65, 65, 65, 65 },
+    GPS = { 650, 65, 65, 65 },
+    SEEDER = { 455, 0, 130, 130 },
 }
-
 
 InteractiveHUD.COLOR = {
     INACTIVE = { 1, 1, 1, 0.75 },
