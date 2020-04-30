@@ -54,7 +54,6 @@ function GuidanceSeedingTramLines.registerFunctions(vehicleType)
 end
 
 function GuidanceSeedingTramLines.registerOverwrittenFunctions(vehicleType)
-    SpecializationUtil.registerOverwrittenFunction(vehicleType, "processSowingMachineArea", GuidanceSeedingTramLines.processSowingMachineArea)
 end
 
 function GuidanceSeedingTramLines.registerEventListeners(vehicleType)
@@ -66,6 +65,7 @@ function GuidanceSeedingTramLines.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GuidanceSeedingTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", GuidanceSeedingTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GuidanceSeedingTramLines)
+    SpecializationUtil.registerEventListener(vehicleType, "onEndWorkAreaProcessing", GuidanceSeedingTramLines)
 end
 
 ---Called onLoad.
@@ -207,26 +207,25 @@ function GuidanceSeedingTramLines:onUpdateTick(dt)
     end
 end
 
-function GuidanceSeedingTramLines:processSowingMachineArea(superFunc, workArea, dt)
-    local changedArea, totalArea = superFunc(self, workArea, dt)
-
+function GuidanceSeedingTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
     local spec = self.spec_guidanceSeedingTramLines
-    if spec.createTramLines and spec.tramlinesWorkAreaIndex == workArea.index then
+    if self.isServer and spec.createTramLines then
         local params = self.spec_sowingMachine.workAreaParameters
 
-        for _, area in ipairs(spec.tramlinesAreas) do
-            local xs, _, zs = getWorldTranslation(area.start)
-            local xw, _, zw = getWorldTranslation(area.width)
-            local xh, _, zh = getWorldTranslation(area.height)
-            FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
+        if params.lastChangedArea > 0 then
+            for _, area in ipairs(spec.tramlinesAreas) do
+                local xs, _, zs = getWorldTranslation(area.start)
+                local xw, _, zw = getWorldTranslation(area.width)
+                local xh, _, zh = getWorldTranslation(area.height)
+                FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
 
-            if VehicleDebug.state == VehicleDebug.DEBUG_ATTRIBUTES then
-                drawArea(area, 0, 0, 1, 1)
+                if VehicleDebug.state == VehicleDebug.DEBUG_ATTRIBUTES then
+                    drawArea(area, 0, 0, 1, 1)
+                end
             end
         end
-    end
 
-    return changedArea, totalArea
+    end
 end
 
 ---Sets the half side shutoff mode.
