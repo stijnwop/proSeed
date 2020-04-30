@@ -26,7 +26,6 @@ function InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFi
     instance.speedMeterDisplay = mission.hud.speedMeter
 
     instance.vehicle = nil
-    instance.isMoving = false
 
     return instance
 end
@@ -71,64 +70,17 @@ end
 ---Called on mouse event.
 function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
     if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.inputBinding:getShowMouseCursor() then
-        local eventUsed = false
+        local eventUsed = self.base:mouseEvent(posX, posY, isDown, isUp, button, false)
         for _, child in ipairs(self.base.children) do
             if child.mouseEvent ~= nil then
-                eventUsed = child:mouseEvent(posX, posY, isDown, isUp, button)
+                eventUsed = child:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
             end
 
             if eventUsed then
                 break
             end
         end
-
-        if not eventUsed then
-            local isLeftButton = button == Input.MOUSE_BUTTON_LEFT
-            if self.isDirty then
-                if isLeftButton and isUp then
-                    self:setIsPositionDirty(false)
-                else
-                    self:setPositionByMousePosition(posX, posY)
-                end
-            else
-                local x, y = self:getPosition()
-                if isLeftButton and isDown and GuiUtils.checkOverlayOverlap(posX, posY, x, y, self.base:getWidth(), self.base:getHeight()) then
-                    self:setIsPositionDirty(true, posX, posY)
-                end
-            end
-        end
     end
-end
-
----Set position dirty and if it requires and update.
-function InteractiveHUD:setIsPositionDirty(isDirty, mouseX, mouseY)
-    self.isDirty = isDirty
-
-    if isDirty then
-        self.currentMouseX = mouseX
-        self.currentMouseY = mouseY
-    end
-end
-
----Set base position based on the given mouse position.
-function InteractiveHUD:setPositionByMousePosition(mouseX, mouseY)
-    if self.isDirty then
-        local moveX, moveY = mouseX - self.currentMouseX, mouseY - self.currentMouseY
-        local x, y = self.base:getPosition()
-        self:setPosition(x + moveX, y + moveY)
-        self.currentMouseX = mouseX
-        self.currentMouseY = mouseY
-    end
-end
-
----Set position of the HUD.
-function InteractiveHUD:setPosition(x, y)
-    self.base:setPosition(x, y)
-end
-
----Get the position of the HUD.
-function InteractiveHUD:getPosition()
-    return self.base:getPosition()
 end
 
 function InteractiveHUD:scalePixelToScreenVector(vector2D)
@@ -160,7 +112,7 @@ function InteractiveHUD:createElements()
     self.base:setVisible(true)
     self.speedMeterDisplay:addChild(baseBox)
 
-    local posX, posY = self:getPosition()
+    local posX, posY = self.base:getPosition()
     self.icon = self:createIcon(self.uiFilename, posX, posY, iconWidth, iconHeight, InteractiveHUD.UV.TRAM_LINE)
     self.icon:setIsVisible(true)
 
@@ -185,7 +137,7 @@ function InteractiveHUD:createElements()
     self.buttonSound:setColor(unpack(InteractiveHUD.COLOR.ACTIVE)) -- TODO: remove
     self.base:addChild(self.buttonSound)
 
-    self.iconGuidanceSteering = self:createIcon(self.uiFilename, posX + boxWidth - iconWidth, posY+ iconHeight, iconWidth, iconHeight, InteractiveHUD.UV.GPS)
+    self.iconGuidanceSteering = self:createIcon(self.uiFilename, posX + boxWidth - iconWidth, posY + iconHeight, iconWidth, iconHeight, InteractiveHUD.UV.GPS)
     self.iconGuidanceSteering:setIsVisible(true)
 
     self.buttonGuidanceSteering = HUDButtonElement:new(self.iconGuidanceSteering)
@@ -201,7 +153,7 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
     local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
     local posX = x - boxWidth
     local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
-    local boxElement = HUDElement:new(boxOverlay)
+    local boxElement = HUDMovableElement:new(boxOverlay)
 
     boxElement:setColor(0.013, 0.013, 0.013, 0.7)
     boxElement:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
@@ -216,7 +168,6 @@ function InteractiveHUD:createIcon(imagePath, baseX, baseY, width, height, uvs)
 
     return iconOverlay
 end
-
 
 function InteractiveHUD:createSeederIcon(posX, posY)
     local seederWidth, seederHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEEDER)

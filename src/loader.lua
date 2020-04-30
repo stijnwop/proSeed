@@ -13,6 +13,7 @@ source(Utils.getFilename("src/events/GuidanceSeedingHalfSideShutoffEvent.lua", d
 source(Utils.getFilename("src/events/GuidanceSeedingTramLineDataEvent.lua", directory))
 
 source(Utils.getFilename("src/hud/elements/HUDElementBase.lua", directory))
+source(Utils.getFilename("src/hud/elements/HUDMovableElement.lua", directory))
 source(Utils.getFilename("src/hud/elements/HUDButtonElement.lua", directory))
 source(Utils.getFilename("src/hud/InteractiveHUD.lua", directory))
 
