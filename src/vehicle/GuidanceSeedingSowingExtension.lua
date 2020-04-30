@@ -16,14 +16,20 @@ end
 
 function GuidanceSeedingSowingExtension.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", GuidanceSeedingSowingExtension.toggleSowingSounds)
+    SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", GuidanceSeedingSowingExtension.toggleSowingFertilizer)
+    SpecializationUtil.registerFunction(vehicleType, "setSowingData(", GuidanceSeedingSowingExtension.setSowingData)
 end
 
 function GuidanceSeedingSowingExtension.registerOverwrittenFunctions(vehicleType)
+    SpecializationUtil.registerOverwrittenFunction(vehicleType, "processSowingMachineArea", GuidanceSeedingSowingExtension.processSowingMachineArea)
+    SpecializationUtil.registerOverwrittenFunction(vehicleType, "removeActionEvents", GuidanceSeedingSowingExtension.removeActionEvents)
 end
 
 function GuidanceSeedingSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onLoad", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDelete", GuidanceSeedingSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onReadStream", GuidanceSeedingSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", GuidanceSeedingSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GuidanceSeedingSowingExtension)
@@ -38,17 +44,20 @@ function GuidanceSeedingSowingExtension:onLoad(savegame)
     spec.fillUnitIndexForFrame = 1 -- current frame fillUnit to check
     table.insert(spec.fillUnitsToCheck, { fillUnitIndex = Utils.getNoNil(self:getFirstValidFillUnitToFill(FillType.SEEDS, true), 1), didPlay = false })
 
+    --Insert solid fertilizer if present.
     local fillUnitIndexFertilizer = self:getFirstValidFillUnitToFill(FillType.FERTILIZER, true)
     if fillUnitIndexFertilizer ~= nil then
         table.insert(spec.fillUnitsToCheck, { fillUnitIndex = fillUnitIndexFertilizer, didPlay = false })
     end
 
+    --Insert liquid fertilizer if present.
     local fillUnitIndexLiquidFertilizer = self:getFirstValidFillUnitToFill(FillType.LIQUIDFERTILIZER, true)
     if fillUnitIndexLiquidFertilizer ~= nil then
         table.insert(spec.fillUnitsToCheck, { fillUnitIndex = fillUnitIndexLiquidFertilizer, didPlay = false })
     end
 
-    spec.allowSound = true
+    spec.allowSound = false
+    spec.allowFertilizer = false
 
     if self.isClient then
         --TODO: cleanup with better loading.
@@ -99,6 +108,18 @@ function GuidanceSeedingSowingExtension:onDelete()
     if self.isClient then
         g_soundManager:deleteSamples(spec.samples)
     end
+end
+
+function GuidanceSeedingSowingExtension:onReadStream(streamId, connection)
+    local allowSound = streamReadBool(streamId)
+    local allowFertilizer = streamReadBool(streamId)
+    self:setSowingData(allowSound, allowFertilizer, true)
+end
+
+function GuidanceSeedingSowingExtension:onWriteStream(streamId, connection)
+    local spec = self.spec_guidanceSeedingSowingExtension
+    streamWriteBool(streamId, spec.allowSound)
+    streamWriteBool(streamId, spec.allowFertilizer)
 end
 
 function GuidanceSeedingSowingExtension:onUpdate(dt)
@@ -194,31 +215,21 @@ function GuidanceSeedingSowingExtension:onDeactivate()
     end
 end
 
-function GuidanceSeedingSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
-    if self.isClient then
-        local spec = self.spec_guidanceSeedingSowingExtension
-
-        self:clearActionEventsTable(spec.actionEvents)
-
-        if isActiveForInput then
-            local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.GS_TOGGLE_MOUSE_CURSOR, self, GuidanceSeedingSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
-
-            g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("function_toggleMouseCursor"))
-            g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, true)
-            g_inputBinding:setActionEventTextPriority(actionEventToggleMouseCursor, GS_PRIO_LOW)
-        end
+function GuidanceSeedingSowingExtension:removeActionEvents(superFunc, ...)
+    local hud = g_guidanceSeeding.hud
+    if hud:isVehicleActive(self) then
+        hud:setVehicle(nil)
     end
+
+    return superFunc(self, ...)
 end
 
-function GuidanceSeedingSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
-    g_guidanceSeeding.hud:toggleMouseCursor()
-end
-
+---Toggle playing sound.
 function GuidanceSeedingSowingExtension:toggleSowingSounds()
     local spec = self.spec_guidanceSeedingSowingExtension
-    spec.allowSound = not spec.allowSound
+    local allowSound = not spec.allowSound
 
-    if not spec.allowSound then
+    if not allowSound then
         if self.isClient then
             g_soundManager:stopSamples(spec.samples)
             spec.playedTramline = false
@@ -226,5 +237,59 @@ function GuidanceSeedingSowingExtension:toggleSowingSounds()
         end
     end
 
-    return spec.allowSound
+    self:setSowingData(allowSound, spec.allowFertilizer)
+    return allowSound
+end
+
+---Toggle usage of fertilizer.
+function GuidanceSeedingSowingExtension:toggleSowingFertilizer()
+    local spec = self.spec_guidanceSeedingSowingExtension
+    local allowFertilizer = not spec.allowFertilizer
+    self:setSowingData(spec.allowSound, allowFertilizer)
+    return allowFertilizer
+end
+
+---Set the active sowing data and sync with players and server.
+function GuidanceSeedingSowingExtension:setSowingData(allowSound, allowFertilizer, noEventSend)
+    local spec = self.spec_guidanceSeedingSowingExtension
+
+    GuidanceSeedingDataEvent.sendEvent(self, allowSound, allowFertilizer, noEventSend)
+    spec.allowSound = allowSound
+    spec.allowFertilizer = allowFertilizer
+end
+
+---Overwrite sowing area processing to block fertilizer when set.
+function GuidanceSeedingSowingExtension:processSowingMachineArea(superFunc, workArea, dt)
+    local spec = self.spec_guidanceSeedingSowingExtension
+    if not spec.allowFertilizer then
+        local spec_sprayer = self.spec_sprayer
+        if spec_sprayer ~= nil then
+            spec_sprayer.workAreaParameters.sprayFillLevel = 0
+        end
+    end
+
+    local changedArea, totalArea = superFunc(self, workArea, dt)
+    return changedArea, totalArea
+end
+
+function GuidanceSeedingSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
+    if self.isClient then
+        local spec = self.spec_guidanceSeedingSowingExtension
+        self:clearActionEventsTable(spec.actionEvents)
+
+        if isActiveForInput then
+            --TODO: add if active
+            local hud = g_guidanceSeeding.hud
+            hud:setVehicle(self)
+
+            local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.GS_TOGGLE_MOUSE_CURSOR, self, GuidanceSeedingSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
+            g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("function_toggleMouseCursor"))
+            g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, false)
+        end
+    end
+end
+
+function GuidanceSeedingSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
+    --We need to trigger the cursor somewhere.
+    g_guidanceSeeding.hud:toggleMouseCursor()
 end
