@@ -44,9 +44,30 @@ function HUDElementBase:getIsVisible()
     return self:getVisible()
 end
 
+---Set visibility of the HUD element.
+function HUDElementBase:setVisible(isVisible)
+    HUDElementBase:superClass().setVisible(self, isVisible)
+
+    if self.hasBorders then
+        for _, frameOverlay in pairs(self.frameOverlays) do
+            frameOverlay:setIsVisible(isVisible)
+        end
+    end
+end
+
 ---Check if sound have to suppressed.
 function HUDElementBase:getSoundSuppressed()
     return false
+end
+
+---Set position of the HUD element.
+function HUDElementBase:setPosition(x, y)
+    HUDElementBase:superClass().setPosition(self, x, y)
+
+    --Update borders when position is changed.
+    if self.hasBorders then
+        self:updateBordersPosition()
+    end
 end
 
 ---Function to handle callbacks for e.g. buttons.
@@ -75,16 +96,6 @@ function HUDElementBase:draw()
         for _, frameOverlay in pairs(self.frameOverlays) do
             frameOverlay:render()
         end
-    end
-end
-
----Set position of the HUD element.
-function HUDElementBase:setPosition(x, y)
-    HUDElementBase:superClass().setPosition(self, x, y)
-
-    --Update borders when position is changed.
-    if self.hasBorders then
-        self:updateBordersPosition()
     end
 end
 
