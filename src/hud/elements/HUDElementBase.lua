@@ -39,6 +39,16 @@ function HUDElementBase:isActive()
     return self.isElementActive
 end
 
+---Pass on method to have compatibility with the focus manager.
+function HUDElementBase:getIsVisible()
+    return self:getVisible()
+end
+
+---Check if sound have to suppressed.
+function HUDElementBase:getSoundSuppressed()
+    return false
+end
+
 ---Function to handle callbacks for e.g. buttons.
 function HUDElementBase:raiseCallback(name, ...)
     if self[name] ~= nil then
