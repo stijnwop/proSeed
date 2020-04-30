@@ -17,7 +17,7 @@ end
 function GuidanceSeedingSowingExtension.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", GuidanceSeedingSowingExtension.toggleSowingSounds)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", GuidanceSeedingSowingExtension.toggleSowingFertilizer)
-    SpecializationUtil.registerFunction(vehicleType, "setSowingData(", GuidanceSeedingSowingExtension.setSowingData)
+    SpecializationUtil.registerFunction(vehicleType, "setSowingData", GuidanceSeedingSowingExtension.setSowingData)
 end
 
 function GuidanceSeedingSowingExtension.registerOverwrittenFunctions(vehicleType)
