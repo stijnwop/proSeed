@@ -213,19 +213,16 @@ function GuidanceSeedingTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
     if self.isServer and spec.createTramLines then
         local params = self.spec_sowingMachine.workAreaParameters
 
-        if params.lastChangedArea > 0 then
-            for _, area in ipairs(spec.tramlinesAreas) do
-                local xs, _, zs = getWorldTranslation(area.start)
-                local xw, _, zw = getWorldTranslation(area.width)
-                local xh, _, zh = getWorldTranslation(area.height)
-                FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
+        for _, area in ipairs(spec.tramlinesAreas) do
+            local xs, _, zs = getWorldTranslation(area.start)
+            local xw, _, zw = getWorldTranslation(area.width)
+            local xh, _, zh = getWorldTranslation(area.height)
+            FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
 
-                if VehicleDebug.state == VehicleDebug.DEBUG_ATTRIBUTES then
-                    drawArea(area, 0, 0, 1, 1)
-                end
+            if VehicleDebug.state == VehicleDebug.DEBUG_ATTRIBUTES then
+                drawArea(area, 0, 0, 1, 1)
             end
         end
-
     end
 end
 
