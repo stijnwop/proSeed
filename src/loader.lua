@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- loader
 ----------------------------------------------------------------------------------------------------
--- Purpose: Loads the guidanceSeeding mod.
+-- Purpose: Loads the ProSeed mod.
 --
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
@@ -19,13 +19,13 @@ source(Utils.getFilename("src/hud/elements/HUDButtonElement.lua", directory))
 source(Utils.getFilename("src/hud/InteractiveHUD.lua", directory))
 
 source(Utils.getFilename("src/stream.lua", directory))
-source(Utils.getFilename("src/GuidanceSeeding.lua", directory))
+source(Utils.getFilename("src/ProSeed.lua", directory))
 
-local guidanceSeeding
+local proSeed
 
----Returns true when the local instance of guidanceSeeding is set, false otherwise.
+---Returns true when the local instance of proSeed is set, false otherwise.
 local function isEnabled()
-    return guidanceSeeding ~= nil
+    return proSeed ~= nil
 end
 
 local function loadedMission(mission, node)
@@ -37,23 +37,23 @@ local function loadedMission(mission, node)
         return
     end
 
-    g_guidanceSeeding:onMissionLoaded(mission)
+    proSeed:onMissionLoaded(mission)
 end
 
 
 ---Load the mod.
 local function load(mission)
-    assert(guidanceSeeding == nil)
+    assert(proSeed == nil)
 
-    guidanceSeeding = GuidanceSeeding:new(mission, g_i18n, g_inputBinding, g_gui, g_soundManager, directory, modName)
+    proSeed = ProSeed:new(mission, g_i18n, g_inputBinding, g_gui, g_soundManager, directory, modName)
 
-    getfenv(0)["g_guidanceSeeding"] = guidanceSeeding
+    getfenv(0)["g_proSeed"] = proSeed
 
-    addModEventListener(guidanceSeeding)
+    addModEventListener(proSeed)
 end
 
 local function validateVehicleTypes(vehicleTypeManager)
-    GuidanceSeeding.installSpecializations(g_vehicleTypeManager, g_specializationManager, directory, modName)
+    ProSeed.installSpecializations(g_vehicleTypeManager, g_specializationManager, directory, modName)
 end
 
 ---Unload the mod when the game is closed.
@@ -62,11 +62,11 @@ local function unload()
         return
     end
 
-    if guidanceSeeding ~= nil then
-        guidanceSeeding:delete()
+    if proSeed ~= nil then
+        proSeed:delete()
         -- GC
-        guidanceSeeding = nil
-        getfenv(0)["g_guidanceSeeding"] = nil
+        proSeed = nil
+        getfenv(0)["g_proSeed"] = nil
     end
 end
 

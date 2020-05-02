@@ -1,18 +1,18 @@
 ----------------------------------------------------------------------------------------------------
--- GuidanceSeeding
+-- ProSeed
 ----------------------------------------------------------------------------------------------------
--- Purpose: Main class the handle the Guidance Seeding.
+-- Purpose: Main class to handle the ProSeed mod.
 --
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
----@class GuidanceSeeding
-GuidanceSeeding = {}
+---@class ProSeed
+ProSeed = {}
 
-local GuidanceSeeding_mt = Class(GuidanceSeeding)
+local ProSeed_mt = Class(ProSeed)
 
-function GuidanceSeeding:new(mission, i18n, inputBinding, gui, soundManager, modDirectory, modName)
-    local self = setmetatable({}, GuidanceSeeding_mt)
+function ProSeed:new(mission, i18n, inputBinding, gui, soundManager, modDirectory, modName)
+    local self = setmetatable({}, ProSeed_mt)
 
     self.version = 1.0
     self.isServer = mission:getIsServer()
@@ -30,28 +30,32 @@ function GuidanceSeeding:new(mission, i18n, inputBinding, gui, soundManager, mod
     local uiFilename = Utils.getFilename("resources/hud/guidanceSeeding_1080p.png", modDirectory)
     self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
 
-    self:loadGuidanceSeedingSamples()
+    self:loadSamples()
 
     return self
 end
 
-function GuidanceSeeding:delete()
+function ProSeed:delete()
     self.soundManager:deleteSamples(self.samples)
     self.hud:delete()
 end
 
-function GuidanceSeeding:onMissionLoaded()
+function ProSeed:onMissionLoaded()
     self.hud:load()
 end
 
-function GuidanceSeeding:mouseEvent(posX, posY, isDown, isUp, button)
+function ProSeed:mouseEvent(posX, posY, isDown, isUp, button)
     self.hud:mouseEvent(posX, posY, isDown, isUp, button)
 end
 
-function GuidanceSeeding:loadGuidanceSeedingSamples()
+function ProSeed:update(dt)
+    self.hud:update(dt)
+end
+
+function ProSeed:loadSamples()
     self.samples = {}
 
-    local xmlFile = loadXMLFile("GuidanceSeedingSamples", Utils.getFilename("resources/sounds/sounds.xml", self.modDirectory))
+    local xmlFile = loadXMLFile("ProSeedSamples", Utils.getFilename("resources/sounds/sounds.xml", self.modDirectory))
     if xmlFile ~= nil then
         local soundsNode = getRootNode()
 
@@ -64,14 +68,14 @@ function GuidanceSeeding:loadGuidanceSeedingSamples()
     end
 end
 
-function GuidanceSeeding.installSpecializations(vehicleTypeManager, specializationManager, modDirectory, modName)
-    specializationManager:addSpecialization("guidanceSeedingTramLines", "GuidanceSeedingTramLines", Utils.getFilename("src/vehicle/GuidanceSeedingTramLines.lua", modDirectory), nil)
-    specializationManager:addSpecialization("guidanceSeedingSowingExtension", "GuidanceSeedingSowingExtension", Utils.getFilename("src/vehicle/GuidanceSeedingSowingExtension.lua", modDirectory), nil)
+function ProSeed.installSpecializations(vehicleTypeManager, specializationManager, modDirectory, modName)
+    specializationManager:addSpecialization("proSeedTramLines", "ProSeedTramLines", Utils.getFilename("src/vehicle/ProSeedTramLines.lua", modDirectory), nil)
+    specializationManager:addSpecialization("proSeedSowingExtension", "ProSeedSowingExtension", Utils.getFilename("src/vehicle/ProSeedSowingExtension.lua", modDirectory), nil)
 
     for typeName, typeEntry in pairs(vehicleTypeManager:getVehicleTypes()) do
         if SpecializationUtil.hasSpecialization(SowingMachine, typeEntry.specializations) then
-            vehicleTypeManager:addSpecialization(typeName, modName .. ".guidanceSeedingTramLines")
-            vehicleTypeManager:addSpecialization(typeName, modName .. ".guidanceSeedingSowingExtension")
+            vehicleTypeManager:addSpecialization(typeName, modName .. ".proSeedTramLines")
+            vehicleTypeManager:addSpecialization(typeName, modName .. ".proSeedSowingExtension")
         end
     end
 end

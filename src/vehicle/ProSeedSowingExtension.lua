@@ -1,44 +1,44 @@
 ----------------------------------------------------------------------------------------------------
--- GuidanceSeedingSowingExtension
+-- ProSeedSowingExtension
 ----------------------------------------------------------------------------------------------------
 -- Purpose: Specialization for extending the sowing machine.
 --
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
----@class GuidanceSeedingSowingExtension
-GuidanceSeedingSowingExtension = {}
-GuidanceSeedingSowingExtension.MOD_NAME = g_currentModName
+---@class ProSeedSowingExtension
+ProSeedSowingExtension = {}
+ProSeedSowingExtension.MOD_NAME = g_currentModName
 
-function GuidanceSeedingSowingExtension.prerequisitesPresent(specializations)
+function ProSeedSowingExtension.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
 end
 
-function GuidanceSeedingSowingExtension.registerFunctions(vehicleType)
-    SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", GuidanceSeedingSowingExtension.toggleSowingSounds)
-    SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", GuidanceSeedingSowingExtension.toggleSowingFertilizer)
-    SpecializationUtil.registerFunction(vehicleType, "setSowingData", GuidanceSeedingSowingExtension.setSowingData)
+function ProSeedSowingExtension.registerFunctions(vehicleType)
+    SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", ProSeedSowingExtension.toggleSowingSounds)
+    SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", ProSeedSowingExtension.toggleSowingFertilizer)
+    SpecializationUtil.registerFunction(vehicleType, "setSowingData", ProSeedSowingExtension.setSowingData)
 end
 
-function GuidanceSeedingSowingExtension.registerOverwrittenFunctions(vehicleType)
-    SpecializationUtil.registerOverwrittenFunction(vehicleType, "processSowingMachineArea", GuidanceSeedingSowingExtension.processSowingMachineArea)
-    SpecializationUtil.registerOverwrittenFunction(vehicleType, "removeActionEvents", GuidanceSeedingSowingExtension.removeActionEvents)
+function ProSeedSowingExtension.registerOverwrittenFunctions(vehicleType)
+    SpecializationUtil.registerOverwrittenFunction(vehicleType, "processSowingMachineArea", ProSeedSowingExtension.processSowingMachineArea)
+    SpecializationUtil.registerOverwrittenFunction(vehicleType, "removeActionEvents", ProSeedSowingExtension.removeActionEvents)
 end
 
-function GuidanceSeedingSowingExtension.registerEventListeners(vehicleType)
-    SpecializationUtil.registerEventListener(vehicleType, "onLoad", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onDelete", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onReadStream", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", GuidanceSeedingSowingExtension)
-    SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GuidanceSeedingSowingExtension)
+function ProSeedSowingExtension.registerEventListeners(vehicleType)
+    SpecializationUtil.registerEventListener(vehicleType, "onLoad", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onDelete", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onReadStream", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onUpdate", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", ProSeedSowingExtension)
 end
 
 ---Called onLoad.
-function GuidanceSeedingSowingExtension:onLoad(savegame)
-    self.spec_guidanceSeedingSowingExtension = self[("spec_%s.guidanceSeedingSowingExtension"):format(g_guidanceSeeding.modName)]
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:onLoad(savegame)
+    self.spec_proSeedSowingExtension = self[("spec_%s.proSeedSowingExtension"):format(g_proSeed.modName)]
+    local spec = self.spec_proSeedSowingExtension
 
     spec.fillUnitsToCheck = {}
     spec.fillUnitIndexForFrame = 1 -- current frame fillUnit to check
@@ -68,33 +68,33 @@ function GuidanceSeedingSowingExtension:onLoad(savegame)
         end
 
         spec.samples = {}
-        local sampleLowered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.guidanceSeeding.sounds", "lowered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+        local sampleLowered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "lowered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
         if sampleLowered == nil then
-            sampleLowered = g_soundManager:cloneSample(g_guidanceSeeding.samples.lowered, linkNode, self)
+            sampleLowered = g_soundManager:cloneSample(g_proSeed.samples.lowered, linkNode, self)
         end
 
         spec.samples.lowered = sampleLowered
         spec.playedLowered = false
 
-        local sampleHighered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.guidanceSeeding.sounds", "highered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+        local sampleHighered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "highered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
         if sampleHighered == nil then
-            sampleHighered = g_soundManager:cloneSample(g_guidanceSeeding.samples.highered, linkNode, self)
+            sampleHighered = g_soundManager:cloneSample(g_proSeed.samples.highered, linkNode, self)
         end
 
         spec.samples.highered = sampleHighered
 
-        local sampleEmpty = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.guidanceSeeding.sounds", "empty", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+        local sampleEmpty = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "empty", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
         if sampleEmpty == nil then
-            sampleEmpty = g_soundManager:cloneSample(g_guidanceSeeding.samples.empty, linkNode, self)
+            sampleEmpty = g_soundManager:cloneSample(g_proSeed.samples.empty, linkNode, self)
         end
 
         spec.samples.empty = sampleEmpty
         spec.activeFillUnitIndexEmptySound = nil
         spec.activeFillUnitIndexAlmostEmptySound = nil
 
-        local sampleTramline = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.guidanceSeeding.sounds", "tramline", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+        local sampleTramline = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "tramline", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
         if sampleTramline == nil then
-            sampleTramline = g_soundManager:cloneSample(g_guidanceSeeding.samples.tramline, linkNode, self)
+            sampleTramline = g_soundManager:cloneSample(g_proSeed.samples.tramline, linkNode, self)
         end
 
         spec.samples.tramline = sampleTramline
@@ -102,28 +102,28 @@ function GuidanceSeedingSowingExtension:onLoad(savegame)
     end
 end
 
-function GuidanceSeedingSowingExtension:onDelete()
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:onDelete()
+    local spec = self.spec_proSeedSowingExtension
 
     if self.isClient then
         g_soundManager:deleteSamples(spec.samples)
     end
 end
 
-function GuidanceSeedingSowingExtension:onReadStream(streamId, connection)
+function ProSeedSowingExtension:onReadStream(streamId, connection)
     local allowSound = streamReadBool(streamId)
     local allowFertilizer = streamReadBool(streamId)
     self:setSowingData(allowSound, allowFertilizer, true)
 end
 
-function GuidanceSeedingSowingExtension:onWriteStream(streamId, connection)
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:onWriteStream(streamId, connection)
+    local spec = self.spec_proSeedSowingExtension
     streamWriteBool(streamId, spec.allowSound)
     streamWriteBool(streamId, spec.allowFertilizer)
 end
 
-function GuidanceSeedingSowingExtension:onUpdate(dt)
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:onUpdate(dt)
+    local spec = self.spec_proSeedSowingExtension
 
     if self.isClient then
         if self:getIsActiveForInput() and self:getIsTurnedOn() and spec.allowSound then
@@ -151,7 +151,7 @@ function GuidanceSeedingSowingExtension:onUpdate(dt)
                 end
             end
 
-            local specTramLines = self.spec_guidanceSeedingTramLines
+            local specTramLines = self.spec_proSeedTramLines
             if specTramLines ~= nil then
                 if not spec.playedTramline then
                     if specTramLines.createTramLines then
@@ -206,8 +206,8 @@ function GuidanceSeedingSowingExtension:onUpdate(dt)
     end
 end
 
-function GuidanceSeedingSowingExtension:onDeactivate()
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:onDeactivate()
+    local spec = self.spec_proSeedSowingExtension
     if self.isClient then
         g_soundManager:stopSamples(spec.samples)
         spec.playedTramline = false
@@ -215,8 +215,8 @@ function GuidanceSeedingSowingExtension:onDeactivate()
     end
 end
 
-function GuidanceSeedingSowingExtension:removeActionEvents(superFunc, ...)
-    local hud = g_guidanceSeeding.hud
+function ProSeedSowingExtension:removeActionEvents(superFunc, ...)
+    local hud = g_proSeed.hud
     if hud:isVehicleActive(self) then
         hud:setVehicle(nil)
     end
@@ -225,8 +225,8 @@ function GuidanceSeedingSowingExtension:removeActionEvents(superFunc, ...)
 end
 
 ---Toggle playing sound.
-function GuidanceSeedingSowingExtension:toggleSowingSounds()
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:toggleSowingSounds()
+    local spec = self.spec_proSeedSowingExtension
     local allowSound = not spec.allowSound
 
     if not allowSound then
@@ -242,16 +242,16 @@ function GuidanceSeedingSowingExtension:toggleSowingSounds()
 end
 
 ---Toggle usage of fertilizer.
-function GuidanceSeedingSowingExtension:toggleSowingFertilizer()
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:toggleSowingFertilizer()
+    local spec = self.spec_proSeedSowingExtension
     local allowFertilizer = not spec.allowFertilizer
     self:setSowingData(spec.allowSound, allowFertilizer)
     return allowFertilizer
 end
 
 ---Set the active sowing data and sync with players and server.
-function GuidanceSeedingSowingExtension:setSowingData(allowSound, allowFertilizer, noEventSend)
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:setSowingData(allowSound, allowFertilizer, noEventSend)
+    local spec = self.spec_proSeedSowingExtension
 
     GuidanceSeedingDataEvent.sendEvent(self, allowSound, allowFertilizer, noEventSend)
     spec.allowSound = allowSound
@@ -259,8 +259,8 @@ function GuidanceSeedingSowingExtension:setSowingData(allowSound, allowFertilize
 end
 
 ---Overwrite sowing area processing to block fertilizer when set.
-function GuidanceSeedingSowingExtension:processSowingMachineArea(superFunc, workArea, dt)
-    local spec = self.spec_guidanceSeedingSowingExtension
+function ProSeedSowingExtension:processSowingMachineArea(superFunc, workArea, dt)
+    local spec = self.spec_proSeedSowingExtension
     if not spec.allowFertilizer then
         local spec_sprayer = self.spec_sprayer
         if spec_sprayer ~= nil then
@@ -272,24 +272,24 @@ function GuidanceSeedingSowingExtension:processSowingMachineArea(superFunc, work
     return changedArea, totalArea
 end
 
-function GuidanceSeedingSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
+function ProSeedSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
     if self.isClient then
-        local spec = self.spec_guidanceSeedingSowingExtension
+        local spec = self.spec_proSeedSowingExtension
         self:clearActionEventsTable(spec.actionEvents)
 
         if isActiveForInput then
             --TODO: add if active
-            local hud = g_guidanceSeeding.hud
+            local hud = g_proSeed.hud
             hud:setVehicle(self)
 
-            local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.GS_TOGGLE_MOUSE_CURSOR, self, GuidanceSeedingSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
+            local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.GS_TOGGLE_MOUSE_CURSOR, self, ProSeedSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
             g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("function_toggleMouseCursor"))
             g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, false)
         end
     end
 end
 
-function GuidanceSeedingSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
+function ProSeedSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
     --We need to trigger the cursor somewhere.
-    g_guidanceSeeding.hud:toggleMouseCursor()
+    g_proSeed.hud:toggleMouseCursor()
 end
