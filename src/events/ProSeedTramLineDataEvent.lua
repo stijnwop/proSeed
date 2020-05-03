@@ -1,26 +1,26 @@
 ----------------------------------------------------------------------------------------------------
--- GuidanceSeedingTramLineDataEvent
+-- ProSeedTramLineDataEvent
 ----------------------------------------------------------------------------------------------------
 -- Purpose: Event for updating the tramline data.
 --
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
----@class GuidanceSeedingTramLineDataEvent
-GuidanceSeedingTramLineDataEvent = {}
+---@class ProSeedTramLineDataEvent
+ProSeedTramLineDataEvent = {}
 
-local GuidanceSeedingTramLineDataEvent_mt = Class(GuidanceSeedingTramLineDataEvent, Event)
+local ProSeedTramLineDataEvent_mt = Class(ProSeedTramLineDataEvent, Event)
 
-InitEventClass(GuidanceSeedingTramLineDataEvent, "GuidanceSeedingTramLineDataEvent")
+InitEventClass(ProSeedTramLineDataEvent, "ProSeedTramLineDataEvent")
 
----@return GuidanceSeedingTramLineDataEvent
-function GuidanceSeedingTramLineDataEvent:emptyNew()
-    local self = Event:new(GuidanceSeedingTramLineDataEvent_mt)
+---@return ProSeedTramLineDataEvent
+function ProSeedTramLineDataEvent:emptyNew()
+    local self = Event:new(ProSeedTramLineDataEvent_mt)
     return self
 end
 
-function GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines)
-    local self = GuidanceSeedingTramLineDataEvent:emptyNew()
+function ProSeedTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines)
+    local self = ProSeedTramLineDataEvent:emptyNew()
 
     self.object = object
     self.tramLineDistance = tramLineDistance
@@ -30,7 +30,7 @@ function GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLine
     return self
 end
 
-function GuidanceSeedingTramLineDataEvent:readStream(streamId, connection)
+function ProSeedTramLineDataEvent:readStream(streamId, connection)
     self.object = NetworkUtil.readNodeObject(streamId)
     self.tramLineDistance = streamReadFloat32(streamId)
     self.tramLinePeriodicSequence = streamReadInt8(streamId)
@@ -38,7 +38,7 @@ function GuidanceSeedingTramLineDataEvent:readStream(streamId, connection)
     self:run(connection)
 end
 
-function GuidanceSeedingTramLineDataEvent:writeStream(streamId, connection)
+function ProSeedTramLineDataEvent:writeStream(streamId, connection)
     NetworkUtil.writeNodeObject(streamId, self.object)
 
     streamWriteFloat32(streamId, self.tramLineDistance)
@@ -46,7 +46,7 @@ function GuidanceSeedingTramLineDataEvent:writeStream(streamId, connection)
     streamWriteBool(streamId, self.createPreMarkedTramLines)
 end
 
-function GuidanceSeedingTramLineDataEvent:run(connection)
+function ProSeedTramLineDataEvent:run(connection)
     if not connection:getIsServer() then
         g_server:broadcastEvent(self, false, connection, self.object)
     end
@@ -54,12 +54,12 @@ function GuidanceSeedingTramLineDataEvent:run(connection)
     self.object:setTramLineData(self.tramLineDistance, self.tramLinePeriodicSequence, self.createPreMarkedTramLines, true)
 end
 
-function GuidanceSeedingTramLineDataEvent.sendEvent(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
+function ProSeedTramLineDataEvent.sendEvent(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
-            g_server:broadcastEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines), nil, nil, object)
+            g_server:broadcastEvent(ProSeedTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines), nil, nil, object)
         else
-            g_client:getServerConnection():sendEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines))
+            g_client:getServerConnection():sendEvent(ProSeedTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines))
         end
     end
 end

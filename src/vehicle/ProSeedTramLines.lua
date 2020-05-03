@@ -337,7 +337,7 @@ end
 function ProSeedTramLines:setTramLineData(tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     local spec = self.spec_proSeedTramLines
 
-    GuidanceSeedingTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
+    ProSeedTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     spec.tramLineDistance = tramLineDistance
     spec.tramLinePeriodicSequence = tramLinePeriodicSequence
     spec.createPreMarkedTramLines = createPreMarkedTramLines
