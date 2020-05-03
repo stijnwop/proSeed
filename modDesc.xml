@@ -39,7 +39,6 @@
     </inputBinding>
 
     <l10n>
-
         <text name="input_PS_SET_HALF_SIDE_SHUTOFF">
             <en>PS: Toggle halfside shutoff</en>
             <de>PS: Halbseitige Abschaltung</de>
@@ -59,10 +58,6 @@
         <text name="function_toggleHalfSideShutoff">
             <en>Toggle halfside shutoff</en>
             <de>Halbseitige Abschaltung</de>
-        </text>
-        <text name="function_setLinesTillTramline">
-            <en>Set lines till tramline</en>
-            <de>Set lines till tramline</de>
         </text>
         <text name="function_setTramlineDistance">
             <en>Set line distance</en>
