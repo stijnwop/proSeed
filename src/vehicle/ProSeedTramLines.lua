@@ -239,7 +239,7 @@ function ProSeedTramLines:setHalfSideShutoffMode(mode, noEventSend)
     local spec = self.spec_proSeedTramLines
 
     if mode ~= spec.shutoffMode then
-        GuidanceSeedingHalfSideShutoffEvent.sendEvent(self, mode, noEventSend)
+        ProSeedHalfSideShutoffEvent.sendEvent(self, mode, noEventSend)
 
         for workAreaIndex, area in ipairs(spec.originalAreas) do
             local workArea = self:getWorkAreaByIndex(workAreaIndex)
