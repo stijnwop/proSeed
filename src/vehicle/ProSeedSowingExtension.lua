@@ -253,7 +253,7 @@ end
 function ProSeedSowingExtension:setSowingData(allowSound, allowFertilizer, noEventSend)
     local spec = self.spec_proSeedSowingExtension
 
-    GuidanceSeedingDataEvent.sendEvent(self, allowSound, allowFertilizer, noEventSend)
+    ProSeedDataEvent.sendEvent(self, allowSound, allowFertilizer, noEventSend)
     spec.allowSound = allowSound
     spec.allowFertilizer = allowFertilizer
 end

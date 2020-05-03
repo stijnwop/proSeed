@@ -1,26 +1,26 @@
 ----------------------------------------------------------------------------------------------------
--- GuidanceSeedingDataEvent
+-- ProSeedDataEvent
 ----------------------------------------------------------------------------------------------------
 -- Purpose: Event for updating the data.
 --
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
----@class GuidanceSeedingDataEvent
-GuidanceSeedingDataEvent = {}
+---@class ProSeedDataEvent
+ProSeedDataEvent = {}
 
-local GuidanceSeedingDataEvent_mt = Class(GuidanceSeedingDataEvent, Event)
+local ProSeedDataEvent_mt = Class(ProSeedDataEvent, Event)
 
-InitEventClass(GuidanceSeedingDataEvent, "GuidanceSeedingDataEvent")
+InitEventClass(ProSeedDataEvent, "ProSeedDataEvent")
 
----@return GuidanceSeedingDataEvent
-function GuidanceSeedingDataEvent:emptyNew()
-    local self = Event:new(GuidanceSeedingDataEvent_mt)
+---@return ProSeedDataEvent
+function ProSeedDataEvent:emptyNew()
+    local self = Event:new(ProSeedDataEvent_mt)
     return self
 end
 
-function GuidanceSeedingDataEvent:new(object, allowSound, allowFertilizer)
-    local self = GuidanceSeedingDataEvent:emptyNew()
+function ProSeedDataEvent:new(object, allowSound, allowFertilizer)
+    local self = ProSeedDataEvent:emptyNew()
 
     self.object = object
     self.allowSound = allowSound
@@ -29,21 +29,21 @@ function GuidanceSeedingDataEvent:new(object, allowSound, allowFertilizer)
     return self
 end
 
-function GuidanceSeedingDataEvent:readStream(streamId, connection)
+function ProSeedDataEvent:readStream(streamId, connection)
     self.object = NetworkUtil.readNodeObject(streamId)
     self.allowSound = streamReadBool(streamId)
     self.allowFertilizer = streamReadBool(streamId)
     self:run(connection)
 end
 
-function GuidanceSeedingDataEvent:writeStream(streamId, connection)
+function ProSeedDataEvent:writeStream(streamId, connection)
     NetworkUtil.writeNodeObject(streamId, self.object)
 
     streamWriteBool(streamId, self.allowSound)
     streamWriteBool(streamId, self.allowFertilizer)
 end
 
-function GuidanceSeedingDataEvent:run(connection)
+function ProSeedDataEvent:run(connection)
     if not connection:getIsServer() then
         g_server:broadcastEvent(self, false, connection, self.object)
     end
@@ -51,12 +51,12 @@ function GuidanceSeedingDataEvent:run(connection)
     self.object:setSowingData(self.allowSound, self.allowFertilizer, true)
 end
 
-function GuidanceSeedingDataEvent.sendEvent(object, allowSound, allowFertilizer, noEventSend)
+function ProSeedDataEvent.sendEvent(object, allowSound, allowFertilizer, noEventSend)
     if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
-            g_server:broadcastEvent(GuidanceSeedingDataEvent:new(object, allowSound, allowFertilizer), nil, nil, object)
+            g_server:broadcastEvent(ProSeedDataEvent:new(object, allowSound, allowFertilizer), nil, nil, object)
         else
-            g_client:getServerConnection():sendEvent(GuidanceSeedingDataEvent:new(object, allowSound, allowFertilizer))
+            g_client:getServerConnection():sendEvent(ProSeedDataEvent:new(object, allowSound, allowFertilizer))
         end
     end
 end
