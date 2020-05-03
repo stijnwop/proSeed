@@ -3,11 +3,11 @@
     <author>Wopster</author>
     <version>1.0.0.0</version>
     <title>
-        <en>Guidance Seeding</en>
+        <en>ProSeed</en>
     </title>
     <description>
         <en>
-            <![CDATA[My cool mod]]>
+            <![CDATA[ProSeed mod]]>
         </en>
     </description>
     <iconFilename>icon.png</iconFilename>
@@ -18,21 +18,21 @@
     </extraSourceFiles>
 
     <actions>
-        <action name="GS_SET_LANES_TILL_TRAMLINE" axisType="HALF"/>
-        <action name="GS_SET_HALF_SIDE_SHUTOFF" axisType="HALF"/>
-        <action name="GS_TOGGLE_MOUSE_CURSOR" axisType="HALF"/>
+        <action name="PS_SET_LANES_TILL_TRAMLINE" axisType="HALF"/>
+        <action name="PS_SET_HALF_SIDE_SHUTOFF" axisType="HALF"/>
+        <action name="PS_TOGGLE_MOUSE_CURSOR" axisType="HALF"/>
     </actions>
 
     <inputBinding>
-        <actionBinding action="GS_SET_LANES_TILL_TRAMLINE">
+        <actionBinding action="PS_SET_LANES_TILL_TRAMLINE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_r"/>
             <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
         </actionBinding>
-        <actionBinding action="GS_SET_HALF_SIDE_SHUTOFF">
+        <actionBinding action="PS_SET_HALF_SIDE_SHUTOFF">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_t"/>
             <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
         </actionBinding>
-        <actionBinding action="GS_TOGGLE_MOUSE_CURSOR">
+        <actionBinding action="PS_TOGGLE_MOUSE_CURSOR">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_MIDDLE"/>
             <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
         </actionBinding>
@@ -40,17 +40,17 @@
 
     <l10n>
 
-        <text name="input_GS_SET_HALF_SIDE_SHUTOFF">
-            <en>GS: Toggle halfside shutoff</en>
-            <de>GS: Halbseitige Abschaltung</de>
+        <text name="input_PS_SET_HALF_SIDE_SHUTOFF">
+            <en>PS: Toggle halfside shutoff</en>
+            <de>PS: Halbseitige Abschaltung</de>
         </text>
-        <text name="input_GS_SET_LANES_TILL_TRAMLINE">
-            <en>GS: Lines till tramline</en>
-            <de>GS: Lines till tramline</de>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE">
+            <en>PS: Lines till tramline</en>
+            <de>PS: Lines till tramline</de>
         </text>
-        <text name="input_GS_TOGGLE_MOUSE_CURSOR">
-            <en>GS: Toggle mouse cursor</en>
-            <de>GS: Toggle mouse cursor</de>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR">
+            <en>PS: Toggle mouse cursor</en>
+            <de>PS: Toggle mouse cursor</de>
         </text>
         <text name="function_toggleMouseCursor">
             <en>Toggle mouse cursor</en>

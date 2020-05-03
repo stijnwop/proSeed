@@ -49,7 +49,7 @@ function InteractiveHUD:toggleMouseCursor()
     if not self.isCustomInputActive and isActive then
         self.inputBinding:setContext(InteractiveHUD.INPUT_CONTEXT_NAME, true, false)
 
-        local _, eventId = self.inputBinding:registerActionEvent(InputAction.GS_TOGGLE_MOUSE_CURSOR, self, self.toggleMouseCursor, false, true, false, true)
+        local _, eventId = self.inputBinding:registerActionEvent(InputAction.PS_TOGGLE_MOUSE_CURSOR, self, self.toggleMouseCursor, false, true, false, true)
         self.inputBinding:setActionEventTextVisibility(eventId, false)
 
         self.isCustomInputActive = true

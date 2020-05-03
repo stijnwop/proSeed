@@ -159,7 +159,7 @@ function ProSeedTramLines:onUpdate(dt)
 
     if self.isClient then
         if spec.actionEvents ~= nil then
-            local actionEvent = spec.actionEvents[InputAction.GS_SET_HALF_SIDE_SHUTOFF]
+            local actionEvent = spec.actionEvents[InputAction.PS_SET_HALF_SIDE_SHUTOFF]
             if actionEvent ~= nil then
                 g_inputBinding:setActionEventActive(actionEvent.actionEventId, self:canActivateHalfSideShutoff())
             end
@@ -408,8 +408,8 @@ function ProSeedTramLines:onRegisterActionEvents(isActiveForInput, isActiveForIn
         self:clearActionEventsTable(spec.actionEvents)
 
         if isActiveForInput then
-            local _, actionEventIdSetTramlines = self:addActionEvent(spec.actionEvents, InputAction.GS_SET_LANES_TILL_TRAMLINE, self, ProSeedTramLines.actionEventSetTramlines, false, true, false, true, nil, nil, true)
-            local _, actionEventIdToggleHalfSideShutoff = self:addActionEvent(spec.actionEvents, InputAction.GS_SET_HALF_SIDE_SHUTOFF, self, ProSeedTramLines.actionEventToggleHalfSideShutoff, false, true, false, true, nil, nil, true)
+            local _, actionEventIdSetTramlines = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_LANES_TILL_TRAMLINE, self, ProSeedTramLines.actionEventSetTramlines, false, true, false, true, nil, nil, true)
+            local _, actionEventIdToggleHalfSideShutoff = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_HALF_SIDE_SHUTOFF, self, ProSeedTramLines.actionEventToggleHalfSideShutoff, false, true, false, true, nil, nil, true)
 
             g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("function_setTramlineDistance"))
             g_inputBinding:setActionEventTextVisibility(actionEventIdSetTramlines, true)

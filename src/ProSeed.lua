@@ -27,7 +27,7 @@ function ProSeed:new(mission, i18n, inputBinding, gui, soundManager, modDirector
     self.soundManager = soundManager
 
 
-    local uiFilename = Utils.getFilename("resources/hud/guidanceSeeding_1080p.png", modDirectory)
+    local uiFilename = Utils.getFilename("resources/hud/proSeed_1080p.png", modDirectory)
     self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
 
     self:loadSamples()
