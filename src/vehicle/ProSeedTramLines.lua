@@ -39,7 +39,7 @@ ProSeedTramLines.SHUTOFF_MODE_OFF = 0
 ProSeedTramLines.SHUTOFF_MODE_LEFT = 1
 ProSeedTramLines.SHUTOFF_MODE_RIGHT = 2
 
-ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE = 2 -- minimum sequence is 2.
+ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE = 2 -- minimum sequence is 1.
 
 function ProSeedTramLines.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
@@ -47,6 +47,7 @@ end
 
 function ProSeedTramLines.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "createTramLineAreas", ProSeedTramLines.createTramLineAreas)
+    SpecializationUtil.registerFunction(vehicleType, "setTramLineDistance", ProSeedTramLines.setTramLineDistance)
     SpecializationUtil.registerFunction(vehicleType, "setTramLineData", ProSeedTramLines.setTramLineData)
     SpecializationUtil.registerFunction(vehicleType, "setHalfSideShutoffMode", ProSeedTramLines.setHalfSideShutoffMode)
     SpecializationUtil.registerFunction(vehicleType, "isHalfSideShutoffActive", ProSeedTramLines.isHalfSideShutoffActive)
@@ -114,7 +115,8 @@ function ProSeedTramLines:onReadStream(streamId, connection)
 
     local tramLineDistance = streamReadFloat32(streamId)
     local tramLinePeriodicSequence = streamReadInt8(streamId)
-    self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, true)
+    local createPreMarkedTramLines = streamReadBool(streamId)
+    self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, true)
 
     local shutoffMode = streamReadUIntN(streamId, 2)
     self:setHalfSideShutoffMode(shutoffMode, true)
@@ -126,6 +128,7 @@ function ProSeedTramLines:onWriteStream(streamId, connection)
 
     streamWriteFloat32(streamId, spec.tramLineDistance)
     streamWriteInt8(streamId, spec.tramLinePeriodicSequence)
+    streamWriteBool(streamId, spec.createPreMarkedTramLines)
 
     --Send current halfside shutoff mode.
     streamWriteUIntN(streamId, spec.shutoffMode, 2)
@@ -163,13 +166,11 @@ function ProSeedTramLines:onUpdate(dt)
         end
 
         if self:getIsActiveForInput() then
-            local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
             local data = {
                 { name = "working width", value = spec.workingWidth },
                 { name = "rounded width", value = spec.workingWidthRounded },
                 { name = "currentLane", value = spec.currentLane },
                 { name = "tramLineDistance", value = spec.tramLineDistance },
-                { name = "lanesForDistance", value = lanesForDistance },
                 { name = "tramLinePeriodicSequence", value = spec.tramLinePeriodicSequence },
                 { name = "shutoff (0=off)", value = spec.shutoffMode },
                 { name = "createTramLine", value = tostring(spec.createTramLines) },
@@ -313,13 +314,33 @@ function ProSeedTramLines:createTramLineAreas(center, workAreaIndex)
     return lineAreas, workArea.index
 end
 
+---Calculates the tramline distance based on the given multiplier.
+function ProSeedTramLines:setTramLineDistance(tramLineDistanceMultiplier)
+    local spec = self.spec_proSeedTramLines
+    spec.tramLineDistanceMultiplier = tramLineDistanceMultiplier
+
+    local tramLineDistance = spec.workingWidthRounded * tramLineDistanceMultiplier
+    if tramLineDistance >= ProSeedTramLines.TRAMLINE_MAX_WIDTH then
+        spec.tramLineDistanceMultiplier = 1
+        tramLineDistance = spec.workingWidthRounded * tramLineDistanceMultiplier
+    end
+
+    local tramLinePeriodicSequence = tramLineDistance / spec.workingWidthRounded
+    if tramLinePeriodicSequence < ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE then
+        tramLinePeriodicSequence = ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
+    end
+
+    self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, spec.createPreMarkedTramLines)
+end
+
 ---Set current tram line data and sync to server and clients.
-function ProSeedTramLines:setTramLineData(tramLineDistance, tramLinePeriodicSequence, noEventSend)
+function ProSeedTramLines:setTramLineData(tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     local spec = self.spec_proSeedTramLines
 
-    GuidanceSeedingTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, noEventSend)
+    GuidanceSeedingTramLineDataEvent.sendEvent(self, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     spec.tramLineDistance = tramLineDistance
     spec.tramLinePeriodicSequence = tramLinePeriodicSequence
+    spec.createPreMarkedTramLines = createPreMarkedTramLines
 end
 
 function ProSeedTramLines.getMaxWorkAreaWidth(object)
@@ -387,15 +408,10 @@ function ProSeedTramLines:onRegisterActionEvents(isActiveForInput, isActiveForIn
         self:clearActionEventsTable(spec.actionEvents)
 
         if isActiveForInput then
-            local _, actionEventIdToggleTramlines = self:addActionEvent(spec.actionEvents, InputAction.TOGGLE_PIPE, self, ProSeedTramLines.actionEventToggleTramlines, false, true, false, true, nil, nil, true)
             local _, actionEventIdSetTramlines = self:addActionEvent(spec.actionEvents, InputAction.GS_SET_LANES_TILL_TRAMLINE, self, ProSeedTramLines.actionEventSetTramlines, false, true, false, true, nil, nil, true)
             local _, actionEventIdToggleHalfSideShutoff = self:addActionEvent(spec.actionEvents, InputAction.GS_SET_HALF_SIDE_SHUTOFF, self, ProSeedTramLines.actionEventToggleHalfSideShutoff, false, true, false, true, nil, nil, true)
 
-            g_inputBinding:setActionEventText(actionEventIdToggleTramlines, g_i18n:getText("function_setTramlineDistance"))
-            g_inputBinding:setActionEventTextVisibility(actionEventIdToggleTramlines, true)
-            g_inputBinding:setActionEventTextPriority(actionEventIdToggleTramlines, GS_PRIO_HIGH)
-
-            g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("function_setLinesTillTramline"))
+            g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("function_setTramlineDistance"))
             g_inputBinding:setActionEventTextVisibility(actionEventIdSetTramlines, true)
             g_inputBinding:setActionEventTextPriority(actionEventIdSetTramlines, GS_PRIO_HIGH)
 
@@ -406,29 +422,9 @@ function ProSeedTramLines:onRegisterActionEvents(isActiveForInput, isActiveForIn
     end
 end
 
-function ProSeedTramLines.actionEventToggleTramlines(self, actionName, inputValue, callbackState, isAnalog)
-    local spec = self.spec_proSeedTramLines
-    spec.tramLineDistanceMultiplier = spec.tramLineDistanceMultiplier + 1
-
-    local tramLineDistance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
-    if tramLineDistance >= ProSeedTramLines.TRAMLINE_MAX_WIDTH then
-        spec.tramLineDistanceMultiplier = 1
-        tramLineDistance = spec.workingWidthRounded * spec.tramLineDistanceMultiplier
-    end
-
-    self:setTramLineData(tramLineDistance, spec.tramLinePeriodicSequence)
-end
-
 function ProSeedTramLines.actionEventSetTramlines(self, actionName, inputValue, callbackState, isAnalog)
     local spec = self.spec_proSeedTramLines
-    local tramLinePeriodicSequence = spec.tramLinePeriodicSequence + 1
-
-    local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
-    if tramLinePeriodicSequence > lanesForDistance then
-        tramLinePeriodicSequence = ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
-    end
-
-    self:setTramLineData(spec.tramLineDistance, tramLinePeriodicSequence)
+    self:setTramLineDistance(spec.tramLineDistanceMultiplier + 1)
 end
 
 function ProSeedTramLines.actionEventToggleHalfSideShutoff(self, actionName, inputValue, callbackState, isAnalog)

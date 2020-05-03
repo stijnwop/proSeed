@@ -19,12 +19,13 @@ function GuidanceSeedingTramLineDataEvent:emptyNew()
     return self
 end
 
-function GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence)
+function GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines)
     local self = GuidanceSeedingTramLineDataEvent:emptyNew()
 
     self.object = object
     self.tramLineDistance = tramLineDistance
     self.tramLinePeriodicSequence = tramLinePeriodicSequence
+    self.createPreMarkedTramLines = createPreMarkedTramLines
 
     return self
 end
@@ -33,6 +34,7 @@ function GuidanceSeedingTramLineDataEvent:readStream(streamId, connection)
     self.object = NetworkUtil.readNodeObject(streamId)
     self.tramLineDistance = streamReadFloat32(streamId)
     self.tramLinePeriodicSequence = streamReadInt8(streamId)
+    self.createPreMarkedTramLines = streamReadBool(streamId)
     self:run(connection)
 end
 
@@ -41,6 +43,7 @@ function GuidanceSeedingTramLineDataEvent:writeStream(streamId, connection)
 
     streamWriteFloat32(streamId, self.tramLineDistance)
     streamWriteInt8(streamId, self.tramLinePeriodicSequence)
+    streamWriteBool(streamId, self.createPreMarkedTramLines)
 end
 
 function GuidanceSeedingTramLineDataEvent:run(connection)
@@ -48,15 +51,15 @@ function GuidanceSeedingTramLineDataEvent:run(connection)
         g_server:broadcastEvent(self, false, connection, self.object)
     end
 
-    self.object:setTramLineData(self.tramLineDistance, self.tramLinePeriodicSequence, true)
+    self.object:setTramLineData(self.tramLineDistance, self.tramLinePeriodicSequence, self.createPreMarkedTramLines, true)
 end
 
-function GuidanceSeedingTramLineDataEvent.sendEvent(object, tramLineDistance, tramLinePeriodicSequence, noEventSend)
+function GuidanceSeedingTramLineDataEvent.sendEvent(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, noEventSend)
     if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
-            g_server:broadcastEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence), nil, nil, object)
+            g_server:broadcastEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines), nil, nil, object)
         else
-            g_client:getServerConnection():sendEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence))
+            g_client:getServerConnection():sendEvent(GuidanceSeedingTramLineDataEvent:new(object, tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines))
         end
     end
 end
