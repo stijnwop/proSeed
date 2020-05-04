@@ -13,6 +13,19 @@ local function createGuideNode(name, linkNode, x, y, z)
     return node
 end
 
+--Exclude ridged markers from workArea calculation
+local skipWorkAreas = {
+    ["processRidgeMarkerArea"] = true
+}
+
+local function isWorkAreaValid(workArea)
+    if skipWorkAreas[workArea.functionName] ~= nil then
+        return false
+    end
+
+    return workArea.type ~= WorkAreaType.AUXILIARY
+end
+
 ---Debug line area.
 local function drawArea(area, r, g, b, a)
     local x0, _, z0 = getWorldTranslation(area.start)
@@ -95,12 +108,14 @@ function ProSeedTramLines:onLoad(savegame)
     local originalAreas = {}
     local node = createGuideNode("width_node", self.rootNode)
     for _, workArea in ipairs(self.spec_workArea.workAreas) do
-        local area = {}
-        area.start = { localToLocal(workArea.start, node, 0, 0, 0) }
-        area.width = { localToLocal(workArea.width, node, 0, 0, 0) }
-        area.height = { localToLocal(workArea.height, node, 0, 0, 0) }
+        if isWorkAreaValid(workArea) then
+            local area = {}
+            area.start = { localToLocal(workArea.start, node, 0, 0, 0) }
+            area.width = { localToLocal(workArea.width, node, 0, 0, 0) }
+            area.height = { localToLocal(workArea.height, node, 0, 0, 0) }
 
-        originalAreas[workArea.index] = area
+            originalAreas[workArea.index] = area
+        end
     end
 
     delete(node)
@@ -348,19 +363,6 @@ function ProSeedTramLines.getMaxWorkAreaWidth(object)
     local maxWidth, minWidth = 0, 0
 
     local node = createGuideNode("width_node", object.rootNode)
-
-    -- Exclude ridged markers from workArea calculation
-    local skipWorkAreas = {
-        ["processRidgeMarkerArea"] = true
-    }
-
-    local function isWorkAreaValid(workArea)
-        if skipWorkAreas[workArea.functionName] ~= nil then
-            return false
-        end
-
-        return workArea.type ~= WorkAreaType.AUXILIARY
-    end
 
     local function toLocalArea(workArea)
         if not isWorkAreaValid(workArea) then
