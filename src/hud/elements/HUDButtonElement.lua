@@ -48,7 +48,7 @@ function HUDButtonElement:loadOverlayColors(overlay)
         overlay.colorSelected = color
     end
 
-    local color = { 1, 1, 1, 1 }
+    local color = { 0.5, 0.5, 0.5, 1 }
     if color ~= nil then
         overlay.colorDisabled = color
     end
@@ -110,7 +110,7 @@ function HUDButtonElement:mouseEvent(posX, posY, isDown, isUp, button, eventUsed
 
     if self:isActive() then
         local x, y = self:getPosition()
-        local cursorInElement = GuiUtils.checkOverlayOverlap(posX, posY, x, y, self:getWidth(), self:getHeight())
+        local cursorInElement = GuiUtils.checkOverlayOverlap(posX, posY, x, y, self:getWidth(), self:getHeight()) and self:getOverlayState() ~= GuiOverlay.STATE_DISABLED
 
         if cursorInElement then
             if not self.mouseEntered and not self.focusActive then
@@ -161,6 +161,18 @@ end
 function HUDButtonElement:setSelected(isSelected)
     if isSelected then
         self:setOverlayState(GuiOverlay.STATE_SELECTED)
+    else
+        self:setOverlayState(GuiOverlay.STATE_NORMAL)
+    end
+end
+
+function HUDButtonElement:setDisabled(disabled)
+    if disabled then
+        FocusManager:unsetFocus(self)
+        self.mouseEntered = false
+        self:raiseCallback("onLeaveCallback", self)
+        self.mouseDown = false
+        self:setOverlayState(GuiOverlay.STATE_DISABLED)
     else
         self:setOverlayState(GuiOverlay.STATE_NORMAL)
     end
