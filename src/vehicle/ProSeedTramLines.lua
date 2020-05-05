@@ -179,19 +179,6 @@ function ProSeedTramLines:onUpdate(dt)
                 g_inputBinding:setActionEventActive(actionEvent.actionEventId, self:canActivateHalfSideShutoff())
             end
         end
-
-        if self:getIsActiveForInput() then
-            local data = {
-                { name = "working width", value = spec.workingWidth },
-                { name = "rounded width", value = spec.workingWidthRounded },
-                { name = "currentLane", value = spec.currentLane },
-                { name = "tramLineDistance", value = spec.tramLineDistance },
-                { name = "tramLinePeriodicSequence", value = spec.tramLinePeriodicSequence },
-                { name = "shutoff (0=off)", value = spec.shutoffMode },
-                { name = "createTramLine", value = tostring(spec.createTramLines) },
-            }
-            DebugUtil.renderTable(0.5, 0.95, 0.012, data, 0.1)
-        end
     end
 end
 
@@ -200,7 +187,6 @@ function ProSeedTramLines:onUpdateTick(dt)
 
     local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
     if self.isServer then
-
         local rootVehicle = self:getRootVehicle()
         --Get GuidanceSteering information when active.
         if rootVehicle.getHasGuidanceSystem ~= nil and rootVehicle:getHasGuidanceSystem() then
