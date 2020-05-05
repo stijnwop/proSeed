@@ -126,7 +126,7 @@ function ProSeedSowingExtension:onUpdate(dt)
     local spec = self.spec_proSeedSowingExtension
 
     if self.isClient then
-        if self:getIsActiveForInput() and self:getIsTurnedOn() and spec.allowSound then
+        if self:getIsActiveForInput(true) and self:getIsTurnedOn() and spec.allowSound then
             local isLowered = self:getIsLowered()
 
             ---TODO: cleanup with function playing.
