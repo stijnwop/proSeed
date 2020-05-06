@@ -12,5 +12,8 @@
         <text name="action_toggleMouseCursor" text="Toggle mouse cursor"/>
         <text name="action_toggleHalfSideShutoff" text="Toggle halfside shutoff"/>
         <text name="action_setTramlineDistance" text="Set line distance"/>
+
+        <!--Warnings-->
+        <text name="warning_gpsNotActive" text="GPS is not active on this vehicle!"/>
     </texts>
 </l10n>
