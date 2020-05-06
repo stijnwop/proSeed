@@ -283,7 +283,7 @@ function ProSeedSowingExtension:onRegisterActionEvents(isActiveForInput, isActiv
             hud:setVehicle(self)
 
             local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.PS_TOGGLE_MOUSE_CURSOR, self, ProSeedSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
-            g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("function_toggleMouseCursor"))
+            g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("action_toggleMouseCursor"))
             g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, false)
         end
     end

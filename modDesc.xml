@@ -38,30 +38,5 @@
         </actionBinding>
     </inputBinding>
 
-    <l10n>
-        <text name="input_PS_SET_HALF_SIDE_SHUTOFF">
-            <en>PS: Toggle halfside shutoff</en>
-            <de>PS: Halbseitige Abschaltung</de>
-        </text>
-        <text name="input_PS_SET_LANES_TILL_TRAMLINE">
-            <en>PS: Lines till tramline</en>
-            <de>PS: Lines till tramline</de>
-        </text>
-        <text name="input_PS_TOGGLE_MOUSE_CURSOR">
-            <en>PS: Toggle mouse cursor</en>
-            <de>PS: Toggle mouse cursor</de>
-        </text>
-        <text name="function_toggleMouseCursor">
-            <en>Toggle mouse cursor</en>
-            <de>Toggle mouse cursor</de>
-        </text>
-        <text name="function_toggleHalfSideShutoff">
-            <en>Toggle halfside shutoff</en>
-            <de>Halbseitige Abschaltung</de>
-        </text>
-        <text name="function_setTramlineDistance">
-            <en>Set line distance</en>
-            <de>Fahrgassen Abstand</de>
-        </text>
-    </l10n>
+    <l10n filenamePrefix="translations/translation"/>
 </modDesc>

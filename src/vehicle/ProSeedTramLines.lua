@@ -464,11 +464,11 @@ function ProSeedTramLines:onRegisterActionEvents(isActiveForInput, isActiveForIn
             local _, actionEventIdSetTramlines = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_LANES_TILL_TRAMLINE, self, ProSeedTramLines.actionEventSetTramlines, false, true, false, true, nil, nil, true)
             local _, actionEventIdToggleHalfSideShutoff = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_HALF_SIDE_SHUTOFF, self, ProSeedTramLines.actionEventToggleHalfSideShutoff, false, true, false, true, nil, nil, true)
 
-            g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("function_setTramlineDistance"))
+            g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("action_setTramlineDistance"))
             g_inputBinding:setActionEventTextVisibility(actionEventIdSetTramlines, true)
             g_inputBinding:setActionEventTextPriority(actionEventIdSetTramlines, GS_PRIO_HIGH)
 
-            g_inputBinding:setActionEventText(actionEventIdToggleHalfSideShutoff, g_i18n:getText("function_toggleHalfSideShutoff"))
+            g_inputBinding:setActionEventText(actionEventIdToggleHalfSideShutoff, g_i18n:getText("action_toggleHalfSideShutoff"))
             g_inputBinding:setActionEventTextVisibility(actionEventIdToggleHalfSideShutoff, true)
             g_inputBinding:setActionEventTextPriority(actionEventIdToggleHalfSideShutoff, GS_PRIO_HIGH)
         end
