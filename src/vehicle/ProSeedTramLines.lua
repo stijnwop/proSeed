@@ -52,6 +52,16 @@ ProSeedTramLines.SHUTOFF_MODE_OFF = 0
 ProSeedTramLines.SHUTOFF_MODE_LEFT = 1
 ProSeedTramLines.SHUTOFF_MODE_RIGHT = 2
 
+ProSeedTramLines.TRAMLINE_MODE_AUTO = 0
+ProSeedTramLines.TRAMLINE_MODE_SEMI = 1
+ProSeedTramLines.TRAMLINE_MODE_MANUAL = 2
+
+ProSeedTramLines.TRAMLINE_MODE_TO_KEY = {
+    [ProSeedTramLines.TRAMLINE_MODE_AUTO] = "auto",
+    [ProSeedTramLines.TRAMLINE_MODE_SEMI] = "semi",
+    [ProSeedTramLines.TRAMLINE_MODE_MANUAL] = "manual"
+}
+
 ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE = 2 -- minimum sequence is 1.
 
 function ProSeedTramLines.prerequisitesPresent(specializations)
@@ -62,6 +72,8 @@ function ProSeedTramLines.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "createTramLineAreas", ProSeedTramLines.createTramLineAreas)
     SpecializationUtil.registerFunction(vehicleType, "setTramLineDistance", ProSeedTramLines.setTramLineDistance)
     SpecializationUtil.registerFunction(vehicleType, "setTramLineData", ProSeedTramLines.setTramLineData)
+    SpecializationUtil.registerFunction(vehicleType, "setCurrentLane", ProSeedTramLines.setCurrentLane)
+    SpecializationUtil.registerFunction(vehicleType, "setTramLineMode", ProSeedTramLines.setTramLineMode)
     SpecializationUtil.registerFunction(vehicleType, "setHalfSideShutoffMode", ProSeedTramLines.setHalfSideShutoffMode)
     SpecializationUtil.registerFunction(vehicleType, "isHalfSideShutoffActive", ProSeedTramLines.isHalfSideShutoffActive)
     SpecializationUtil.registerFunction(vehicleType, "canActivateHalfSideShutoff", ProSeedTramLines.canActivateHalfSideShutoff)
@@ -97,9 +109,13 @@ function ProSeedTramLines:onLoad(savegame)
     spec.createTramLines = false
     spec.createPreMarkedTramLines = true
     spec.createTramLinesSent = false
+    spec.currentLaneSent = 1
 
-    spec.currentLane = 0
+    spec.currentLane = 1
     spec.shutoffMode = ProSeedTramLines.SHUTOFF_MODE_OFF
+    spec.tramLineMode = ProSeedTramLines.TRAMLINE_MODE_AUTO
+
+    spec.isLowered = false
 
     spec.tramLinePeriodicSequence = ProSeedTramLines.TRAMLINE_MIM_PERIODIC_SEQUENCE
     spec.tramLineDistanceMultiplier = 1
@@ -127,6 +143,7 @@ end
 function ProSeedTramLines:onReadStream(streamId, connection)
     local spec = self.spec_proSeedTramLines
     spec.createTramLines = streamReadBool(streamId)
+    spec.currentLane = streamReadInt8(streamId)
 
     local tramLineDistance = streamReadFloat32(streamId)
     local tramLinePeriodicSequence = streamReadInt8(streamId)
@@ -140,6 +157,7 @@ end
 function ProSeedTramLines:onWriteStream(streamId, connection)
     local spec = self.spec_proSeedTramLines
     streamWriteBool(streamId, spec.createTramLines)
+    streamWriteInt8(streamId, spec.currentLane)
 
     streamWriteFloat32(streamId, spec.tramLineDistance)
     streamWriteInt8(streamId, spec.tramLinePeriodicSequence)
@@ -155,6 +173,7 @@ function ProSeedTramLines:onReadUpdateStream(streamId, timestamp, connection)
 
         if streamReadBool(streamId) then
             spec.createTramLines = streamReadBool(streamId)
+            spec.currentLane = streamReadInt8(streamId)
         end
     end
 end
@@ -165,6 +184,7 @@ function ProSeedTramLines:onWriteUpdateStream(streamId, connection, dirtyMask)
 
         if streamWriteBool(streamId, bitAND(dirtyMask, spec.dirtyFlag) ~= 0) then
             streamWriteBool(streamId, spec.createTramLines)
+            streamWriteInt8(streamId, spec.currentLane)
         end
     end
 end
@@ -187,16 +207,29 @@ function ProSeedTramLines:onUpdateTick(dt)
 
     local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
     if self.isServer then
-        local rootVehicle = self:getRootVehicle()
-        --Get GuidanceSteering information when active.
-        if rootVehicle.getHasGuidanceSystem ~= nil and rootVehicle:getHasGuidanceSystem() then
-            local data = rootVehicle:getGuidanceData()
-            spec.currentLane = (math.abs(data.currentLane) % lanesForDistance) + 1
+        if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_AUTO then
+            local rootVehicle = self:getRootVehicle()
+            --Get GuidanceSteering information when active.
+            if rootVehicle.getHasGuidanceSystem ~= nil and rootVehicle:getHasGuidanceSystem() then
+                local data = rootVehicle:getGuidanceData()
+                self:setCurrentLane((math.abs(data.currentLane) % lanesForDistance) + 1, true)
+            end
+        elseif spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_SEMI then
+            local isLowered = self:getIsLowered()
+
+            if spec.isLowered ~= isLowered then
+                if isLowered then
+                    self:setCurrentLane()
+                end
+
+                spec.isLowered = isLowered
+            end
         end
 
         --Offset currentLane with 1 cause we don't want to start at the first lane.
         local lanesPassed = (spec.currentLane + 1) % spec.tramLinePeriodicSequence
-        spec.createTramLines = lanesPassed == 0 --We create lines when we can divide.
+        --We create lines when we can divide.
+        spec.createTramLines = lanesPassed == 0 and lanesForDistance > 1
 
         if spec.createTramLines then
             --Turnoff half side shutoff when we create tramlines.
@@ -205,8 +238,10 @@ function ProSeedTramLines:onUpdateTick(dt)
             end
         end
 
-        if spec.createTramLines ~= spec.createTramLinesSent then
+        if spec.createTramLines ~= spec.createTramLinesSent
+            or spec.currentLane ~= spec.currentLaneSent then
             spec.createTramLinesSent = spec.createTramLines
+            spec.currentLaneSent = spec.currentLane
             self:raiseDirtyFlags(spec.dirtyFlag)
         end
     end
@@ -232,6 +267,16 @@ function ProSeedTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
                 drawArea(area, 0, 0, 1, 1)
             end
         end
+    end
+end
+
+---Sets the tram line mode.
+function ProSeedTramLines:setTramLineMode(mode, noEventSend)
+    local spec = self.spec_proSeedTramLines
+
+    if mode ~= spec.tramLineMode then
+        ProSeedModeEvent.sendEvent(self, mode, noEventSend)
+        spec.tramLineMode = mode
     end
 end
 
@@ -342,6 +387,26 @@ function ProSeedTramLines:setTramLineData(tramLineDistance, tramLinePeriodicSequ
     spec.tramLineDistance = tramLineDistance
     spec.tramLinePeriodicSequence = tramLinePeriodicSequence
     spec.createPreMarkedTramLines = createPreMarkedTramLines
+end
+
+---Set current lane count.
+function ProSeedTramLines:setCurrentLane(value, force)
+    value = value or 1
+    force = force or false
+    local spec = self.spec_proSeedTramLines
+
+    if force then
+        spec.currentLane = value
+    else
+        if spec.tramLineMode ~= ProSeedTramLines.TRAMLINE_MODE_AUTO then
+            local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
+            if spec.currentLane < lanesForDistance then
+                spec.currentLane = math.max(1, spec.currentLane + value)
+            else
+                spec.currentLane = 1
+            end
+        end
+    end
 end
 
 function ProSeedTramLines.getMaxWorkAreaWidth(object)
