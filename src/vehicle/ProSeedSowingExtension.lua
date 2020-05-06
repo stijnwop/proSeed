@@ -128,6 +128,10 @@ function ProSeedSowingExtension:onUpdate(dt)
     if self.isClient then
         if self:getIsActiveForInput(true) and self:getIsTurnedOn() and spec.allowSound then
             local isLowered = self:getIsLowered()
+            if not self:getAllowsLowering() then
+                local attacherVehicle = self:getAttacherVehicle()
+                isLowered = attacherVehicle:getIsLowered()
+            end
 
             ---TODO: cleanup with function playing.
             if not spec.playedLowered then
@@ -171,6 +175,11 @@ function ProSeedSowingExtension:onUpdate(dt)
 
             local canPlayEmptySound = spec.activeFillUnitIndexEmptySound == desc.fillUnitIndex or spec.activeFillUnitIndexEmptySound == nil
             local isEmpty = fillPercentage == 0
+
+            if not spec.allowFertilizer and not self:getFillUnitSupportsFillType(desc.fillUnitIndex, FillType.SEEDS) then
+                canPlayEmptySound = false
+                isAlmostEmpty = false
+            end
 
             --Warning when empty.
             if isEmpty and canPlayEmptySound then
