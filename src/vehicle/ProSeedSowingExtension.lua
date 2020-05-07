@@ -27,6 +27,7 @@ end
 
 function ProSeedSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onLoad", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onPostLoad", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDelete", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onReadStream", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", ProSeedSowingExtension)
@@ -35,7 +36,7 @@ function ProSeedSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", ProSeedSowingExtension)
 end
 
----Called onLoad.
+---Called on load.
 function ProSeedSowingExtension:onLoad(savegame)
     self.spec_proSeedSowingExtension = self[("spec_%s.proSeedSowingExtension"):format(g_proSeed.modName)]
     local spec = self.spec_proSeedSowingExtension
@@ -102,6 +103,18 @@ function ProSeedSowingExtension:onLoad(savegame)
     end
 end
 
+---Called on post load.
+function proSeedSowingExtension:onPostLoad(savegame)
+    local spec = self.spec_proSeedSowingExtension
+
+    if savegame ~= nil and not savegame.resetVehicles then
+        local key = ("%s.%s.proSeedSowingExtension"):format(savegame.key, g_proSeed.modName)
+        spec.allowSound = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowSound"), spec.allowSound)
+        spec.allowFertilizer = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowFertilizer"), spec.allowFertilizer)
+    end
+end
+
+---Called on delete.
 function ProSeedSowingExtension:onDelete()
     local spec = self.spec_proSeedSowingExtension
 
@@ -110,18 +123,29 @@ function ProSeedSowingExtension:onDelete()
     end
 end
 
+---Called on save.
+function ProSeedSowingExtensions:saveToXMLFile(xmlFile, key, usedModNames)
+    local spec = self.spec_proSeedSowingExtension
+
+    setXMLBool(xmlFile, key .. "#allowSound", spec.allowSound)
+    setXMLBool(xmlFile, key .. "#allowFertilizer", spec.allowFertilizer)
+end
+
+---Called on read stream.
 function ProSeedSowingExtension:onReadStream(streamId, connection)
     local allowSound = streamReadBool(streamId)
     local allowFertilizer = streamReadBool(streamId)
     self:setSowingData(allowSound, allowFertilizer, true)
 end
 
+---Called on write stream.
 function ProSeedSowingExtension:onWriteStream(streamId, connection)
     local spec = self.spec_proSeedSowingExtension
     streamWriteBool(streamId, spec.allowSound)
     streamWriteBool(streamId, spec.allowFertilizer)
 end
 
+---Called on update.
 function ProSeedSowingExtension:onUpdate(dt)
     local spec = self.spec_proSeedSowingExtension
 
