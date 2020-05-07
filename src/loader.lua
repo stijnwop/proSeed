@@ -17,6 +17,7 @@ source(Utils.getFilename("src/events/ProSeedDataEvent.lua", directory))
 source(Utils.getFilename("src/hud/elements/HUDElementBase.lua", directory))
 source(Utils.getFilename("src/hud/elements/HUDMovableElement.lua", directory))
 source(Utils.getFilename("src/hud/elements/HUDButtonElement.lua", directory))
+source(Utils.getFilename("src/hud/elements/HUDTextElement.lua", directory))
 source(Utils.getFilename("src/hud/InteractiveHUD.lua", directory))
 
 source(Utils.getFilename("src/stream.lua", directory))
