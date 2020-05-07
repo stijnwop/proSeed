@@ -6,6 +6,7 @@
 -- Copyright (c) Wopster, 2020
 ----------------------------------------------------------------------------------------------------
 
+---Create guidance node for area calculation.
 local function createGuideNode(name, linkNode, x, y, z)
     local node = createTransformGroup(name)
     link(linkNode, node)
@@ -13,11 +14,12 @@ local function createGuideNode(name, linkNode, x, y, z)
     return node
 end
 
---Exclude ridged markers from workArea calculation
+---Exclude ridged markers from workArea calculation
 local skipWorkAreas = {
     ["processRidgeMarkerArea"] = true
 }
 
+---Returns true when function name is not being skipped and when the type is different from `AUXILIARY`, false otherwise.
 local function isWorkAreaValid(workArea)
     if skipWorkAreas[workArea.functionName] ~= nil then
         return false
@@ -80,11 +82,9 @@ function ProSeedTramLines.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "togglePreMarkersState", ProSeedTramLines.togglePreMarkersState)
 end
 
-function ProSeedTramLines.registerOverwrittenFunctions(vehicleType)
-end
-
 function ProSeedTramLines.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onLoad", ProSeedTramLines)
+    SpecializationUtil.registerEventListener(vehicleType, "onPostLoad", ProSeedTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onReadStream", ProSeedTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", ProSeedTramLines)
     SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", ProSeedTramLines)
@@ -95,7 +95,7 @@ function ProSeedTramLines.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onEndWorkAreaProcessing", ProSeedTramLines)
 end
 
----Called onLoad.
+---Called on load.
 function ProSeedTramLines:onLoad(savegame)
     self.spec_proSeedTramLines = self[("spec_%s.proSeedTramLines"):format(g_proSeed.modName)]
     local spec = self.spec_proSeedTramLines
@@ -140,6 +140,46 @@ function ProSeedTramLines:onLoad(savegame)
     spec.dirtyFlag = self:getNextDirtyFlag()
 end
 
+---Called on post load.
+function ProSeedTramLines:onPostLoad(savegame)
+    local spec = self.spec_proSeedTramLines
+
+    if savegame ~= nil and not savegame.resetVehicles then
+        local key = ("%s.%s.proSeedTramLines"):format(savegame.key, g_proSeed.modName)
+        spec.isLowered = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#isLowered"), spec.isLowered)
+        spec.createTramLines = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#createTramLines"), spec.createTramLines)
+        spec.currentLane = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#currentLane"), spec.currentLane)
+
+        local tramLineDistance = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#tramLineDistance"), spec.tramLineDistance)
+        local tramLinePeriodicSequence = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#tramLinePeriodicSequence"), spec.tramLinePeriodicSequence)
+        local createPreMarkedTramLines = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#createPreMarkedTramLines"), spec.createPreMarkedTramLines)
+        self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, true)
+
+        local tramLineMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#tramLineMode"), spec.tramLineMode)
+        self:setTramLineMode(tramLineMode, true)
+
+        local shutoffMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#shutoffMode"), spec.shutoffMode)
+        self:setHalfSideShutoffMode(shutoffMode, true)
+    end
+end
+
+---Called on save.
+function ProSeedTramLines:saveToXMLFile(xmlFile, key, usedModNames)
+    local spec = self.spec_proSeedTramLines
+
+    setXMLBool(xmlFile, key .. "#isLowered", spec.isLowered)
+    setXMLBool(xmlFile, key .. "#createTramLines", spec.createTramLines)
+    setXMLInt(xmlFile, key .. "#currentLane", spec.currentLane)
+
+    setXMLFloat(xmlFile, key .. "#tramLineDistance", spec.tramLineDistance)
+    setXMLInt(xmlFile, key .. "#tramLinePeriodicSequence", spec.tramLinePeriodicSequence)
+    setXMLBool(xmlFile, key .. "#createPreMarkedTramLines", spec.createPreMarkedTramLines)
+
+    setXMLInt(xmlFile, key .. "#tramLineMode", spec.tramLineMode)
+    setXMLInt(xmlFile, key .. "#shutoffMode", spec.shutoffMode)
+end
+
+---Called on read stream.
 function ProSeedTramLines:onReadStream(streamId, connection)
     local spec = self.spec_proSeedTramLines
     spec.createTramLines = streamReadBool(streamId)
@@ -154,6 +194,7 @@ function ProSeedTramLines:onReadStream(streamId, connection)
     self:setHalfSideShutoffMode(shutoffMode, true)
 end
 
+---Called on write stream.
 function ProSeedTramLines:onWriteStream(streamId, connection)
     local spec = self.spec_proSeedTramLines
     streamWriteBool(streamId, spec.createTramLines)
@@ -167,6 +208,7 @@ function ProSeedTramLines:onWriteStream(streamId, connection)
     streamWriteUIntN(streamId, spec.shutoffMode, 2)
 end
 
+---Called on read update stream.
 function ProSeedTramLines:onReadUpdateStream(streamId, timestamp, connection)
     if connection:getIsServer() then
         local spec = self.spec_proSeedTramLines
@@ -178,6 +220,7 @@ function ProSeedTramLines:onReadUpdateStream(streamId, timestamp, connection)
     end
 end
 
+---Called on write update stream.
 function ProSeedTramLines:onWriteUpdateStream(streamId, connection, dirtyMask)
     if not connection:getIsServer() then
         local spec = self.spec_proSeedTramLines
@@ -189,6 +232,7 @@ function ProSeedTramLines:onWriteUpdateStream(streamId, connection, dirtyMask)
     end
 end
 
+---Called on update.
 function ProSeedTramLines:onUpdate(dt)
     local spec = self.spec_proSeedTramLines
 
@@ -202,6 +246,7 @@ function ProSeedTramLines:onUpdate(dt)
     end
 end
 
+---Called on update tick.
 function ProSeedTramLines:onUpdateTick(dt)
     local spec = self.spec_proSeedTramLines
 
@@ -251,6 +296,7 @@ function ProSeedTramLines:onUpdateTick(dt)
     end
 end
 
+---Process tramline creation on the end of work area processing.
 function ProSeedTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
     local spec = self.spec_proSeedTramLines
     if spec.createTramLines and hasProcessed then
@@ -413,6 +459,7 @@ function ProSeedTramLines:setCurrentLane(value, force)
     end
 end
 
+---Determine the area width of the vehicle.
 function ProSeedTramLines.getMaxWorkAreaWidth(object)
     local workAreaSpec = object.spec_workArea
     local maxWidth, minWidth = 0, 0
@@ -452,6 +499,7 @@ function ProSeedTramLines.getMaxWorkAreaWidth(object)
     return MathUtil.round(width, 3), MathUtil.round(offset, 3), area[4]
 end
 
+---Toggle state of pre marker for tramlines.
 function ProSeedTramLines:togglePreMarkersState()
     local spec = self.spec_proSeedTramLines
     spec.createPreMarkedTramLines = not spec.createPreMarkedTramLines
