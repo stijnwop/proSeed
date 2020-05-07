@@ -368,7 +368,7 @@ function InteractiveHUD:createSeederIcon(posX, posY)
     local textY = posY + seederHeight + (seederHeight * 0.25)
     self.seederWidth = HUDElement:new(self.iconSeederWidth)
 
-    local textSize = 22 * self:getUIScale()
+    local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HIGHLIGHT)
     self.textElementWorkingWidth = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, true)
     self.textElementWorkingWidth:setText("0m")
 
@@ -552,7 +552,8 @@ function InteractiveHUD:createTramLineModeBox(posX, posY)
 end
 
 InteractiveHUD.TEXT_SIZE = {
-    HEADER = 18
+    HEADER = 18,
+    HIGHLIGHT = 22
 }
 
 InteractiveHUD.SIZE = {
