@@ -13,6 +13,11 @@
         <text name="action_toggleHalfSideShutoff" text="Halbseitige Abschaltung"/>
         <text name="action_setTramlineDistance" text="Fahrgassen Abstand"/>
 
+        <!--Info-->
+        <text name="info_mode_auto" text="Auto"/>
+        <text name="info_mode_semi" text="Semi"/>
+        <text name="info_mode_manual" text="Manual"/>
+
         <!--Warnings-->
         <text name="warning_gpsNotActive" text="GPS is not active on this vehicle!"/>
     </texts>

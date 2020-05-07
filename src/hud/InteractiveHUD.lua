@@ -42,6 +42,8 @@ function InteractiveHUD:delete()
 end
 
 function InteractiveHUD:load()
+    self.uiScale = self:getUIScale()
+
     self:createElements()
     self:setVehicle(nil)
 end
@@ -368,11 +370,8 @@ function InteractiveHUD:createSeederIcon(posX, posY)
     self.seederWidth = HUDElement:new(self.iconSeederWidth)
 
     local textSize = 22 * self:getUIScale()
-    self.textElementWorkingWidth = HUDTextDisplay:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, true)
+    self.textElementWorkingWidth = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, true)
     self.textElementWorkingWidth:setText("0m")
-
-    --self.headerElement = HUDTextDisplay:new(textX, posY + seederHeight, 25, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.INACTIVE, false)
-    --self.headerElement:setText("SeedAssist")
 
     self.base:addChild(self.buttonSeeder)
     self.base:addChild(self.seederWidth)
@@ -451,7 +450,9 @@ function InteractiveHUD:updateTramLineModeState(mode)
     local isManual = mode == ProSeedTramLines.TRAMLINE_MODE_MANUAL
     self.buttonTramLineModePlus:setDisabled(isManual)
     self.buttonTramLineModeMin:setDisabled(isAuto)
-    self.textElementTramLineMode.text = ProSeedTramLines.TRAMLINE_MODE_TO_KEY[mode]
+
+    local key = ProSeedTramLines.TRAMLINE_MODE_TO_KEY[mode]
+    self.textElementTramLineMode:setText(self.i18n:getText(("info_mode_%s"):format(key)))
 
     if isAuto then
         if self.vehicle ~= nil then
@@ -481,7 +482,7 @@ function InteractiveHUD:createTramLineDistanceBox(posX, posY)
     self.buttonTramlinePlus:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.base:addChild(self.buttonTramlinePlus)
 
-    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth + iconMarginHeight, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
+    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
     iconMin:setIsVisible(true)
     self.buttonTramlineMin = HUDButtonElement:new(iconMin)
     self.buttonTramlineMin:setButtonCallback(self, self.decreaseTramLineDistance)
@@ -491,7 +492,7 @@ function InteractiveHUD:createTramLineDistanceBox(posX, posY)
     local textX = posX
     local textY = posY + iconHeight + iconHeight * 0.5
     local textSize = 18 * self:getUIScale()
-    self.textElementTramLineDistance = HUDTextDisplay:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTramLineDistance = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTramLineDistance:setText("0m")
     self.base:addChild(self.textElementTramLineDistance)
 end
@@ -510,7 +511,7 @@ function InteractiveHUD:createTramLineCountBox(posX, posY)
     self.buttonTramLineCountPlus:setDisabled(true)
     self.base:addChild(self.buttonTramLineCountPlus)
 
-    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth + iconMarginHeight, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
+    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
     iconMin:setIsVisible(true)
     self.buttonTramLineCountMin = HUDButtonElement:new(iconMin)
     self.buttonTramLineCountMin:setButtonCallback(self, self.decreaseTramLinePassedCount)
@@ -521,7 +522,7 @@ function InteractiveHUD:createTramLineCountBox(posX, posY)
     local textX = posX
     local textY = posY + iconHeight + iconHeight * 0.5
     local textSize = 18 * self:getUIScale()
-    self.textElementTramLineCount = HUDTextDisplay:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTramLineCount = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTramLineCount:setText("0 / 0")
     self.base:addChild(self.textElementTramLineCount)
 end
@@ -529,6 +530,9 @@ end
 function InteractiveHUD:createTramLineModeBox(posX, posY)
     local iconWidth, iconHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL)
     local iconMarginWidth, iconMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL_MARGIN)
+
+    local centerX = 0
+    local centerY = 0
 
     posX = posX + (iconWidth + iconMarginWidth) * 2
 
@@ -539,7 +543,7 @@ function InteractiveHUD:createTramLineModeBox(posX, posY)
     self.buttonTramLineModePlus:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.base:addChild(self.buttonTramLineModePlus)
 
-    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth + iconMarginHeight, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_ARROW)
+    local iconMin = self:createIcon(self.uiFilename, posX - iconWidth - iconMarginWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_ARROW)
     iconMin:setIsVisible(true)
     iconMin:setRotation(math.rad(180), iconWidth * 0.5, iconHeight * 0.5)
 
@@ -550,10 +554,11 @@ function InteractiveHUD:createTramLineModeBox(posX, posY)
 
     local textX = posX
     local textY = posY + iconHeight + iconHeight * 0.5
-    local textSize = 18 * self:getUIScale()
-    self.textElementTramLineMode = HUDTextDisplay:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
-    self.textElementTramLineMode:setText("Auto")
+    local textSize = 18 * self.uiScale
+    self.textElementTramLineMode = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+
     self.base:addChild(self.textElementTramLineMode)
+
 end
 
 InteractiveHUD.SIZE = {
