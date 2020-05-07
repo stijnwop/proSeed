@@ -61,50 +61,38 @@ function ProSeedSowingExtension:onLoad(savegame)
     spec.allowFertilizer = false
 
     if self.isClient then
-        --TODO: cleanup with better loading.
         local linkNode = self.components[1].node
         if self.getInputAttacherJoints ~= nil then
-            local inputAttacherJoint = self:getInputAttacherJoints()[1]
-            linkNode = inputAttacherJoint.node
+            local _, inputAttacherJoint = next(self:getInputAttacherJoints())
+            if inputAttacherJoint ~= nil then
+                linkNode = inputAttacherJoint.node
+            end
         end
 
         spec.samples = {}
-        local sampleLowered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "lowered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        if sampleLowered == nil then
-            sampleLowered = g_soundManager:cloneSample(g_proSeed.samples.lowered, linkNode, self)
+        local function loadSample(name)
+            local sample = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+            if sample == nil then
+                sample = g_soundManager:cloneSample(g_proSeed.samples[name], linkNode, self)
+            end
+
+            return sample
         end
 
-        spec.samples.lowered = sampleLowered
+        spec.samples.lowered = loadSample("lowered")
+        spec.samples.highered = loadSample("highered")
+        spec.samples.empty = loadSample("empty")
+        spec.samples.tramline = loadSample("tramline")
+
         spec.playedLowered = false
-
-        local sampleHighered = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "highered", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        if sampleHighered == nil then
-            sampleHighered = g_soundManager:cloneSample(g_proSeed.samples.highered, linkNode, self)
-        end
-
-        spec.samples.highered = sampleHighered
-
-        local sampleEmpty = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "empty", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        if sampleEmpty == nil then
-            sampleEmpty = g_soundManager:cloneSample(g_proSeed.samples.empty, linkNode, self)
-        end
-
-        spec.samples.empty = sampleEmpty
+        spec.playedTramline = false
         spec.activeFillUnitIndexEmptySound = nil
         spec.activeFillUnitIndexAlmostEmptySound = nil
-
-        local sampleTramline = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", "tramline", self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
-        if sampleTramline == nil then
-            sampleTramline = g_soundManager:cloneSample(g_proSeed.samples.tramline, linkNode, self)
-        end
-
-        spec.samples.tramline = sampleTramline
-        spec.playedTramline = false
     end
 end
 
 ---Called on post load.
-function proSeedSowingExtension:onPostLoad(savegame)
+function ProSeedSowingExtension:onPostLoad(savegame)
     local spec = self.spec_proSeedSowingExtension
 
     if savegame ~= nil and not savegame.resetVehicles then
@@ -124,7 +112,7 @@ function ProSeedSowingExtension:onDelete()
 end
 
 ---Called on save.
-function ProSeedSowingExtensions:saveToXMLFile(xmlFile, key, usedModNames)
+function ProSeedSowingExtension:saveToXMLFile(xmlFile, key, usedModNames)
     local spec = self.spec_proSeedSowingExtension
 
     setXMLBool(xmlFile, key .. "#allowSound", spec.allowSound)
