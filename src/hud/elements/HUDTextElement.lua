@@ -121,6 +121,8 @@ end
 
 ---Called on element draw.
 function HUDTextElement:draw()
+    HUDTextElement:superClass().draw(self)
+
     setTextBold(self.textBold)
     local posX, posY = self:getPosition()
     -- NOTE: alignment is factored into background overlay position, use left alignment now
