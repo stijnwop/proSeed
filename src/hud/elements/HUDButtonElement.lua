@@ -48,7 +48,7 @@ function HUDButtonElement:loadOverlayColors(overlay)
         overlay.colorSelected = color
     end
 
-    local color = { 0.5, 0.5, 0.5, 1 }
+    local color = { 0.4, 0.4, 0.4, 1 }
     if color ~= nil then
         overlay.colorDisabled = color
     end
