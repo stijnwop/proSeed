@@ -33,6 +33,7 @@ function ProSeedSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onEndWorkAreaProcessing", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", ProSeedSowingExtension)
 end
 
@@ -56,6 +57,12 @@ function ProSeedSowingExtension:onLoad(savegame)
     if fillUnitIndexLiquidFertilizer ~= nil then
         table.insert(spec.fillUnitsToCheck, { fillUnitIndex = fillUnitIndexLiquidFertilizer, didPlay = false })
     end
+
+    spec.sessionHectares = 0
+    spec.totalHectares = 0
+    spec.seedUsage = 0
+    spec.hectareTime = 0
+    spec.hectarePerHour = 0
 
     spec.allowSound = false
     spec.allowFertilizer = false
@@ -99,6 +106,12 @@ function ProSeedSowingExtension:onPostLoad(savegame)
         local key = ("%s.%s.proSeedSowingExtension"):format(savegame.key, g_proSeed.modName)
         spec.allowSound = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowSound"), spec.allowSound)
         spec.allowFertilizer = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowFertilizer"), spec.allowFertilizer)
+
+        spec.sessionHectares = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#sessionHectares"), spec.sessionHectares)
+        spec.totalHectares = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#totalHectares"), spec.totalHectares)
+        spec.seedUsage = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#seedUsage"), spec.seedUsage)
+        spec.hectareTime = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#hectareTime"), spec.hectareTime)
+        spec.hectarePerHour = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#hectarePerHour"), spec.hectarePerHour)
     end
 end
 
@@ -117,6 +130,12 @@ function ProSeedSowingExtension:saveToXMLFile(xmlFile, key, usedModNames)
 
     setXMLBool(xmlFile, key .. "#allowSound", spec.allowSound)
     setXMLBool(xmlFile, key .. "#allowFertilizer", spec.allowFertilizer)
+
+    setXMLFloat(xmlFile, key .. "#sessionHectares", spec.sessionHectares)
+    setXMLFloat(xmlFile, key .. "#totalHectares", spec.totalHectares)
+    setXMLFloat(xmlFile, key .. "#seedUsage", spec.seedUsage)
+    setXMLFloat(xmlFile, key .. "#hectareTime", spec.hectareTime)
+    setXMLFloat(xmlFile, key .. "#hectarePerHour", spec.hectarePerHour)
 end
 
 ---Called on read stream.
@@ -291,6 +310,37 @@ function ProSeedSowingExtension:processSowingMachineArea(superFunc, workArea, dt
 
     local changedArea, totalArea = superFunc(self, workArea, dt)
     return changedArea, totalArea
+end
+
+function ProSeedSowingExtension:onEndWorkAreaProcessing(dt, hasProcessed)
+    local spec = self.spec_proSeedSowingExtension
+
+    local workAreaParameters = self.spec_sowingMachine.workAreaParameters
+
+    if workAreaParameters.lastChangedArea > 0 then
+        local fruitDesc = g_fruitTypeManager:getFruitTypeByIndex(workAreaParameters.seedsFruitType)
+        local lastHa = MathUtil.areaToHa(workAreaParameters.lastChangedArea, g_currentMission:getFruitPixelsToSqm())
+        local usage = fruitDesc.seedUsagePerSqm * lastHa * 10000
+        local ha = MathUtil.areaToHa(workAreaParameters.lastStatsArea, g_currentMission:getFruitPixelsToSqm()) -- 4096px are mapped to 2048m
+
+        local damage = self:getVehicleDamage()
+        if damage > 0 then
+            usage = usage * (1 + damage * SowingMachine.DAMAGED_USAGE_INCREASE)
+        end
+
+        spec.sessionHectares = spec.sessionHectares + ha
+        spec.totalHectares = spec.totalHectares + ha
+        spec.seedUsage = usage
+
+        local sownTimeMinutes = dt / (1000 * 60)
+        local sownTimeHours = math.floor(sownTimeMinutes / 60)
+
+        spec.hectareTime = spec.hectareTime + sownTimeHours
+
+        if spec.hectareTime > 0 then
+            spec.hectarePerHour = spec.sessionHectares / spec.hectareTime
+        end
+    end
 end
 
 function ProSeedSowingExtension:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
