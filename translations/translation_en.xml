@@ -5,15 +5,19 @@
     <texts>
         <!--Inputs-->
         <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: Toggle halfside shutoff"/>
-        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Lines till tramline"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Set tramline distance"/>
         <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Toggle mouse cursor"/>
 
         <!--Actions-->
         <text name="action_toggleMouseCursor" text="Toggle mouse cursor"/>
         <text name="action_toggleHalfSideShutoff" text="Toggle halfside shutoff"/>
-        <text name="action_setTramlineDistance" text="Set line distance"/>
+        <text name="action_setTramlineDistance" text="Set trameline distance"/>
 
         <!--Info-->
+        <text name="info_mode_header" text="Mode"/>
+        <text name="info_tramline_distance_header" text="Distance"/>
+        <text name="info_line_number_header" text="Track"/>
+
         <text name="info_mode_auto" text="Auto"/>
         <text name="info_mode_semi" text="Semi"/>
         <text name="info_mode_manual" text="Manual"/>

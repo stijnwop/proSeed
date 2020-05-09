@@ -94,8 +94,8 @@ function InteractiveHUD:setVehicle(vehicle)
             self.iconSeeder:setUVs(getNormalizedUVs(uvs))
 
             local spec = vehicle.spec_proSeedTramLines
-            self.textElementTramLineDistance.text = (("%sm"):format(spec.tramLineDistance))
-            self.textElementWorkingWidth.text = (("%sm"):format(spec.workingWidthRounded))
+            self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
+            self.textElementWorkingWidth:setText(("%sm"):format(spec.workingWidthRounded))
             self.buttonPreMarkers:setSelected(spec.createPreMarkedTramLines)
 
             self:updateTramLineModeState(spec.tramLineMode)
@@ -115,9 +115,14 @@ function InteractiveHUD:update(dt)
     if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.base:getIsVisible() then
         local spec = self.vehicle.spec_proSeedTramLines
         self:visualizeTramLine(self.vehicle)
-
+        --TODO: OPTIMIZE
         local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
-        self.textElementTramLineCount.text = (("%s / %s"):format(spec.currentLane, lanesForDistance))
+        self.textElementTramLineCount:setText(("%s / %s"):format(spec.currentLane, lanesForDistance))
+
+        local spec_extension = self.vehicle.spec_proSeedSowingExtension
+        self.textElementTotalWorkedHA:setText(("%.1fha"):format(spec_extension.totalHectares))
+        self.textElementWorkedHA:setText(("%.2fha (%.1f ha/h)"):format(spec_extension.sessionHectares, spec_extension.hectarePerHour))
+        self.textElementSeedUsage:setText(("%.2fl"):format(spec_extension.seedUsage))
     end
 end
 
@@ -210,7 +215,7 @@ function InteractiveHUD:increaseTramLineDistance(buttonElement)
             local spec = vehicle.spec_proSeedTramLines
             vehicle:setTramLineDistance(spec.tramLineDistanceMultiplier + 1)
 
-            self.textElementTramLineDistance.text = (("%sm"):format(spec.tramLineDistance))
+            self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
         end
     end
 end
@@ -222,7 +227,7 @@ function InteractiveHUD:decreaseTramLineDistance(buttonElement)
             local spec = vehicle.spec_proSeedTramLines
             local tramLineDistanceMultiplier = math.max(spec.tramLineDistanceMultiplier - 1, 1)
             vehicle:setTramLineDistance(tramLineDistanceMultiplier)
-            self.textElementTramLineDistance.text = (("%sm"):format(spec.tramLineDistance))
+            self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
         end
     end
 end
@@ -321,9 +326,65 @@ function InteractiveHUD:createElements()
     self.base:addChild(self.buttonHalfSideShutoff)
 
     local headerWidth, headerHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.HEADER)
-    self.buttonHeader = HUDButtonElement:new(Overlay:new(nil, posX, posY + (boxHeight - headerHeight), headerWidth, headerHeight))
+    local headerY = posY + (boxHeight - headerHeight)
+    self.buttonHeader = HUDButtonElement:new(Overlay:new(nil, posX, headerY, headerWidth, headerHeight))
     self.buttonHeader:setBorders("0dp 0dp 0dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.base:addChild(self.buttonHeader)
+
+    local headerTopWidth, headerTopHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.HEADER_TOP)
+    local headerTopY = headerY + headerHeight - paddingHeight - headerTopHeight
+
+    local headerTopOverlay = Overlay:new(self.uiFilename, posX, headerTopY, headerTopWidth, headerTopHeight)
+    self.buttonTopHeader = HUDElementBase:new(headerTopOverlay)
+    self.buttonTopHeader:setBorders("0dp 0dp 0dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTopHeader:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
+    self.buttonTopHeader:setColor(unpack(InteractiveHUD.COLOR.DARK_GLASS))
+
+    self.base:addChild(self.buttonTopHeader)
+
+    local iconSmallWidth, iconSmallHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL)
+    local iconSmallMarginWidth, iconSmallMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL_MARGIN)
+
+    local iconClose = self:createIcon(self.uiFilename, posX + boxWidth - iconSmallWidth, headerTopY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.BUTTON_CLOSE)
+    self.buttonClose = HUDButtonElement:new(iconClose)
+    --self.buttonClose:setButtonCallback(self, self.increaseTramLineMode)
+    self.buttonClose:setBorders("1dp 0dp 0dp 0dp", InteractiveHUD.COLOR.BORDER)
+    self.base:addChild(self.buttonClose)
+
+    --HA counter.
+    local textY = headerTopY
+    local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.SMALL)
+
+    self.iconSeederSeedUsage = self:createIcon(self.uiFilename, posX, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.SEED_USAGE)
+    self.seederSeedUsage = HUDElement:new(self.iconSeederSeedUsage)
+
+    self.textElementSeedUsage = HUDTextElement:new(posX + iconSmallWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementSeedUsage:setText("0l")
+
+    local seedUsagePosX, seedUsagePosY = self.textElementSeedUsage:getPosition()
+    seedUsagePosX = seedUsagePosX + iconSmallWidth + iconSmallMarginWidth
+
+    self.iconSeederTotalWorkedHA = self:createIcon(self.uiFilename, seedUsagePosX, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.TOTAL_WORKED_HA)
+    self.seederTotalWorkedHA = HUDElement:new(self.iconSeederTotalWorkedHA)
+
+    self.textElementTotalWorkedHA = HUDTextElement:new(seedUsagePosX + iconSmallWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTotalWorkedHA:setText("0ha")
+
+    local workedHaPosX, workedHaPosY = self.textElementTotalWorkedHA:getPosition()
+    workedHaPosX = workedHaPosX + iconSmallMarginWidth
+
+    self.iconSeederWorkedHA = self:createIcon(self.uiFilename, workedHaPosX + iconSmallWidth + iconSmallMarginWidth, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.WORKED_HA)
+    self.seederWorkedHA = HUDElement:new(self.iconSeederWorkedHA)
+
+    self.textElementWorkedHA = HUDTextElement:new(workedHaPosX + iconSmallWidth + iconSmallWidth + iconSmallMarginWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementWorkedHA:setText("0ha (0.0 ha/h)")
+
+    self.base:addChild(self.seederTotalWorkedHA)
+    self.base:addChild(self.seederWorkedHA)
+    self.base:addChild(self.seederSeedUsage)
+    self.base:addChild(self.textElementTotalWorkedHA)
+    self.base:addChild(self.textElementWorkedHA)
+    self.base:addChild(self.textElementSeedUsage)
 
     local settingsY = posY + (boxHeight - headerHeight) + paddingHeight
     self:createTramLineDistanceBox(posX + (headerWidth * 0.5), settingsY)
@@ -338,7 +399,8 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
     local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDMovableElement:new(boxOverlay)
 
-    boxElement:setColor(0.013, 0.013, 0.013, 0.7)
+    --boxElement:setColor(0.013, 0.013, 0.013, 0.7)
+    boxElement:setColor(unpack(InteractiveHUD.COLOR.MEDIUM_GLASS))
     boxElement:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
     boxElement:setVisible(true)
     boxElement:setBorders("1dp 1dp 1dp 4dp", InteractiveHUD.COLOR.BORDER)
@@ -362,21 +424,44 @@ function InteractiveHUD:createSeederIcon(posX, posY)
 
     self.buttonSeeder = HUDElement:new(self.iconSeeder)
 
-    self.iconSeederWidth = self:createIcon(self.uiFilename, posX, posY + seederHeight, seederWidth, seederHeight, InteractiveHUD.UV.WIDTH)
+    local seederWidthWidth, seederWidthHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.WIDTH)
+    self.iconSeederWidth = self:createIcon(self.uiFilename, posX, posY + seederHeight + (seederWidthHeight * 0.25), seederWidthWidth, seederWidthHeight, InteractiveHUD.UV.WIDTH)
 
     local textX = posX + seederMarginWidth + (seederWidth * 0.5)
-    local textY = posY + seederHeight + (seederHeight * 0.25)
+    local textY = posY + seederHeight + (seederWidthHeight * 0.5)
     self.seederWidth = HUDElement:new(self.iconSeederWidth)
 
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HIGHLIGHT)
     self.textElementWorkingWidth = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, true)
     self.textElementWorkingWidth:setText("0m")
 
+    local markerPosX = posX
+    local markerPosY = posY + seederHeight
+    self.markerLeft = self:createMarker(markerPosX, markerPosY, false)
+    self.base:addChild(self.markerLeft)
+
+    self.markerRight = self:createMarker(markerPosX, markerPosY, true)
+    self.base:addChild(self.markerRight)
+
     self.base:addChild(self.buttonSeeder)
     self.base:addChild(self.seederWidth)
     self.base:addChild(self.textElementWorkingWidth)
 
     self:createWorkingAreaSegments(posX, posY)
+end
+
+function InteractiveHUD:createMarker(posX, posY, invert)
+    local width, height = self:scalePixelToScreenVector(InteractiveHUD.SIZE.MARKER)
+    local marginWidth, marginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.MARKER_MARGIN)
+
+    posX = invert and posX + width or posX
+    local markerIcon = self:createIcon(self.uiFilename, posX + marginWidth, posY + marginHeight, width, height, InteractiveHUD.UV.MARKER_UP)
+
+    if invert then
+        markerIcon:setInvertX(true)
+    end
+
+    return HUDElement:new(markerIcon)
 end
 
 function InteractiveHUD:createWorkingAreaSegments(posX, posY)
@@ -478,22 +563,27 @@ function InteractiveHUD:createTramLineDistanceBox(posX, posY)
     local iconPlus = self:createIcon(self.uiFilename, centerX + iconMarginWidth, posY + iconMarginHeight, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_PLUS)
     self.buttonTramLinePlus = HUDButtonElement:new(iconPlus)
     self.buttonTramLinePlus:setButtonCallback(self, self.increaseTramLineDistance)
-    self.buttonTramLinePlus:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLinePlus:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
 
     local iconMin = self:createIcon(self.uiFilename, centerX - iconWidth - iconMarginWidth, posY, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
     self.buttonTramLineMin = HUDButtonElement:new(iconMin)
     self.buttonTramLineMin:setButtonCallback(self, self.decreaseTramLineDistance)
-    self.buttonTramLineMin:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLineMin:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
 
     local textX = centerX
-    local textY = posY + iconHeight + iconHeight * 0.5
+    local textY = posY + iconHeight + iconHeight * 0.25
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HEADER)
     self.textElementTramLineDistance = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTramLineDistance:setText("0m")
 
+    local textSizeHeader = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.SMALL)
+    self.textElementTramLineDistanceHeader = HUDTextElement:new(textX, textY + iconHeight * 0.8, textSizeHeader, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTramLineDistanceHeader:setText(self.i18n:getText("info_tramline_distance_header"))
+
     self.base:addChild(self.buttonTramLinePlus)
     self.base:addChild(self.buttonTramLineMin)
     self.base:addChild(self.textElementTramLineDistance)
+    self.base:addChild(self.textElementTramLineDistanceHeader)
 end
 
 function InteractiveHUD:createTramLineCountBox(posX, posY)
@@ -504,24 +594,29 @@ function InteractiveHUD:createTramLineCountBox(posX, posY)
     local iconPlus = self:createIcon(self.uiFilename, centerX + iconMarginWidth, posY + iconMarginHeight, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_PLUS)
     self.buttonTramLineCountPlus = HUDButtonElement:new(iconPlus)
     self.buttonTramLineCountPlus:setButtonCallback(self, self.increaseTramLinePassedCount)
-    self.buttonTramLineCountPlus:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLineCountPlus:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
     self.buttonTramLineCountPlus:setDisabled(true)
 
     local iconMin = self:createIcon(self.uiFilename, centerX - iconWidth - iconMarginWidth, posY + iconMarginHeight, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_MIN)
     self.buttonTramLineCountMin = HUDButtonElement:new(iconMin)
     self.buttonTramLineCountMin:setButtonCallback(self, self.decreaseTramLinePassedCount)
-    self.buttonTramLineCountMin:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLineCountMin:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
     self.buttonTramLineCountMin:setDisabled(true)
 
     local textX = centerX
-    local textY = posY + iconHeight + iconHeight * 0.5
+    local textY = posY + iconHeight + iconHeight * 0.25
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HEADER)
     self.textElementTramLineCount = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTramLineCount:setText("0 / 0")
 
+    local textSizeHeader = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.SMALL)
+    self.textElementTramLineCountHeader = HUDTextElement:new(textX, textY + iconHeight * 0.8, textSizeHeader, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTramLineCountHeader:setText(self.i18n:getText("info_line_number_header"))
+
     self.base:addChild(self.buttonTramLineCountPlus)
     self.base:addChild(self.buttonTramLineCountMin)
     self.base:addChild(self.textElementTramLineCount)
+    self.base:addChild(self.textElementTramLineCountHeader)
 end
 
 function InteractiveHUD:createTramLineModeBox(posX, posY)
@@ -532,42 +627,52 @@ function InteractiveHUD:createTramLineModeBox(posX, posY)
     local iconPlus = self:createIcon(self.uiFilename, centerX + iconMarginWidth, posY + iconMarginHeight, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_ARROW)
     self.buttonTramLineModePlus = HUDButtonElement:new(iconPlus)
     self.buttonTramLineModePlus:setButtonCallback(self, self.increaseTramLineMode)
-    self.buttonTramLineModePlus:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLineModePlus:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
 
     local iconMin = self:createIcon(self.uiFilename, centerX - iconWidth - iconMarginWidth, posY + iconMarginHeight, iconWidth, iconHeight, InteractiveHUD.UV.BUTTON_ARROW)
     iconMin:setRotation(math.rad(180), iconWidth * 0.5, iconHeight * 0.5)
 
     self.buttonTramLineModeMin = HUDButtonElement:new(iconMin)
     self.buttonTramLineModeMin:setButtonCallback(self, self.decreaseTramLineMode)
-    self.buttonTramLineModeMin:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTramLineModeMin:setBorders("2dp 2dp 2dp 2dp", InteractiveHUD.COLOR.BORDER)
 
     local textX = centerX
-    local textY = posY + iconHeight + iconHeight * 0.5
+    local textY = posY + iconHeight + iconHeight * 0.25
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HEADER)
     self.textElementTramLineMode = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+
+    local textSizeHeader = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.SMALL)
+    self.textElementTramLineModeHeader = HUDTextElement:new(textX, textY + iconHeight * 0.8, textSizeHeader, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementTramLineModeHeader:setText(self.i18n:getText("info_mode_header"))
 
     self.base:addChild(self.buttonTramLineModePlus)
     self.base:addChild(self.buttonTramLineModeMin)
     self.base:addChild(self.textElementTramLineMode)
+    self.base:addChild(self.textElementTramLineModeHeader)
 end
 
 InteractiveHUD.TEXT_SIZE = {
     HEADER = 18,
-    HIGHLIGHT = 22
+    HIGHLIGHT = 22,
+    SMALL = 12
 }
 
 InteractiveHUD.SIZE = {
-    BOX = { 308, 176 }, -- 4px border correction
+    BOX = { 308, 196 }, -- 4px border correction
     BOX_MARGIN = { 20, 40 },
     BOX_PADDING = { 0, 4 },
     ICON = { 54, 54 },
     ICON_SMALL = { 22, 22 },
     ICON_SMALL_MARGIN = { 5, 0 },
     SEEDER = { 200, 60 },
+    WIDTH = { 200, 50 },
     SEGMENT = { 10, 5 },
     SEGMENT_MARGIN = { 0, 0 },
     SEEDER_MARGIN = { 0, 0 },
-    HEADER = { 308, 69 },
+    HEADER = { 308, 89 },
+    HEADER_TOP = { 308, 22 },
+    MARKER = { 100, 50 },
+    MARKER_MARGIN = { 0, -5 },
 }
 
 InteractiveHUD.UV = {
@@ -583,6 +688,12 @@ InteractiveHUD.UV = {
     BUTTON_PLUS = { 260, 0, 65, 65 },
     BUTTON_MIN = { 260, 65, 65, 65 },
     BUTTON_ARROW = { 195, 0, 65, 65 },
+    TOTAL_WORKED_HA = { 585, 0, 65, 65 },
+    WORKED_HA = { 585, 65, 65, 65 },
+    SEED_USAGE = { 650, 65, 65, 65 },
+    BUTTON_CLOSE = { 650, 0, 65, 65 },
+    MARKER = { 715, 0, 130, 65 },
+    MARKER_UP = { 715, 65, 130, 65 },
 }
 
 InteractiveHUD.COLOR = {
@@ -592,4 +703,6 @@ InteractiveHUD.COLOR = {
     ACTIVE = { 0.9910, 0.3865, 0.0100, 1 },
     BORDER = { 0.718, 0.716, 0.715, 0.25 },
     RED = { 0.718, 0, 0, 0.75 },
+    DARK_GLASS = { 0.018, 0.016, 0.015, 0.9 },
+    MEDIUM_GLASS = { 0.018, 0.016, 0.015, 0.8 },
 }

@@ -14,6 +14,10 @@
         <text name="action_setTramlineDistance" text="Fahrgassen Abstand"/>
 
         <!--Info-->
+        <text name="info_mode_header" text="Mode"/>
+        <text name="info_tramline_distance_header" text="Distance"/>
+        <text name="info_line_number_header" text="Track"/>
+
         <text name="info_mode_auto" text="Auto"/>
         <text name="info_mode_semi" text="Semi"/>
         <text name="info_mode_manual" text="Manual"/>
