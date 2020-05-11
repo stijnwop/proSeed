@@ -123,6 +123,8 @@ function InteractiveHUD:update(dt)
         self.textElementTotalWorkedHA:setText(("%.1fha"):format(spec_extension.totalHectares))
         self.textElementWorkedHA:setText(("%.2fha (%.1f ha/h)"):format(spec_extension.sessionHectares, spec_extension.hectarePerHour))
         self.textElementSeedUsage:setText(("%.2fl"):format(spec_extension.seedUsage))
+
+        self:visualizeRidgeMarkerState(self.vehicle)
     end
 end
 
@@ -464,6 +466,13 @@ function InteractiveHUD:createMarker(posX, posY, invert)
     return HUDElement:new(markerIcon)
 end
 
+function InteractiveHUD:setMarkerUVs(marker, uvs, invert)
+    local overlay = marker.overlay
+    overlay:setInvertX(not invert)
+    overlay:setUVs(getNormalizedUVs(uvs))
+    overlay:setInvertX(invert)
+end
+
 function InteractiveHUD:createWorkingAreaSegments(posX, posY)
     local fillWidth, fillHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEGMENT)
     local segmentMarginWidth, segmentMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEGMENT_MARGIN)
@@ -526,6 +535,29 @@ function InteractiveHUD:visualizeTramLine(vehicle)
 
         self.buttonHalfSideShutoff:setDisabled(isActive)
         self.tramLineVisualState = isActive
+    end
+end
+
+function InteractiveHUD:visualizeRidgeMarkerState(vehicle)
+    local spec_ridgeMarker = vehicle.spec_ridgeMarker
+    local state = spec_ridgeMarker.ridgeMarkerState
+
+    if state ~= self.ridgeMarkerVisualState then
+        local isLeft = state == 1
+        local isRight = state == 2
+
+        if isLeft then
+            self:setMarkerUVs(self.markerLeft, InteractiveHUD.UV.MARKER, false)
+            self:setMarkerUVs(self.markerRight, InteractiveHUD.UV.MARKER_UP, true)
+        elseif isRight then
+            self:setMarkerUVs(self.markerLeft, InteractiveHUD.UV.MARKER_UP, false)
+            self:setMarkerUVs(self.markerRight, InteractiveHUD.UV.MARKER, true)
+        else
+            self:setMarkerUVs(self.markerLeft, InteractiveHUD.UV.MARKER_UP, false)
+            self:setMarkerUVs(self.markerRight, InteractiveHUD.UV.MARKER_UP, true)
+        end
+
+        self.ridgeMarkerVisualState = state
     end
 end
 
