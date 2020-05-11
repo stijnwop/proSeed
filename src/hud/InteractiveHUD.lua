@@ -100,6 +100,7 @@ function InteractiveHUD:setVehicle(vehicle)
 
             self:updateTramLineModeState(spec.tramLineMode)
             self:updateTramLineCountingState(spec.tramLineMode)
+            self:updateTramLineDistanceState(spec.tramLineMode)
 
             spec = vehicle.spec_proSeedSowingExtension
             self.buttonSound:setSelected(spec.allowSound)
@@ -244,6 +245,7 @@ function InteractiveHUD:increaseTramLineMode(buttonElement)
 
             self:updateTramLineModeState(tramLineMode)
             self:updateTramLineCountingState(tramLineMode)
+            self:updateTramLineDistanceState(tramLineMode)
         end
     end
 end
@@ -258,6 +260,7 @@ function InteractiveHUD:decreaseTramLineMode(buttonElement)
 
             self:updateTramLineModeState(tramLineMode)
             self:updateTramLineCountingState(tramLineMode)
+            self:updateTramLineDistanceState(tramLineMode)
         end
     end
 end
@@ -581,10 +584,18 @@ function InteractiveHUD:updateTramLineModeState(mode)
     end
 end
 
+---Enable count buttons on semi mode only.
 function InteractiveHUD:updateTramLineCountingState(mode)
-    local isActive = mode == ProSeedTramLines.TRAMLINE_MODE_AUTO
+    local isActive = mode ~= ProSeedTramLines.TRAMLINE_MODE_SEMI
     self.buttonTramLineCountPlus:setDisabled(isActive)
     self.buttonTramLineCountMin:setDisabled(isActive)
+end
+
+---Enable count buttons on semi mode only.
+function InteractiveHUD:updateTramLineDistanceState(mode)
+    local isActive = mode ~= ProSeedTramLines.TRAMLINE_MODE_MANUAL
+    self.buttonTramLinePlus:setDisabled(not isActive)
+    self.buttonTramLineMin:setDisabled(not isActive)
 end
 
 function InteractiveHUD:createTramLineDistanceBox(posX, posY)
