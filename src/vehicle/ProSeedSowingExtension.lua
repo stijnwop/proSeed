@@ -31,6 +31,8 @@ function ProSeedSowingExtension.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onDelete", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onReadStream", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", ProSeedSowingExtension)
+    SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onDeactivate", ProSeedSowingExtension)
     SpecializationUtil.registerEventListener(vehicleType, "onEndWorkAreaProcessing", ProSeedSowingExtension)
@@ -64,6 +66,9 @@ function ProSeedSowingExtension:onLoad(savegame)
     spec.hectareTime = 0
     spec.hectarePerHour = 0
 
+    spec.sessionHectaresSent = 0
+    spec.totalHectaresSent = 0
+
     spec.allowSound = false
     spec.allowFertilizer = false
 
@@ -96,6 +101,8 @@ function ProSeedSowingExtension:onLoad(savegame)
         spec.activeFillUnitIndexEmptySound = nil
         spec.activeFillUnitIndexAlmostEmptySound = nil
     end
+
+    spec.dirtyFlag = self:getNextDirtyFlag()
 end
 
 ---Called on post load.
@@ -140,9 +147,14 @@ end
 
 ---Called on read stream.
 function ProSeedSowingExtension:onReadStream(streamId, connection)
+    local spec = self.spec_proSeedSowingExtension
     local allowSound = streamReadBool(streamId)
     local allowFertilizer = streamReadBool(streamId)
     self:setSowingData(allowSound, allowFertilizer, true)
+    spec.sessionHectares = streamReadFloat32(streamId)
+    spec.totalHectares = streamReadFloat32(streamId)
+    spec.hectareTime = streamReadFloat32(streamId)
+    spec.seedUsage = streamReadFloat32(streamId)
 end
 
 ---Called on write stream.
@@ -150,6 +162,42 @@ function ProSeedSowingExtension:onWriteStream(streamId, connection)
     local spec = self.spec_proSeedSowingExtension
     streamWriteBool(streamId, spec.allowSound)
     streamWriteBool(streamId, spec.allowFertilizer)
+    streamWriteFloat32(streamId, spec.sessionHectares)
+    streamWriteFloat32(streamId, spec.totalHectares)
+    streamWriteFloat32(streamId, spec.hectareTime)
+    streamWriteFloat32(streamId, spec.seedUsage)
+end
+
+---Called on read update stream.
+function ProSeedSowingExtension:onReadUpdateStream(streamId, timestamp, connection)
+    if connection:getIsServer() then
+        local spec = self.spec_proSeedSowingExtension
+
+        if streamReadBool(streamId) then
+            spec.sessionHectares = streamReadFloat32(streamId)
+            spec.totalHectares = streamReadFloat32(streamId)
+            spec.hectareTime = streamReadFloat32(streamId)
+            spec.seedUsage = streamReadFloat32(streamId)
+
+            if spec.hectareTime > 0 then
+                spec.hectarePerHour = spec.sessionHectares / spec.hectareTime
+            end
+        end
+    end
+end
+
+---Called on write update stream.
+function ProSeedSowingExtension:onWriteUpdateStream(streamId, connection, dirtyMask)
+    if not connection:getIsServer() then
+        local spec = self.spec_proSeedSowingExtension
+
+        if streamWriteBool(streamId, bitAND(dirtyMask, spec.dirtyFlag) ~= 0) then
+            streamWriteFloat32(streamId, spec.sessionHectares)
+            streamWriteFloat32(streamId, spec.totalHectares)
+            streamWriteFloat32(streamId, spec.hectareTime)
+            streamWriteFloat32(streamId, spec.seedUsage)
+        end
+    end
 end
 
 ---Called on update.
@@ -313,32 +361,41 @@ function ProSeedSowingExtension:processSowingMachineArea(superFunc, workArea, dt
 end
 
 function ProSeedSowingExtension:onEndWorkAreaProcessing(dt, hasProcessed)
-    local spec = self.spec_proSeedSowingExtension
+    if self.isServer then
+        local spec = self.spec_proSeedSowingExtension
 
-    local workAreaParameters = self.spec_sowingMachine.workAreaParameters
+        local workAreaParameters = self.spec_sowingMachine.workAreaParameters
 
-    if workAreaParameters.lastChangedArea > 0 then
-        local fruitDesc = g_fruitTypeManager:getFruitTypeByIndex(workAreaParameters.seedsFruitType)
-        local lastHa = MathUtil.areaToHa(workAreaParameters.lastChangedArea, g_currentMission:getFruitPixelsToSqm())
-        local usage = fruitDesc.seedUsagePerSqm * lastHa * 10000
-        local ha = MathUtil.areaToHa(workAreaParameters.lastStatsArea, g_currentMission:getFruitPixelsToSqm()) -- 4096px are mapped to 2048m
+        if workAreaParameters.lastChangedArea > 0 then
+            local fruitDesc = g_fruitTypeManager:getFruitTypeByIndex(workAreaParameters.seedsFruitType)
+            local lastHa = MathUtil.areaToHa(workAreaParameters.lastChangedArea, g_currentMission:getFruitPixelsToSqm())
+            local usage = fruitDesc.seedUsagePerSqm * lastHa * 10000
+            local ha = MathUtil.areaToHa(workAreaParameters.lastStatsArea, g_currentMission:getFruitPixelsToSqm()) -- 4096px are mapped to 2048m
 
-        local damage = self:getVehicleDamage()
-        if damage > 0 then
-            usage = usage * (1 + damage * SowingMachine.DAMAGED_USAGE_INCREASE)
-        end
+            local damage = self:getVehicleDamage()
+            if damage > 0 then
+                usage = usage * (1 + damage * SowingMachine.DAMAGED_USAGE_INCREASE)
+            end
 
-        spec.sessionHectares = spec.sessionHectares + ha
-        spec.totalHectares = spec.totalHectares + ha
-        spec.seedUsage = usage
+            spec.sessionHectares = spec.sessionHectares + ha
+            spec.totalHectares = spec.totalHectares + ha
+            spec.seedUsage = usage
 
-        local sownTimeMinutes = dt / (1000 * 60)
-        local sownTimeHours = math.floor(sownTimeMinutes / 60)
+            local sownTimeMinutes = dt / (1000 * 60)
+            local sownTimeHours = math.floor(sownTimeMinutes / 60)
 
-        spec.hectareTime = spec.hectareTime + sownTimeHours
+            spec.hectareTime = spec.hectareTime + sownTimeHours
 
-        if spec.hectareTime > 0 then
-            spec.hectarePerHour = spec.sessionHectares / spec.hectareTime
+            if spec.hectareTime > 0 then
+                spec.hectarePerHour = spec.sessionHectares / spec.hectareTime
+            end
+
+            if math.abs(spec.sessionHectares - spec.sessionHectaresSent) > 0.01
+                or math.abs(spec.totalHectares - spec.totalHectaresSent) > 0.01 then
+                spec.sessionHectaresSent = spec.sessionHectares
+                spec.totalHectaresSent = spec.totalHectares
+                self:raiseDirtyFlags(spec.dirtyFlag)
+            end
         end
     end
 end
