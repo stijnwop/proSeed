@@ -115,10 +115,21 @@ end
 function InteractiveHUD:update(dt)
     if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.base:getIsVisible() then
         local spec = self.vehicle.spec_proSeedTramLines
+        self:visualizeHalfSideShutoff(self.vehicle)
         self:visualizeTramLine(self.vehicle)
-        --TODO: OPTIMIZE
+
         local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
-        self.textElementTramLineCount:setText(("%s / %s"):format(spec.currentLane, lanesForDistance))
+        if lanesForDistance ~= self.lanesForDistanceVisualState
+            or spec.currentLane ~= self.currentLaneVisualState then
+            self.lanesForDistanceVisualState = lanesForDistance
+            self.currentLaneVisualState = spec.currentLane
+            self.textElementTramLineCount:setText(("%s / %s"):format(spec.currentLane, lanesForDistance))
+        end
+
+        if spec.tramLineDistance ~= self.tramLineDistanceVisualState then
+            self.tramLineDistanceVisualState = spec.tramLineDistance
+            self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
+        end
 
         local spec_extension = self.vehicle.spec_proSeedSowingExtension
         self.textElementTotalWorkedHA:setText(("%.1fha"):format(spec_extension.totalHectares))
@@ -195,8 +206,6 @@ function InteractiveHUD:toggleVehicleHalfSideShutoff(buttonElement)
                 end
 
                 self.vehicle:setHalfSideShutoffMode(mode)
-                --buttonElement:setSelected(state)
-                self:visualizeHalfSideShutoff(mode)
             end
         end
     end
@@ -492,25 +501,32 @@ function InteractiveHUD:createWorkingAreaSegments(posX, posY)
     end
 end
 
-function InteractiveHUD:visualizeHalfSideShutoff(mode)
-    local numberOfSegments = #self.segments
-    --Reset
-    for i = 1, numberOfSegments, 1 do
-        local element = self.segments[i]
-        element:setColor(unpack(InteractiveHUD.COLOR.ACTIVE))
-    end
+function InteractiveHUD:visualizeHalfSideShutoff(vehicle)
+    local spec = vehicle.spec_proSeedTramLines
+    local mode = spec.shutoffMode
 
-    if mode ~= ProSeedTramLines.SHUTOFF_MODE_OFF then
-        local shutOffLeft = mode == ProSeedTramLines.SHUTOFF_MODE_LEFT
-        local shutOffRight = mode == ProSeedTramLines.SHUTOFF_MODE_RIGHT
-
-        local startIndex = shutOffLeft and (numberOfSegments * 0.5) + 1 or 1
-        local endIndex = shutOffRight and numberOfSegments * 0.5 or numberOfSegments
-
-        for i = startIndex, endIndex, 1 do
+    if mode ~= self.shutoffVisualState then
+        local numberOfSegments = #self.segments
+        --Reset
+        for i = 1, numberOfSegments, 1 do
             local element = self.segments[i]
-            element:setColor(unpack(InteractiveHUD.COLOR.RED))
+            element:setColor(unpack(InteractiveHUD.COLOR.ACTIVE))
         end
+
+        if mode ~= ProSeedTramLines.SHUTOFF_MODE_OFF then
+            local shutOffLeft = mode == ProSeedTramLines.SHUTOFF_MODE_LEFT
+            local shutOffRight = mode == ProSeedTramLines.SHUTOFF_MODE_RIGHT
+
+            local startIndex = shutOffLeft and (numberOfSegments * 0.5) + 1 or 1
+            local endIndex = shutOffRight and numberOfSegments * 0.5 or numberOfSegments
+
+            for i = startIndex, endIndex, 1 do
+                local element = self.segments[i]
+                element:setColor(unpack(InteractiveHUD.COLOR.RED))
+            end
+        end
+
+        self.shutoffVisualState = mode
     end
 end
 
@@ -520,7 +536,8 @@ function InteractiveHUD:visualizeTramLine(vehicle)
     local isActive = spec.createTramLines
 
     if isActive ~= self.tramLineVisualState then
-        self:visualizeHalfSideShutoff(spec.shutoffMode)
+        self.shutoffVisualState = nil
+        self:visualizeHalfSideShutoff(vehicle)
 
         if isActive then
             local startIndex = #self.segments * 0.5
