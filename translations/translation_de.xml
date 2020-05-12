@@ -12,6 +12,7 @@
         <text name="action_toggleMouseCursor" text="Toggle mouse cursor"/>
         <text name="action_toggleHalfSideShutoff" text="Halbseitige Abschaltung"/>
         <text name="action_setTramlineDistance" text="Fahrgassen Abstand"/>
+        <text name="action_setTramline" text="Fahrgassen"/>
 
         <!--Info-->
         <text name="info_mode_header" text="Mode"/>

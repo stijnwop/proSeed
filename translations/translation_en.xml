@@ -11,7 +11,8 @@
         <!--Actions-->
         <text name="action_toggleMouseCursor" text="Toggle mouse cursor"/>
         <text name="action_toggleHalfSideShutoff" text="Toggle halfside shutoff"/>
-        <text name="action_setTramlineDistance" text="Set trameline distance"/>
+        <text name="action_setTramlineDistance" text="Set tramline distance"/>
+        <text name="action_setTramline" text="Set tramline"/>
 
         <!--Info-->
         <text name="info_mode_header" text="Mode"/>

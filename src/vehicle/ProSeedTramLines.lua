@@ -250,8 +250,9 @@ end
 function ProSeedTramLines:onUpdateTick(dt)
     local spec = self.spec_proSeedTramLines
 
-    local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
     if self.isServer then
+        local lanesForDistance = spec.tramLineDistance / spec.workingWidthRounded
+
         if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_AUTO then
             local rootVehicle = self:getRootVehicle()
             --Get GuidanceSteering information when active.
@@ -275,10 +276,12 @@ function ProSeedTramLines:onUpdateTick(dt)
             end
         end
 
-        --Offset currentLane with 1 cause we don't want to start at the first lane.
-        local lanesPassed = (spec.currentLane + 1) % spec.tramLinePeriodicSequence
-        --We create lines when we can divide.
-        spec.createTramLines = lanesPassed == 0 and lanesForDistance > 1
+        if spec.tramLineMode ~= ProSeedTramLines.TRAMLINE_MODE_MANUAL then
+            --Offset currentLane with 1 cause we don't want to start at the first lane.
+            local lanesPassed = (spec.currentLane + 1) % spec.tramLinePeriodicSequence
+            --We create lines when we can divide.
+            spec.createTramLines = lanesPassed == 0 and lanesForDistance > 1
+        end
 
         if spec.createTramLines then
             --Turnoff half side shutoff when we create tramlines.
@@ -327,6 +330,18 @@ function ProSeedTramLines:setTramLineMode(mode, noEventSend)
     if mode ~= spec.tramLineMode then
         ProSeedModeEvent.sendEvent(self, mode, noEventSend)
         spec.tramLineMode = mode
+
+        if spec.actionEvents ~= nil then
+            local actionEvent = spec.actionEvents[InputAction.PS_SET_LANES_TILL_TRAMLINE]
+            if actionEvent ~= nil then
+                local text = g_i18n:getText("action_setTramlineDistance")
+                if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_MANUAL then
+                    text = g_i18n:getText("action_setTramline")
+                end
+
+                g_inputBinding:setActionEventText(actionEvent.actionEventId, text)
+            end
+        end
     end
 end
 
@@ -516,7 +531,12 @@ function ProSeedTramLines:onRegisterActionEvents(isActiveForInput, isActiveForIn
             local _, actionEventIdSetTramlines = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_LANES_TILL_TRAMLINE, self, ProSeedTramLines.actionEventSetTramlines, false, true, false, true, nil, nil, true)
             local _, actionEventIdToggleHalfSideShutoff = self:addActionEvent(spec.actionEvents, InputAction.PS_SET_HALF_SIDE_SHUTOFF, self, ProSeedTramLines.actionEventToggleHalfSideShutoff, false, true, false, true, nil, nil, true)
 
-            g_inputBinding:setActionEventText(actionEventIdSetTramlines, g_i18n:getText("action_setTramlineDistance"))
+            local text = g_i18n:getText("action_setTramlineDistance")
+            if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_MANUAL then
+                text = g_i18n:getText("action_setTramline")
+            end
+
+            g_inputBinding:setActionEventText(actionEventIdSetTramlines, text)
             g_inputBinding:setActionEventTextVisibility(actionEventIdSetTramlines, true)
             g_inputBinding:setActionEventTextPriority(actionEventIdSetTramlines, GS_PRIO_HIGH)
 
@@ -529,7 +549,13 @@ end
 
 function ProSeedTramLines.actionEventSetTramlines(self, actionName, inputValue, callbackState, isAnalog)
     local spec = self.spec_proSeedTramLines
-    self:setTramLineDistance(spec.tramLineDistanceMultiplier + 1)
+
+    if spec.tramLineMode ~= ProSeedTramLines.TRAMLINE_MODE_MANUAL then
+        self:setTramLineDistance(spec.tramLineDistanceMultiplier + 1)
+    else
+        --Allow manual creation of tramlines.
+        g_client:getServerConnection():sendEvent(ProSeedCreateTramLineEvent:new(self, not spec.createTramLines))
+    end
 end
 
 function ProSeedTramLines.actionEventToggleHalfSideShutoff(self, actionName, inputValue, callbackState, isAnalog)
