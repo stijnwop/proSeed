@@ -134,6 +134,14 @@ function ProSeedTramLines:onLoad(savegame)
         end
     end
 
+    --Set direct planting on vanilla planters (as they all support that IRL e.g. downforce).
+    if self.customEnvironment == nil then
+        local storeItem = g_storeManager:getItemByXMLFilename(self.configFileName)
+        if storeItem.categoryName ~= nil and storeItem.categoryName == "PLANTERS" then
+            self.spec_sowingMachine.useDirectPlanting = true
+        end
+    end
+
     delete(node)
 
     spec.originalAreas = originalAreas
