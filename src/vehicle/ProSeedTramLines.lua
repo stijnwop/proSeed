@@ -46,8 +46,8 @@ ProSeedTramLines.MOD_NAME = g_currentModName
 
 ProSeedTramLines.TRAMLINE_MAX_WIDTH = 72 -- m
 
-ProSeedTramLines.TRAMLINE_SPACING = 1.6 -- m
-ProSeedTramLines.TRAMELINE_WIDTH = 0.6 -- m
+ProSeedTramLines.TRAMLINE_SPACING = 1.4 -- m
+ProSeedTramLines.TRAMELINE_WIDTH = 0.5 -- m
 ProSeedTramLines.TRAMELINE_HEIGHT_OFFSET = 0.3 -- offset to drop our workArea behind the seeder
 
 ProSeedTramLines.SHUTOFF_MODE_OFF = 0
