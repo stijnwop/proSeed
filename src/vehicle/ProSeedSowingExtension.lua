@@ -382,8 +382,7 @@ function ProSeedSowingExtension:onEndWorkAreaProcessing(dt, hasProcessed)
             spec.seedUsage = usage
 
             local sownTimeMinutes = dt / (1000 * 60)
-            local sownTimeHours = math.floor(sownTimeMinutes / 60)
-
+            local sownTimeHours = sownTimeMinutes / 60
             spec.hectareTime = spec.hectareTime + sownTimeHours
 
             if spec.hectareTime > 0 then
