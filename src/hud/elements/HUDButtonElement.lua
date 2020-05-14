@@ -108,7 +108,7 @@ end
 function HUDButtonElement:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
     eventUsed = HUDButtonElement:superClass().mouseEvent(self, posX, posY, isDown, isUp, button)
 
-    if self:isActive() then
+    if self:isActive() and self:getIsVisible() then
         local x, y = self:getPosition()
         local cursorInElement = GuiUtils.checkOverlayOverlap(posX, posY, x, y, self:getWidth(), self:getHeight()) and self:getOverlayState() ~= GuiOverlay.STATE_DISABLED
 
