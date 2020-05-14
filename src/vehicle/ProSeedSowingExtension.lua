@@ -405,7 +405,7 @@ function ProSeedSowingExtension:onRegisterActionEvents(isActiveForInput, isActiv
         local spec = self.spec_proSeedSowingExtension
         self:clearActionEventsTable(spec.actionEvents)
 
-        if isActiveForInput then
+        if isActiveForInputIgnoreSelection then
             --TODO: add if active
             local hud = g_proSeed.hud
             hud:setVehicle(self)
