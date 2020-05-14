@@ -132,11 +132,7 @@ function InteractiveHUD:update(dt)
             self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
         end
 
-        local spec_extension = self.vehicle.spec_proSeedSowingExtension
-        self.textElementTotalWorkedHA:setText(("%.1fha"):format(spec_extension.totalHectares))
-        self.textElementWorkedHA:setText(("%.2fha (%.1f ha/h)"):format(spec_extension.sessionHectares, spec_extension.hectarePerHour))
-        self.textElementSeedUsage:setText(("%.2fl"):format(spec_extension.seedUsage))
-
+        self:visualizeHectareInformation(self.vehicle)
         self:visualizeRidgeMarkerState(self.vehicle)
     end
 end
@@ -586,6 +582,33 @@ function InteractiveHUD:visualizeRidgeMarkerState(vehicle)
     end
 end
 
+function InteractiveHUD:visualizeHectareInformation(vehicle)
+    local spec = vehicle.spec_proSeedSowingExtension
+
+    if self.totalHectaresVisualState ~= spec.totalHectares then
+        self.textElementTotalWorkedHA:setText(("%.1fha"):format(spec.totalHectares))
+        self.totalHectaresVisualState = spec.totalHectares
+    end
+
+    if self.sessionHectaresVisualState ~= spec.sessionHectares then
+        local iconSmallWidth, _ = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL)
+        local workedHaPosX, _ = self.textElementTotalWorkedHA:getPosition()
+
+        --Dimension width.
+        local textWidth = self.textElementTotalWorkedHA.overlay.width
+
+        self.seederWorkedHA:setPosition(workedHaPosX + textWidth)
+        self.textElementWorkedHA:setPosition(workedHaPosX + iconSmallWidth + textWidth)
+
+        self.textElementWorkedHA:setText(("%.2fha (%.1f ha/h)"):format(spec.sessionHectares, spec.hectarePerHour))
+        self.sessionHectaresVisualState = spec.sessionHectares
+    end
+
+    if self.seedUsageVisualState ~= spec.seedUsage then
+        self.textElementSeedUsage:setText(("%.2fl"):format(spec.seedUsage))
+        self.seedUsageVisualState = spec.seedUsage
+    end
+end
 function InteractiveHUD:updateTramLineModeState(mode)
     local isAuto = mode == ProSeedTramLines.TRAMLINE_MODE_AUTO
     local isManual = mode == ProSeedTramLines.TRAMLINE_MODE_MANUAL
