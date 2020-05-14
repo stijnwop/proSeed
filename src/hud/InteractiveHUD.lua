@@ -27,6 +27,7 @@ function InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFi
     instance.i18n = i18n
     instance.modDirectory = modDirectory
     instance.uiFilename = uiFilename
+    instance.atlasRefSize = { 1024, 128 }
 
     instance.speedMeterDisplay = mission.hud.speedMeter
 
@@ -91,7 +92,7 @@ function InteractiveHUD:setVehicle(vehicle)
         if hasVehicle then
             local storeItem = g_storeManager:getItemByXMLFilename(vehicle.configFileName)
             local uvs = isPlanterCategory(storeItem) and InteractiveHUD.UV.PLANTER or InteractiveHUD.UV.SEEDER
-            self.iconSeeder:setUVs(getNormalizedUVs(uvs))
+            self.iconSeeder:setUVs(self:getNormalizedUVs(uvs))
 
             local spec = vehicle.spec_proSeedTramLines
             self.textElementTramLineDistance:setText(("%sm"):format(spec.tramLineDistance))
@@ -159,6 +160,10 @@ function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
             self.base:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
         end
     end
+end
+
+function InteractiveHUD:getNormalizedUVs(uvs)
+    return getNormalizedUVs(uvs, self.atlasRefSize)
 end
 
 function InteractiveHUD:getUIScale()
@@ -351,7 +356,7 @@ function InteractiveHUD:createElements()
     local headerTopOverlay = Overlay:new(self.uiFilename, posX, headerTopY, headerTopWidth, headerTopHeight)
     self.buttonTopHeader = HUDElementBase:new(headerTopOverlay)
     self.buttonTopHeader:setBorders("0dp 0dp 0dp 1dp", InteractiveHUD.COLOR.BORDER)
-    self.buttonTopHeader:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
+    self.buttonTopHeader:setUVs(self:getNormalizedUVs(InteractiveHUD.UV.FILL))
     self.buttonTopHeader:setColor(unpack(InteractiveHUD.COLOR.DARK_GLASS))
 
     self.base:addChild(self.buttonTopHeader)
@@ -415,7 +420,7 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
 
     --boxElement:setColor(0.013, 0.013, 0.013, 0.7)
     boxElement:setColor(unpack(InteractiveHUD.COLOR.MEDIUM_GLASS))
-    boxElement:setUVs(getNormalizedUVs(InteractiveHUD.UV.FILL))
+    boxElement:setUVs(self:getNormalizedUVs(InteractiveHUD.UV.FILL))
     boxElement:setVisible(true)
     boxElement:setBorders("1dp 1dp 1dp 4dp", InteractiveHUD.COLOR.BORDER)
 
@@ -425,7 +430,7 @@ end
 function InteractiveHUD:createIcon(imagePath, baseX, baseY, width, height, uvs)
     local iconOverlay = Overlay:new(imagePath, baseX, baseY, width, height)
     iconOverlay:setColor(unpack(InteractiveHUD.COLOR.INACTIVE))
-    iconOverlay:setUVs(getNormalizedUVs(uvs))
+    iconOverlay:setUVs(self:getNormalizedUVs(uvs))
     iconOverlay:setIsVisible(true)
 
     return iconOverlay
@@ -481,7 +486,7 @@ end
 function InteractiveHUD:setMarkerUVs(marker, uvs, invert)
     local overlay = marker.overlay
     overlay:setInvertX(not invert)
-    overlay:setUVs(getNormalizedUVs(uvs))
+    overlay:setUVs(self:getNormalizedUVs(uvs))
     overlay:setInvertX(invert)
 end
 
