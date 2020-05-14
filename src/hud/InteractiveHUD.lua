@@ -32,13 +32,14 @@ function InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFi
     instance.speedMeterDisplay = mission.hud.speedMeter
 
     instance.vehicle = nil
+    instance.hudIsExpanded = true
 
     return instance
 end
 
 function InteractiveHUD:delete()
-    if self.base ~= nil then
-        self.base:delete()
+    if self.main ~= nil then
+        self.main:delete()
     end
 end
 
@@ -86,7 +87,7 @@ end
 
 function InteractiveHUD:setVehicle(vehicle)
     self.vehicle = vehicle
-    if self.base ~= nil then
+    if self.main ~= nil then
         local hasVehicle = vehicle ~= nil
 
         if hasVehicle then
@@ -108,13 +109,13 @@ function InteractiveHUD:setVehicle(vehicle)
             self.buttonFertilizer:setSelected(spec.allowFertilizer)
         end
 
-        self.base:setVisible(vehicle ~= nil)
+        self.main:setVisible(vehicle ~= nil)
     end
 end
 
 ---Called on mouse event.
 function InteractiveHUD:update(dt)
-    if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.base:getIsVisible() then
+    if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.main:getIsVisible() then
         local spec = self.vehicle.spec_proSeedTramLines
         self:visualizeHalfSideShutoff(self.vehicle)
         self:visualizeTramLine(self.vehicle)
@@ -137,23 +138,33 @@ function InteractiveHUD:update(dt)
     end
 end
 
----Called on mouse event.
-function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
-    if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.inputBinding:getShowMouseCursor() then
-
-        local eventUsed = false
-        for _, child in ipairs(self.base.children) do
+function InteractiveHUD:callMouseEvent(posX, posY, isDown, isUp, button, element, eventUsed)
+    if element:getVisible() then
+        for _, child in ipairs(element.children) do
             if child.mouseEvent ~= nil then
                 eventUsed = child:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+            end
+
+            if not eventUsed then
+                eventUsed = self:callMouseEvent(posX, posY, isDown, isUp, button, child, eventUsed)
             end
 
             if eventUsed then
                 break
             end
         end
+    end
+
+    return eventUsed
+end
+
+---Called on mouse event.
+function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
+    if self.vehicle ~= nil and not self.gui:getIsGuiVisible() and self.inputBinding:getShowMouseCursor() then
+        local eventUsed = self:callMouseEvent(posX, posY, isDown, isUp, button, self.main, false)
 
         if not eventUsed then
-            self.base:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+            self.main:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
         end
     end
 end
@@ -218,6 +229,24 @@ function InteractiveHUD:toggleVehiclePreMarkersState(buttonElement)
             local state = self.vehicle:togglePreMarkersState()
             buttonElement:setSelected(state)
         end
+    end
+end
+
+function InteractiveHUD:resetVehicleHectareSession(buttonElement)
+    if self.vehicle ~= nil then
+        if self.vehicle.resetVehicleHectareSession ~= nil then
+            self.vehicle:resetVehicleHectareSession()
+        end
+    end
+end
+
+function InteractiveHUD:toggleHUDSize(buttonElement)
+    if self.vehicle ~= nil then
+        self.hudIsExpanded = not self.hudIsExpanded
+        self.base:setVisible(self.hudIsExpanded)
+
+        local uvs = self.hudIsExpanded and InteractiveHUD.UV.BUTTON_MINIMIZE or InteractiveHUD.UV.BUTTON_EXPAND
+        buttonElement:setUVs(self:getNormalizedUVs(uvs))
     end
 end
 
@@ -303,9 +332,11 @@ function InteractiveHUD:createElements()
 
     local iconWidth, iconHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON)
 
-    local baseBox = self:createBaseBox(self.uiFilename, rightX - marginWidth, bottomY - marginHeight)
-    self.base = baseBox
-    self.speedMeterDisplay:addChild(baseBox)
+    self.main = self:createMainBox(nil, rightX - marginWidth, bottomY - marginHeight)
+    self.speedMeterDisplay:addChild(self.main)
+
+    self.base = self:createBaseBox(self.uiFilename, rightX - marginWidth, bottomY - marginHeight)
+    self.main:addChild(self.base)
 
     local posX, posY = self.base:getPosition()
     posY = posY + paddingHeight
@@ -351,20 +382,20 @@ function InteractiveHUD:createElements()
 
     local headerTopOverlay = Overlay:new(self.uiFilename, posX, headerTopY, headerTopWidth, headerTopHeight)
     self.buttonTopHeader = HUDElementBase:new(headerTopOverlay)
-    self.buttonTopHeader:setBorders("0dp 0dp 0dp 1dp", InteractiveHUD.COLOR.BORDER)
+    self.buttonTopHeader:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.buttonTopHeader:setUVs(self:getNormalizedUVs(InteractiveHUD.UV.FILL))
     self.buttonTopHeader:setColor(unpack(InteractiveHUD.COLOR.DARK_GLASS))
 
-    self.base:addChild(self.buttonTopHeader)
+    self.main:addChild(self.buttonTopHeader)
 
     local iconSmallWidth, iconSmallHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL)
-    local iconSmallMarginWidth, iconSmallMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL_MARGIN)
+    local iconSmallMarginWidth, _ = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL_MARGIN)
 
-    local iconClose = self:createIcon(self.uiFilename, posX + boxWidth - iconSmallWidth, headerTopY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.BUTTON_CLOSE)
+    local iconClose = self:createIcon(self.uiFilename, posX + boxWidth - iconSmallWidth, headerTopY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.BUTTON_MINIMIZE)
     self.buttonClose = HUDButtonElement:new(iconClose)
-    --self.buttonClose:setButtonCallback(self, self.increaseTramLineMode)
+    self.buttonClose:setButtonCallback(self, self.toggleHUDSize)
     self.buttonClose:setBorders("1dp 0dp 0dp 0dp", InteractiveHUD.COLOR.BORDER)
-    self.base:addChild(self.buttonClose)
+    self.buttonTopHeader:addChild(self.buttonClose)
 
     --HA counter.
     local textY = headerTopY
@@ -385,21 +416,31 @@ function InteractiveHUD:createElements()
     self.textElementTotalWorkedHA = HUDTextElement:new(seedUsagePosX + iconSmallWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTotalWorkedHA:setText("0ha")
 
-    local workedHaPosX, workedHaPosY = self.textElementTotalWorkedHA:getPosition()
-    workedHaPosX = workedHaPosX + iconSmallMarginWidth
+    local totalWorkedHaPosX, _ = self.textElementTotalWorkedHA:getPosition()
+    totalWorkedHaPosX = totalWorkedHaPosX + iconSmallMarginWidth
 
-    self.iconSeederWorkedHA = self:createIcon(self.uiFilename, workedHaPosX + iconSmallWidth + iconSmallMarginWidth, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.WORKED_HA)
+    self.iconSeederWorkedHA = self:createIcon(self.uiFilename, totalWorkedHaPosX + iconSmallWidth + iconSmallMarginWidth, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.WORKED_HA)
     self.seederWorkedHA = HUDElement:new(self.iconSeederWorkedHA)
 
-    self.textElementWorkedHA = HUDTextElement:new(workedHaPosX + iconSmallWidth + iconSmallWidth + iconSmallMarginWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
+    self.textElementWorkedHA = HUDTextElement:new(totalWorkedHaPosX + iconSmallWidth + iconSmallWidth + iconSmallMarginWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementWorkedHA:setText("0ha (0.0 ha/h)")
 
-    self.base:addChild(self.seederTotalWorkedHA)
-    self.base:addChild(self.seederWorkedHA)
-    self.base:addChild(self.seederSeedUsage)
-    self.base:addChild(self.textElementTotalWorkedHA)
-    self.base:addChild(self.textElementWorkedHA)
-    self.base:addChild(self.textElementSeedUsage)
+    local workedHaPosX, _ = self.textElementWorkedHA:getPosition()
+    local textWidth = self.textElementWorkedHA.overlay.width
+
+    workedHaPosX = workedHaPosX + textWidth
+
+    self.iconSeederResetWorkedHA = self:createIcon(self.uiFilename, workedHaPosX + iconSmallWidth, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.BUTTON_RESET)
+    self.seederResetWorkedHA = HUDButtonElement:new(self.iconSeederResetWorkedHA)
+    self.seederResetWorkedHA:setButtonCallback(self, self.resetVehicleHectareSession)
+
+    self.buttonTopHeader:addChild(self.seederTotalWorkedHA)
+    self.buttonTopHeader:addChild(self.seederWorkedHA)
+    self.buttonTopHeader:addChild(self.seederSeedUsage)
+    self.buttonTopHeader:addChild(self.textElementTotalWorkedHA)
+    self.buttonTopHeader:addChild(self.textElementWorkedHA)
+    self.buttonTopHeader:addChild(self.textElementSeedUsage)
+    self.buttonTopHeader:addChild(self.seederResetWorkedHA)
 
     local settingsY = posY + (boxHeight - headerHeight) + paddingHeight
     self:createTramLineDistanceBox(posX + (headerWidth * 0.5), settingsY)
@@ -407,18 +448,29 @@ function InteractiveHUD:createElements()
     self:createTramLineModeBox(posX, settingsY)
 end
 
---- Create the box with the HUD icons.
-function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
+---Create main movable box.
+function InteractiveHUD:createMainBox(hudAtlasPath, x, y)
     local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
     local posX = x - boxWidth
     local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDMovableElement:new(boxOverlay)
 
-    --boxElement:setColor(0.013, 0.013, 0.013, 0.7)
+    boxElement:setVisible(true)
+
+    return boxElement
+end
+
+---Create the box with the HUD icons.
+function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
+    local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
+    local posX = x - boxWidth
+    local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
+    local boxElement = HUDElementBase:new(boxOverlay)
+
     boxElement:setColor(unpack(InteractiveHUD.COLOR.MEDIUM_GLASS))
     boxElement:setUVs(self:getNormalizedUVs(InteractiveHUD.UV.FILL))
     boxElement:setVisible(true)
-    boxElement:setBorders("1dp 1dp 1dp 4dp", InteractiveHUD.COLOR.BORDER)
+    boxElement:setBorders("1dp 0dp 1dp 4dp", InteractiveHUD.COLOR.BORDER)
 
     return boxElement
 end
@@ -592,16 +644,21 @@ function InteractiveHUD:visualizeHectareInformation(vehicle)
 
     if self.sessionHectaresVisualState ~= spec.sessionHectares then
         local iconSmallWidth, _ = self:scalePixelToScreenVector(InteractiveHUD.SIZE.ICON_SMALL)
-        local workedHaPosX, _ = self.textElementTotalWorkedHA:getPosition()
+        local totalWorkedHaPosX, _ = self.textElementTotalWorkedHA:getPosition()
 
         --Dimension width.
         local textWidth = self.textElementTotalWorkedHA.overlay.width
 
-        self.seederWorkedHA:setPosition(workedHaPosX + textWidth)
-        self.textElementWorkedHA:setPosition(workedHaPosX + iconSmallWidth + textWidth)
+        self.seederWorkedHA:setPosition(totalWorkedHaPosX + textWidth)
+        self.textElementWorkedHA:setPosition(totalWorkedHaPosX + iconSmallWidth + textWidth)
 
         self.textElementWorkedHA:setText(("%.2fha (%.1f ha/h)"):format(spec.sessionHectares, spec.hectarePerHour))
         self.sessionHectaresVisualState = spec.sessionHectares
+
+        --Dimension width.
+        local workedHaPosX, _ = self.textElementWorkedHA:getPosition()
+        textWidth = self.textElementWorkedHA.overlay.width
+        self.seederResetWorkedHA:setPosition(workedHaPosX + textWidth)
     end
 
     if self.seedUsageVisualState ~= spec.seedUsage then
@@ -609,6 +666,7 @@ function InteractiveHUD:visualizeHectareInformation(vehicle)
         self.seedUsageVisualState = spec.seedUsage
     end
 end
+
 function InteractiveHUD:updateTramLineModeState(mode)
     local isAuto = mode == ProSeedTramLines.TRAMLINE_MODE_AUTO
     local isManual = mode == ProSeedTramLines.TRAMLINE_MODE_MANUAL
@@ -782,6 +840,9 @@ InteractiveHUD.UV = {
     BUTTON_CLOSE = { 650, 0, 65, 65 },
     MARKER = { 715, 0, 130, 65 },
     MARKER_UP = { 715, 65, 130, 65 },
+    BUTTON_EXPAND = { 845, 0, 65, 65 },
+    BUTTON_MINIMIZE = { 845, 65, 65, 65 },
+    BUTTON_RESET = { 130, 0, 65, 65 },
 }
 
 InteractiveHUD.COLOR = {
