@@ -14,6 +14,7 @@ source(Utils.getFilename("src/events/ProSeedHalfSideShutoffEvent.lua", directory
 source(Utils.getFilename("src/events/ProSeedTramLineDataEvent.lua", directory))
 source(Utils.getFilename("src/events/ProSeedDataEvent.lua", directory))
 source(Utils.getFilename("src/events/ProSeedCreateTramLineEvent.lua", directory))
+source(Utils.getFilename("src/events/ProSeedResetHectareSessionEvent.lua", directory))
 
 source(Utils.getFilename("src/hud/elements/HUDElementBase.lua", directory))
 source(Utils.getFilename("src/hud/elements/HUDMovableElement.lua", directory))

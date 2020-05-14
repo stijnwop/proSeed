@@ -18,6 +18,7 @@ function ProSeedSowingExtension.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", ProSeedSowingExtension.toggleSowingSounds)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", ProSeedSowingExtension.toggleSowingFertilizer)
     SpecializationUtil.registerFunction(vehicleType, "setSowingData", ProSeedSowingExtension.setSowingData)
+    SpecializationUtil.registerFunction(vehicleType, "resetVehicleHectareSession", ProSeedSowingExtension.resetVehicleHectareSession)
 end
 
 function ProSeedSowingExtension.registerOverwrittenFunctions(vehicleType)
@@ -344,6 +345,13 @@ function ProSeedSowingExtension:setSowingData(allowSound, allowFertilizer, noEve
     ProSeedDataEvent.sendEvent(self, allowSound, allowFertilizer, noEventSend)
     spec.allowSound = allowSound
     spec.allowFertilizer = allowFertilizer
+end
+
+---Reset session hectare counter.
+function ProSeedSowingExtension:resetVehicleHectareSession(noEventSend)
+    local spec = self.spec_proSeedSowingExtension
+    ProSeedResetHectareSessionEvent.sendEvent(self, noEventSend)
+    spec.sessionHectares = 0
 end
 
 ---Overwrite sowing area processing to block fertilizer when set.
