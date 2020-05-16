@@ -285,10 +285,9 @@ function ProSeedTramLines:onUpdateTick(dt)
         end
 
         if spec.tramLineMode ~= ProSeedTramLines.TRAMLINE_MODE_MANUAL then
-            --Offset currentLane with 1 cause we don't want to start at the first lane.
-            local lanesPassed = (spec.currentLane + 1) % spec.tramLinePeriodicSequence
+            local laneForTramLine = math.floor((lanesForDistance / 2) + 0.5)
             --We create lines when we can divide.
-            spec.createTramLines = lanesPassed == 0 and lanesForDistance > 1
+            spec.createTramLines = spec.currentLane == laneForTramLine
         end
 
         if spec.createTramLines then
