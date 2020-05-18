@@ -479,6 +479,10 @@ function ProSeedTramLines:setCurrentLane(value, force)
             end
         end
     end
+
+    if self.isClient and not self.isServer then
+        g_client:getServerConnection():sendEvent(ProSeedCreateTramLineEvent:new(self, spec.createTramLines, spec.currentLane))
+    end
 end
 
 ---Determine the area width of the vehicle.
@@ -561,7 +565,7 @@ function ProSeedTramLines.actionEventSetTramlines(self, actionName, inputValue, 
         self:setTramLineDistance(spec.tramLineDistanceMultiplier + 1)
     else
         --Allow manual creation of tramlines.
-        g_client:getServerConnection():sendEvent(ProSeedCreateTramLineEvent:new(self, not spec.createTramLines))
+        g_client:getServerConnection():sendEvent(ProSeedCreateTramLineEvent:new(self, not spec.createTramLines, spec.currentLane))
     end
 end
 

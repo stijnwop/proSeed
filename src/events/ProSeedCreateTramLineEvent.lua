@@ -19,11 +19,12 @@ function ProSeedCreateTramLineEvent:emptyNew()
     return self
 end
 
-function ProSeedCreateTramLineEvent:new(object, createTramLines)
+function ProSeedCreateTramLineEvent:new(object, createTramLines, currentLane)
     local self = ProSeedCreateTramLineEvent:emptyNew()
 
     self.object = object
     self.createTramLines = createTramLines
+    self.currentLane = currentLane
 
     return self
 end
@@ -31,12 +32,15 @@ end
 function ProSeedCreateTramLineEvent:readStream(streamId, connection)
     self.object = NetworkUtil.readNodeObject(streamId)
     self.createTramLines = streamReadBool(streamId)
+    self.currentLane = streamReadInt8(streamId)
+
     self:run(connection)
 end
 
 function ProSeedCreateTramLineEvent:writeStream(streamId, connection)
     NetworkUtil.writeNodeObject(streamId, self.object)
     streamWriteBool(streamId, self.createTramLines)
+    streamWriteInt8(streamId, self.currentLane)
 end
 
 function ProSeedCreateTramLineEvent:run(connection)
@@ -46,4 +50,5 @@ function ProSeedCreateTramLineEvent:run(connection)
 
     local spec = self.object.spec_proSeedTramLines
     spec.createTramLines = self.createTramLines
+    spec.currentLane = self.currentLane
 end
