@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>Ziuta</translationContributors>
+
+    <texts>
+        <!--Inputs-->
+        <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: Przełączanie siewu na połowie strony"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Ustaw odległość ścieżek technologicznych"/>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Pokaż/Ukryj kursor myszki"/>
+
+        <!--Actions-->
+        <text name="action_toggleMouseCursor" text="Pokaż/Ukryj kursor myszki"/>
+        <text name="action_toggleHalfSideShutoff" text="Przełączanie siewu na połowie strony"/>
+        <text name="action_setTramlineDistance" text="Ustaw odległość ścieżek technologicznych"/>
+        <text name="action_setTramline" text="Ustaw ścieżki technologiczne"/>
+
+        <!--Info-->
+        <text name="info_mode_header" text="Tryb"/>
+        <text name="info_tramline_distance_header" text="Odległość"/>
+        <text name="info_line_number_header" text="Ścieżka"/>
+
+        <text name="info_mode_auto" text="Automat"/>
+        <text name="info_mode_semi" text="Półautomat"/>
+        <text name="info_mode_manual" text="Ręcznie"/>
+
+        <!--Warnings-->
+        <text name="warning_gpsNotActive" text="GPS nie jest aktywny w tym pojeździe!"/>
+    </texts>
+</l10n>

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-    <translationContributors>Wopster</translationContributors>
+    <translationContributors>Wopster $nickers</translationContributors>
 
     <texts>
         <!--Inputs-->
         <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: Halbseitige Abschaltung"/>
-        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Lines till tramline"/>
-        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Toggle mouse cursor"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Reihen bis zur Fahrgasse"/>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Mauszeiger umschalten"/>
 
         <!--Actions-->
-        <text name="action_toggleMouseCursor" text="Toggle mouse cursor"/>
+        <text name="action_toggleMouseCursor" text="Mauszeiger umschalten"/>
         <text name="action_toggleHalfSideShutoff" text="Halbseitige Abschaltung"/>
         <text name="action_setTramlineDistance" text="Fahrgassen Abstand"/>
         <text name="action_setTramline" text="Fahrgassen"/>
 
         <!--Info-->
-        <text name="info_mode_header" text="Mode"/>
-        <text name="info_tramline_distance_header" text="Distance"/>
-        <text name="info_line_number_header" text="Track"/>
+        <text name="info_mode_header" text="Modus"/>
+        <text name="info_tramline_distance_header" text="Abstand"/>
+        <text name="info_line_number_header" text="Spur"/>
 
         <text name="info_mode_auto" text="Auto"/>
         <text name="info_mode_semi" text="Semi"/>
         <text name="info_mode_manual" text="Manual"/>
 
         <!--Warnings-->
-        <text name="warning_gpsNotActive" text="GPS is not active on this vehicle!"/>
+        <text name="warning_gpsNotActive" text="GPS ist in diesem Fahrzeug nicht aktiv!"/>
     </texts>
 </l10n>
