@@ -21,7 +21,7 @@
 
         <text name="info_mode_auto" text="Auto"/>
         <text name="info_mode_semi" text="Semi"/>
-        <text name="info_mode_manual" text="Manual"/>
+        <text name="info_mode_manual" text="Manuell"/>
 
         <!--Warnings-->
         <text name="warning_gpsNotActive" text="GPS ist in diesem Fahrzeug nicht aktiv!"/>
