@@ -7,7 +7,9 @@
     </title>
     <description>
         <en>
-            <![CDATA[ProSeed mod]]>
+            <![CDATA[ProSeed adds a bundle of functionality to enhance sowing machines in the game.
+With ProSeed you're able to create tramlines (with optional pre-emergence marking), halfside shutoff for creating the perfect tramlines, fertilizer shutoff and active feedback with sounds.
+]]>
         </en>
     </description>
     <iconFilename>icon.png</iconFilename>
