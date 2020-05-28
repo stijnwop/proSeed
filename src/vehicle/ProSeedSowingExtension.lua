@@ -84,7 +84,7 @@ function ProSeedSowingExtension:onLoad(savegame)
 
         spec.samples = {}
         local function loadSample(name)
-            local sample = g_soundManager:loadSampleFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+            local sample = g_soundManager:loadSample2DFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
             if sample == nil then
                 sample = g_soundManager:cloneSample(g_proSeed.samples[name], linkNode, self)
             end
@@ -205,11 +205,24 @@ end
 function ProSeedSowingExtension:onUpdate(dt)
     local spec = self.spec_proSeedSowingExtension
 
-    if self.isClient then
-        if self:getIsActiveForInput(true) and self:getIsTurnedOn() and spec.allowSound then
+    if self.isClient and spec.allowSound and self:getIsActiveForInput(true) then
+        local specTramLines = self.spec_proSeedTramLines
+        if specTramLines ~= nil then
+            if not spec.playedTramline then
+                if specTramLines.createTramLines then
+                    g_soundManager:playSample(spec.samples.tramline, 1)
+                    spec.playedTramline = true
+                end
+            else
+                if not specTramLines.createTramLines then
+                    spec.playedTramline = false
+                end
+            end
+        end
+
+        if self:getIsTurnedOn() then
             local isLowered = self:getIsImplementChainLowered()
 
-            ---TODO: cleanup with function playing.
             if not spec.playedLowered then
                 if isLowered then
                     g_soundManager:playSample(spec.samples.lowered, 1)
@@ -228,20 +241,6 @@ function ProSeedSowingExtension:onUpdate(dt)
             else
                 if g_soundManager:getIsSamplePlaying(spec.samples.highered) then
                     g_soundManager:stopSample(spec.samples.highered)
-                end
-            end
-
-            local specTramLines = self.spec_proSeedTramLines
-            if specTramLines ~= nil then
-                if not spec.playedTramline then
-                    if specTramLines.createTramLines then
-                        g_soundManager:playSample(spec.samples.tramline, 1)
-                        spec.playedTramline = true
-                    end
-                else
-                    if not specTramLines.createTramLines then
-                        spec.playedTramline = false
-                    end
                 end
             end
 

@@ -44,6 +44,16 @@ function ProSeed:onMissionLoaded()
     self.hud:load()
 end
 
+---Called when mission is loaded.
+function ProSeed:onMissionLoadFromSavegame(xmlFile)
+    self.hud:loadFromXMLFile(xmlFile)
+end
+
+---Called when mission is being saved with our own xml file.
+function ProSeed:onMissionSaveToSavegame(xmlFile)
+    self.hud:saveToXMLFile(xmlFile)
+end
+
 function ProSeed:mouseEvent(posX, posY, isDown, isUp, button)
     self.hud:mouseEvent(posX, posY, isDown, isUp, button)
 end
@@ -59,10 +69,10 @@ function ProSeed:loadSamples()
     if xmlFile ~= nil then
         local soundsNode = getRootNode()
 
-        self.samples.lowered = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "lowered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.highered = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "highered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.empty = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "empty", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.tramline = self.soundManager:loadSampleFromXML(xmlFile, "vehicle.sounds", "tramline", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.lowered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "lowered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.highered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "highered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.empty = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "empty", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.tramline = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "tramline", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
 
         delete(xmlFile)
     end
