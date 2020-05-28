@@ -50,6 +50,34 @@ function InteractiveHUD:load()
     self:setVehicle(nil)
 end
 
+function InteractiveHUD:loadFromXMLFile(xmlFile)
+    local baseKey = "proseed.hud"
+    local element = self.main
+    if element.loadFromXMLFile ~= nil then
+        element:loadFromXMLFile(xmlFile, ("%s.element(%d)"):format(baseKey, 0))
+    end
+
+    for i, child in ipairs(self.main.children) do
+        if child.loadFromXMLFile ~= nil then
+            child:loadFromXMLFile(xmlFile, ("%s.element(%d)"):format(baseKey, i))
+        end
+    end
+end
+
+function InteractiveHUD:saveToXMLFile(xmlFile)
+    local baseKey = "proseed.hud"
+    local element = self.main
+    if element.saveToXMLFile ~= nil then
+        element:saveToXMLFile(xmlFile, ("%s.element(%d)"):format(baseKey, 0))
+    end
+
+    for i, child in ipairs(self.main.children) do
+        if child.saveToXMLFile ~= nil then
+            child:saveToXMLFile(xmlFile, ("%s.element(%d)"):format(baseKey, i))
+        end
+    end
+end
+
 ---Toggle mouse cursor mode and go into a context to block any other input.
 function InteractiveHUD:toggleMouseCursor()
     local isActive = not self.inputBinding:getShowMouseCursor()
@@ -613,6 +641,15 @@ end
 
 function InteractiveHUD:visualizeRidgeMarkerState(vehicle)
     local spec_ridgeMarker = vehicle.spec_ridgeMarker
+
+    if not (spec_ridgeMarker.numRigdeMarkers > 0) then
+        local attacherVehicle = vehicle:getAttacherVehicle()
+
+        if attacherVehicle ~= nil and attacherVehicle.spec_ridgeMarker ~= nil then
+            spec_ridgeMarker = attacherVehicle.spec_ridgeMarker
+        end
+    end
+
     local state = spec_ridgeMarker.ridgeMarkerState
 
     if state ~= self.ridgeMarkerVisualState then
