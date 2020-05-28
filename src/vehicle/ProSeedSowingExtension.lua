@@ -207,11 +207,7 @@ function ProSeedSowingExtension:onUpdate(dt)
 
     if self.isClient then
         if self:getIsActiveForInput(true) and self:getIsTurnedOn() and spec.allowSound then
-            local isLowered = self:getIsLowered()
-            if not self:getAllowsLowering() then
-                local attacherVehicle = self:getAttacherVehicle()
-                isLowered = attacherVehicle:getIsLowered()
-            end
+            local isLowered = self:getIsImplementChainLowered()
 
             ---TODO: cleanup with function playing.
             if not spec.playedLowered then

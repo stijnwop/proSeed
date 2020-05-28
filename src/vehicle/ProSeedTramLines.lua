@@ -269,11 +269,7 @@ function ProSeedTramLines:onUpdateTick(dt)
                 self:setCurrentLane((math.abs(data.currentLane) % lanesForDistance) + 1, true)
             end
         elseif spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_SEMI then
-            local isLowered = self:getIsLowered()
-            if not self:getAllowsLowering() then
-                local attacherVehicle = self:getAttacherVehicle()
-                isLowered = attacherVehicle:getIsLowered()
-            end
+            local isLowered = self:getIsImplementChainLowered()
 
             if spec.isLowered ~= isLowered then
                 if isLowered then
