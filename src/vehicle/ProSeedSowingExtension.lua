@@ -99,6 +99,8 @@ function ProSeedSowingExtension:onLoad(savegame)
 
         spec.playedLowered = false
         spec.playedTramline = false
+        spec.playedTramlineTimer = 0
+        spec.playedTramlineTimerInterval = 5000 --ms
         spec.activeFillUnitIndexEmptySound = nil
         spec.activeFillUnitIndexAlmostEmptySound = nil
     end
@@ -212,8 +214,18 @@ function ProSeedSowingExtension:onUpdate(dt)
                 if specTramLines.createTramLines then
                     g_soundManager:playSample(spec.samples.tramline, 1)
                     spec.playedTramline = true
+                    spec.playedTramlineTimer = 0
                 end
             else
+                if specTramLines.createTramLines then
+                    spec.playedTramlineTimer = spec.playedTramlineTimer + dt
+
+                    if spec.playedTramlineTimer > spec.playedTramlineTimerInterval then
+                        spec.playedTramlineTimer = 0
+                        g_soundManager:playSample(spec.samples.tramline, 1)
+                    end
+                end
+
                 if not specTramLines.createTramLines then
                     spec.playedTramline = false
                 end
