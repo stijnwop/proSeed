@@ -44,6 +44,37 @@ local function loadedMission(mission, node)
     proSeed:onMissionLoaded(mission)
 end
 
+---Load settings from xml file.
+local function loadedItems(mission)
+    if not isEnabled() then
+        return
+    end
+
+    if mission:getIsServer() then
+        if mission.missionInfo.savegameDirectory ~= nil and fileExists(mission.missionInfo.savegameDirectory .. "/proSeed.xml") then
+            local xmlFile = loadXMLFile("ProSeedXML", mission.missionInfo.savegameDirectory .. "/proSeed.xml")
+            if xmlFile ~= nil then
+                proSeed:onMissionLoadFromSavegame(xmlFile)
+                delete(xmlFile)
+            end
+        end
+    end
+end
+
+---Save settings to xml file.
+local function saveToXMLFile(missionInfo)
+    if not isEnabled() then return end
+
+    if missionInfo.isValid then
+        local xmlFile = createXMLFile("ProSeedXML", missionInfo.savegameDirectory .. "/proSeed.xml", "proSeed")
+        if xmlFile ~= nil then
+            proSeed:onMissionSaveToSavegame(xmlFile)
+
+            saveXMLFile(xmlFile)
+            delete(xmlFile)
+        end
+    end
+end
 
 ---Load the mod.
 local function load(mission)
@@ -79,6 +110,10 @@ local function init()
 
     Mission00.load = Utils.prependedFunction(Mission00.load, load)
     Mission00.loadMission00Finished = Utils.appendedFunction(Mission00.loadMission00Finished, loadedMission)
+    Mission00.loadItemsFinished = Utils.appendedFunction(Mission00.loadItemsFinished, loadedItems)
+
+    FSCareerMissionInfo.saveToXMLFile = Utils.appendedFunction(FSCareerMissionInfo.saveToXMLFile, saveToXMLFile)
+
     VehicleTypeManager.validateVehicleTypes = Utils.prependedFunction(VehicleTypeManager.validateVehicleTypes, validateVehicleTypes)
 end
 
