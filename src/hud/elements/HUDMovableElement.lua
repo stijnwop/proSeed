@@ -21,6 +21,27 @@ function HUDMovableElement:new(overlay)
     return instance
 end
 
+function HUDMovableElement:loadFromXMLFile(xmlFile, key)
+    local x = getXMLFloat(xmlFile, key .. ".position#x")
+    local y = getXMLFloat(xmlFile, key .. ".position#y")
+
+    if x ~= nil and y ~= nil then
+        local height = self:getHeight()
+        local _, parentY = self.parent:getPosition()
+        local _, marginHeight = self.parent:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX_MARGIN)
+
+        --Do height correction based on the parent position.
+        self:setPosition(x, y + (height * 0.5) + parentY - marginHeight)
+    end
+end
+function HUDMovableElement:saveToXMLFile(xmlFile, key)
+    local x, y = self:getPosition()
+    if x ~= nil and y ~= nil then
+        setXMLFloat(xmlFile, key .. ".position#x", x)
+        setXMLFloat(xmlFile, key .. ".position#y", y)
+    end
+end
+
 ---Called on mouse event.
 function HUDMovableElement:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
     eventUsed = HUDMovableElement:superClass().mouseEvent(self, posX, posY, isDown, isUp, button)
@@ -64,7 +85,22 @@ function HUDMovableElement:setPositionByMousePosition(mouseX, mouseY)
     if self.positionIsDirty then
         local moveX, moveY = mouseX - self.currentMouseX, mouseY - self.currentMouseY
         local x, y = self:getPosition()
-        self:setPosition(x + moveX, y + moveY)
+        local boundaryMin = 0
+        local boundaryMax = 1
+        local nexX = MathUtil.clamp(x + moveX, boundaryMin, boundaryMax)
+        local newY = MathUtil.clamp(y + moveY, boundaryMin, boundaryMax)
+
+        local width = self:getWidth()
+        if nexX + width > boundaryMax then
+            nexX = boundaryMax - width
+        end
+
+        local height = self:getHeight()
+        if newY + height > boundaryMax then
+            newY = boundaryMax - height
+        end
+
+        self:setPosition(nexX, newY)
         self.currentMouseX = mouseX
         self.currentMouseY = mouseY
     end
