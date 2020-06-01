@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>Farmer1602</translationContributors>
+
+    <texts>
+        <!--Inputs-->
+        <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: Basculer la coupure à demi-côté"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Définir la distance entre les lignes de passage des véhicules"/>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Basculer le curseur de la souris"/>
+
+        <!--Actions-->
+        <text name="action_toggleMouseCursor" text="Basculer le curseur de la souris"/>
+        <text name="action_toggleHalfSideShutoff" text="Basculer la coupure à demi-côté"/>
+        <text name="action_setTramlineDistance" text="Définir la distance entre les lignes de passage des véhicules"/>
+        <text name="action_setTramline" text="Définir une ligne de passage"/>
+
+        <!--Info-->
+        <text name="info_mode_header" text="Mode"/>
+        <text name="info_tramline_distance_header" text="Distance"/>
+        <text name="info_line_number_header" text="Tracé"/>
+
+        <text name="info_mode_auto" text="Automatique"/>
+        <text name="info_mode_semi" text="Semi-Automatique"/>
+        <text name="info_mode_manual" text="Manuel"/>
+
+        <!--Warnings-->
+        <text name="warning_gpsNotActive" text="Le GPS n'est pas activé sur ce véhicule!"/>
+    </texts>
+</l10n>
