@@ -84,9 +84,9 @@ function ProSeedSowingExtension:onLoad(savegame)
 
         spec.samples = {}
         local function loadSample(name)
-            local sample = g_soundManager:loadSample2DFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
+            local sample = g_soundManager:loadSample2DFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, 1, AudioGroup.VEHICLE, nil, nil)
             if sample == nil then
-                sample = g_soundManager:cloneSample(g_proSeed.samples[name], linkNode, self)
+                sample = g_soundManager:cloneSample2D(g_proSeed.samples[name], self)
             end
 
             return sample

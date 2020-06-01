@@ -26,7 +26,6 @@ function ProSeed:new(mission, i18n, inputBinding, gui, soundManager, modDirector
     self.mission = mission
     self.soundManager = soundManager
 
-
     local uiFilename = Utils.getFilename("resources/hud/proSeed.png", modDirectory)
     self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
 
@@ -67,12 +66,10 @@ function ProSeed:loadSamples()
 
     local xmlFile = loadXMLFile("ProSeedSamples", Utils.getFilename("resources/sounds/sounds.xml", self.modDirectory))
     if xmlFile ~= nil then
-        local soundsNode = getRootNode()
-
-        self.samples.lowered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "lowered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.highered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "highered", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.empty = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "empty", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
-        self.samples.tramline = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "tramline", self.modDirectory, soundsNode, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.lowered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "lowered", self.modDirectory, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.highered = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "highered", self.modDirectory, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.empty = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "empty", self.modDirectory, 1, AudioGroup.VEHICLE, nil, nil)
+        self.samples.tramline = self.soundManager:loadSample2DFromXML(xmlFile, "vehicle.sounds", "tramline", self.modDirectory, 1, AudioGroup.VEHICLE, nil, nil)
 
         delete(xmlFile)
     end
