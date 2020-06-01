@@ -16,6 +16,11 @@ With ProSeed you're able to create tramlines (with optional pre-emergence markin
 Avec ProSeed, vous pouvez créer des lignes de passage (avec marquage de pré-levée en option), une fermeture à mi-chemin pour créer des lignes de passage parfaites, une coupure des fertilisants et un retour d'information actif avec des sons.
 ]]>
         </fr>
+        <nl>
+            <![CDATA[ProSeed voegt een bundel aan functies toe om zaaimachines in het spel te verbeteren.
+Met ProSeed heb je de mogelijkheid om rijpaden te maken (met optionele voor-opkomst markering), halfzijdige uitschakeling om perfecte rijpaden te creëren, bemesting van kunstmest uit te schakelen en actieve feedback met geluid.
+]]>
+        </nl>
     </description>
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
