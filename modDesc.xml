@@ -36,6 +36,11 @@ Con ProSeed è possibile creare delle carreggiate (opzionalmente per trattamenti
 С помощью ProSeed вы можете создавать технологические колеи (с опциональной маркировкой до появления всходов), отключение половины сеялки для создания идеальных технологических колей, отключение подачи удобрения и активную обратную связь со звуками.
 ]]>
         </ru>
+        <cz>
+            <![CDATA[ProSeed přidává mnoho funkcí pro vylepšení secích strojů ve hře.
+S ProSeed můžete vytvořit kolejové řádky (s volitelným nastavením), vypnout polovinu secího stroje pro vytvoření dokonalého kolejového řádku, vypnout přihnojování hnojivem a aktivovat zpětnou vazbu se zvuky.
+]]>
+        </cz>
     </description>
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
