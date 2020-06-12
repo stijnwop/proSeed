@@ -163,6 +163,16 @@ function InteractiveHUD:update(dt)
 
         self:visualizeHectareInformation(self.vehicle)
         self:visualizeRidgeMarkerState(self.vehicle)
+
+        if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_AUTO then
+            if self.vehicle ~= nil then
+                local rootVehicle = self.vehicle:getRootVehicle()
+                --Get GuidanceSteering information when active.
+                if rootVehicle.getHasGuidanceSystem == nil or not rootVehicle:getHasGuidanceSystem() then
+                    self.mission:showBlinkingWarning(self.i18n:getText("warning_gpsNotActive"), 500)
+                end
+            end
+        end
     end
 end
 
@@ -307,7 +317,7 @@ function InteractiveHUD:increaseTramLineMode(buttonElement)
     if vehicle ~= nil then
         if vehicle.setTramLineMode ~= nil then
             local spec = vehicle.spec_proSeedTramLines
-            local tramLineMode = math.min(spec.tramLineMode + 1, ProSeedTramLines.TRAMLINE_MODE_MANUAL)
+            local tramLineMode = math.min(spec.tramLineMode + 1, ProSeedTramLines.TRAMLINE_MODE_AUTO)
             vehicle:setTramLineMode(tramLineMode)
 
             self:updateTramLineModeState(tramLineMode)
@@ -707,21 +717,11 @@ end
 function InteractiveHUD:updateTramLineModeState(mode)
     local isAuto = mode == ProSeedTramLines.TRAMLINE_MODE_AUTO
     local isManual = mode == ProSeedTramLines.TRAMLINE_MODE_MANUAL
-    self.buttonTramLineModePlus:setDisabled(isManual)
-    self.buttonTramLineModeMin:setDisabled(isAuto)
+    self.buttonTramLineModePlus:setDisabled(isAuto)
+    self.buttonTramLineModeMin:setDisabled(isManual)
 
     local key = ProSeedTramLines.TRAMLINE_MODE_TO_KEY[mode]
     self.textElementTramLineMode:setText(self.i18n:getText(("info_mode_%s"):format(key)))
-
-    if isAuto then
-        if self.vehicle ~= nil then
-            local rootVehicle = self.vehicle:getRootVehicle()
-            --Get GuidanceSteering information when active.
-            if rootVehicle.getHasGuidanceSystem == nil or not rootVehicle:getHasGuidanceSystem() then
-                self.mission:showBlinkingWarning(self.i18n:getText("warning_gpsNotActive"), 2000)
-            end
-        end
-    end
 end
 
 ---Enable count buttons on semi mode only.

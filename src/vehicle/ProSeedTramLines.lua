@@ -54,9 +54,9 @@ ProSeedTramLines.SHUTOFF_MODE_OFF = 0
 ProSeedTramLines.SHUTOFF_MODE_LEFT = 1
 ProSeedTramLines.SHUTOFF_MODE_RIGHT = 2
 
-ProSeedTramLines.TRAMLINE_MODE_AUTO = 0
+ProSeedTramLines.TRAMLINE_MODE_MANUAL = 0
 ProSeedTramLines.TRAMLINE_MODE_SEMI = 1
-ProSeedTramLines.TRAMLINE_MODE_MANUAL = 2
+ProSeedTramLines.TRAMLINE_MODE_AUTO = 2
 
 ProSeedTramLines.TRAMLINE_MODE_TO_KEY = {
     [ProSeedTramLines.TRAMLINE_MODE_AUTO] = "auto",
