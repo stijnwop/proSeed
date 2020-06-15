@@ -21,7 +21,7 @@ Currently the development version is only available via GitHub. When a official 
 
 > _Please note: if there's no release version available it means there's no official release yet._
 
-All official releases will be avaiable at the offical Farming Simulator ModHub.
+All official releases will be available at the offical Farming Simulator ModHub.
 
 For installing the release:
 
@@ -30,23 +30,27 @@ Windows: Copy the `FS19_proSeed_rc_<version>.zip` into your `My Games\FarmingSim
 ## Documentation
 
 ### Overview
-When attaching a sowing machine the following HUD pops up. In the table below there's a description on what every bottom does.
-
-You can position the HUD to any position you desire and will be saved.
-
+When a sowing machine is attached the following HUD will be displayed.
 ![Image](docs/images/hud.png)
 
+In the table below there's a description on what every bottom does.
 
 | Number | Description |
 | ------------- | ------------------ |
-| 1 | - |
-| 2 | - |
-| 3 | - |
-| 4 | - |
-| 5 | - |
-| 6 | - |
-| 7 | - |
-| 8 | - |
+| 1 | Toggle pre-emergence marking |
+| 2 | Toggle fertilizer usage |
+| 3 | Change the tramline mode (manual, semi and auto) |
+| 4 | Change the tramline distance (to fit your followup machines e.g. spreader and sprayers) |
+| 5 | Minimize and maximize the HUD display |
+| 6 | Change track number (only in semi mode) |
+| 7 | Toggle halfside shutoff mode |
+| 8 | Toggle interactive sounds |
+
+Further there are some visuals that help you guide your seeding process. In the top bar the seed usage and hectare counters are displayed. In order to reset them you can click on the reset button.
+
+In the middle of the HUD the working width of your seeder is displayed together with the marker state. The big orange bar on the bottom displays if the tramline is active or if a part of the seeder is shutoff.
+
+You can position the HUD to any position you desire and the position will be saved.
 
 ### Usage
 
