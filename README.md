@@ -59,6 +59,17 @@ You can position the HUD to any position you desire and the position will be sav
 
 ### Usage
 
+#### Modes
+In the table below the possible modes are explained. You can toggle the modes by clicking on the arrows shown at number 3 of the HUD image from above.
+
+| Mode | Description | Supports helper |
+| ------------- | ------------------ | ------------------ |
+| Manual | In `Manual` mode the player has full freedom whether to create the tramline or not by simply pressing the buttons `KEY_lctrl + KEY_r`. The option to configure distance or counting tracks are disabled. | no
+| Semi | In `Semi` mode the player has to configure the tramline distance by clicking on the arrows (increment is based on the working width). The tracks are counted automatically when the sowing machine is lifted, you can manually correct this in the HUD. Tramlines are created automatically. | yes
+| Auto | In `Auto` mode the player only has to configure the tramline distance by clicking on the arrows (increment is based on the working width). Correct the working width of GPS when needed and the tracks will be counted automatically by the GuidanceSteering mod. Tramlines are created automatically. | no
+
+> **NOTE: In order to use the mode `Auto` the [GuidanceSteering](https://www.farming-simulator.com/mod.php?mod_id=140328&title=fs2019) mod is required!**
+
 #### How to start
 If the number of total amount of lanes is even, always start with a half track otherwise the distance to the edge of the field will not be valid. 
 E.g. in the HUD above you have a total of 2 lanes `x / 2` so in this case you start with a half line.
