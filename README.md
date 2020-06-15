@@ -7,6 +7,10 @@ With ProSeed you're able to create tramlines (with optional pre-emergence markin
 ## Publishing
 Only Wopster is allowed to publish any of this code as a mod to any mod site, or file sharing site. The code is open for your own use, but give credit where due. I will not accept support for any 'version' of the ProSeed that is obtained from a sketchy mod page. Versioning is controlled by me and not by any other page. This confuses people and really holds back the development which results in no fun for me!
 
+
+## Special thanks to
+Special thanks to gotchTOM and webalizer for allowing me to redo the mod for FS19!
+
 ## Warning!
 Please be aware that this is a ***DEVELOPMENT VERSION***!
 * The development version can break the game or your savegame!
@@ -55,11 +59,15 @@ You can position the HUD to any position you desire and the position will be sav
 
 ### Usage
 
-<object data="https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+#### How to start
+If the number of total amount of lanes is even, always start with a half track otherwise the distance to the edge of the field will not be valid. 
+E.g. in the HUD above you have a total of 2 lanes `x / 2` so in this case you start with a half line.
+
+Use the halfside shutoff function for creating the first track. 
+When using GuidanceSteering, the first track of GS must be aligned at the edge of the field and set to zero (`ALT + HOME`). 
+For the second track shift the GS track by half the working width towards the field edge.
+
+A description of possible working widths and distances is given in this neat PDF file: [proSeed-eng.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf)
 
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
