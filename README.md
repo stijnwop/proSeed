@@ -46,13 +46,20 @@ In the table below there's a description on what every bottom does.
 | 7 | Toggle halfside shutoff mode |
 | 8 | Toggle interactive sounds |
 
-Further there are some visuals that help you guide your seeding process. In the top bar the seed usage and hectare counters are displayed. In order to reset them you can click on the reset button.
+> **NOTE: Some functions / buttons are only available for certain modes, they will be marked grey when disabled.**
 
+Further there are some visuals that help you guide your seeding process. In the top bar the seed usage and hectare counters are displayed. In order to reset them you can click on the reset button.
 In the middle of the HUD the working width of your seeder is displayed together with the marker state. The big orange bar on the bottom displays if the tramline is active or if a part of the seeder is shutoff.
 
 You can position the HUD to any position you desire and the position will be saved.
 
 ### Usage
+
+<object data="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
 
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
