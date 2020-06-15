@@ -14,7 +14,6 @@ Special thanks to gotchTOM and webalizer for allowing me to redo the mod for FS1
 ## Warning!
 Please be aware that this is a ***DEVELOPMENT VERSION***!
 * The development version can break the game or your savegame!
-* The development version can break the game or your savegame!
 * The development version doesn´t support the full feature package yet!
 
 #### Multiplayer
