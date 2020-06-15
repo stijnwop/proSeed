@@ -16,6 +16,40 @@ Please be aware that this is a ***DEVELOPMENT VERSION***!
 #### Multiplayer
 This version should also work in Multiplayer.
 
+# Installation / Releases
+Currently the development version is only available via GitHub. When a official release version is avaiable you can download the latest version from the [release section](https://github.com/stijnwop/proSeed/releases).
+
+> _Please note: if there's no release version available it means there's no official release yet._
+
+All official releases will be avaiable at the offical Farming Simulator ModHub.
+
+For installing the release:
+
+Windows: Copy the `FS19_proSeed_rc_<version>.zip` into your `My Games\FarmingSimulator2019\mods` directory.
+
+## Documentation
+
+### Overview
+When attaching a sowing machine the following HUD pops up. In the table below there's a description on what every bottom does.
+
+You can position the HUD to any position you desire and will be saved.
+
+![Image](docs/images/hud.png)
+
+
+| Number | Description |
+| ------------- | ------------------ |
+| 1 | - |
+| 2 | - |
+| 3 | - |
+| 4 | - |
+| 5 | - |
+| 6 | - |
+| 7 | - |
+| 8 | - |
+
+### Usage
+
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
 All rights reserved.
