@@ -72,15 +72,15 @@ For more information and how to use it read <a href="https://github.com/stijnwop
     <inputBinding>
         <actionBinding action="PS_SET_LANES_TILL_TRAMLINE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_r"/>
-            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_5 BUTTON_11"/>
         </actionBinding>
         <actionBinding action="PS_SET_HALF_SIDE_SHUTOFF">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_t"/>
-            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_5 BUTTON_3"/>
         </actionBinding>
         <actionBinding action="PS_TOGGLE_MOUSE_CURSOR">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_MIDDLE"/>
-            <binding device="GAMEPAD_DEFAULT" input="BUTTON_11"/>
+            <binding device="GAMEPAD_DEFAULT" input="BUTTON_5 BUTTON_6 BUTTON_19"/>
         </actionBinding>
     </inputBinding>
 
