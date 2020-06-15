@@ -55,8 +55,8 @@ You can position the HUD to any position you desire and the position will be sav
 
 ### Usage
 
-<object data="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf">
+<object data="https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf">
         <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/stijnwop/proSeed/tree/master/docs/ProSeed.pdf">Download PDF</a>.</p>
     </embed>
 </object>
