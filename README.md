@@ -77,7 +77,7 @@ Use the halfside shutoff function for creating the first track.
 When using GuidanceSteering, the first track of GS must be aligned at the edge of the field and set to zero (`ALT + HOME`). 
 For the second track shift the GS track by half the working width towards the field edge.
 
-A description of possible working widths and distances is given in this neat PDF file: [proSeed-eng.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (German: [proSeed-de.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed-de.pdf))
+A description of possible working widths and distances is given in this neat PDF file: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: German; Page 2: English)
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
 All rights reserved.
