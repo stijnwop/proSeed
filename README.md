@@ -40,7 +40,7 @@ In the table below there's a description on what every bottom does.
 
 | Number | Description |
 | ------------- | ------------------ |
-| 1 | Toggle pre-emergence marking |
+| 1 | Toggle pre-emergence marking (this only toggles the visually cultivated lines and not the actual tramline creation!) |
 | 2 | Toggle fertilizer usage |
 | 3 | Change the tramline mode (manual, semi and auto) |
 | 4 | Change the tramline distance (to fit your followup machines e.g. spreader and sprayers) |
