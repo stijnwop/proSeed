@@ -281,7 +281,8 @@ function ProSeedTramLines:onUpdateTick(dt)
         end
 
         if spec.tramLineMode ~= ProSeedTramLines.TRAMLINE_MODE_MANUAL then
-            local laneForTramLine = math.floor((lanesForDistance / 2) + 0.5)
+            local rest = lanesForDistance % 2 ~= 0 and 0 or 1
+            local laneForTramLine = math.floor((lanesForDistance / 2) + 0.5) + rest
             --We create lines when we can divide.
             spec.createTramLines = spec.currentLane == laneForTramLine
         end
