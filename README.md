@@ -1,6 +1,8 @@
 # ProSeed for Farming Simulator 19
 ![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-19-FF7C00.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
 
+###### Readme in German can be found [here](README-de.md).
+
 ProSeed adds a bundle of functionality to enhance sowing machines in the game.
 With ProSeed you're able to create tramlines (with optional pre-emergence marking), halfside shutoff for creating the perfect tramlines, fertilizer shutoff and active feedback with sounds.
 

@@ -1,6 +1,8 @@
 # ProSeed for Farming Simulator 19
 ![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-19-FF7C00.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
 
+###### Readme in English can be found [here](README.md).
+
 ProSeed erweitert Sähmaschinen mit neuen Funktionen um sie weiter zu verbessern.
 Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt eine Rückmeldung durch akustische Signale.
 
@@ -41,7 +43,7 @@ In der unteren Tabelle findest du eine Tastenübersicht.
 | ------------- | ------------------ |
 | 1 | Vorauflaufmakierer umschalten (dies schaltet NUR die Sichtbarkeit der Fahrgasse und NICHT die Erstellung der Gasse um!) |
 | 2 | Unterfußdüngung ein/ausschalten |
-| 3 | Fahrgassenmodus durchschalten (Manuell, Semi and Auto) |
+| 3 | Fahrgassenmodus durchschalten (Manuell, Semi und Auto) |
 | 4 | Ändern des Fahrgassenabstands (zum Anpassen an nachfolgende Maschinen, zB Spritzen oder Streuer) |
 | 5 | Minimieren und Maximieren des HUD |
 | 6 | Spur wechseln (nur im Semi Modus) |
