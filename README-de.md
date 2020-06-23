@@ -42,7 +42,7 @@ In der unteren Tabelle findest du eine Tastenübersicht.
 | 1 | Vorauflaufmakierer umschalten (dies schaltet NUR die Sichtbarkeit der Fahrgasse und NICHT die Erstellung der Gasse um!) |
 | 2 | Unterfußdüngung ein/ausschalten |
 | 3 | Fahrgassenmodus durchschalten (Manuell, Semi and Auto) |
-| 4 | Ändern des Fahrgassenabstands (zum Anpassen der nachfolgenden Maschinen, zB Spritzen oder Streuer) |
+| 4 | Ändern des Fahrgassenabstands (zum Anpassen an nachfolgende Maschinen, zB Spritzen oder Streuer) |
 | 5 | Minimieren und Maximieren des HUD |
 | 6 | Spur wechseln (nur im Semi Modus) |
 | 7 | halbseitige Abschaltung ein/ausschalten |
