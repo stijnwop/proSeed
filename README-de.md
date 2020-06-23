@@ -1,0 +1,82 @@
+# ProSeed for Farming Simulator 19
+![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-19-FF7C00.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
+
+ProSeed erweitert Sähmaschinen mit neuen Funktionen um sie weiter zu verbessern.
+Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt eine Rückmeldung durch akustische Signale.
+
+## Veröffentlichen
+Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten, oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
+
+## Danksagung
+Besonderen Dank an gotchTOM und webalizer für die Freigabe einer Neuauflage für LS19!
+
+## Warnung!
+Bedenke, dies ist eine ***ENTWICKLER VERSION***!
+* Die Entwickler Version kann dein Spiel oder Spielstand beschädigen!
+* Die Entwickler Version unterstützt nicht den vollen Funktionsumfang!
+
+#### Mehrspieler
+Diese Version sollte im Mehrspieler funktionieren.
+
+# Installation / Veröffentlichungen
+Aktuell ist die Entwickler Version nur über GitHub verfügbar. Sobald eine offizelle Version verfügbar ist, findest du diese in der [release section](https://github.com/stijnwop/proSeed/releases).
+
+> _Bitte beachte: falls keine offizielle Version verfügbar ist, bedeutet dies: es gibt keine._
+
+Alle offiziellen Veröffentlichungen werden im offizeillen ModHub verfügbar sein.
+
+Zur Installation:
+
+Windows: Kopiere die `FS19_proSeed_rc_<version>.zip` in dein `My Games\FarmingSimulator2019\mods` Verzeichnis.
+
+## Dokumentation
+
+### Übersicht
+Sobald eine Sähmaschine angekuppelt ist, wird folgenes HUD angezeigt.
+![Image](docs/images/hud.png)
+
+In der unteren Tabelle findest du eine Tastenübersicht.
+
+| Nummer | Beschreibung |
+| ------------- | ------------------ |
+| 1 | Vorauflaufmakierer umschalten (dies schaltet NUR die Sichtbarkeit der Fahrgasse und NICHT die Erstellung der Gasse um!) |
+| 2 | Unterfußdüngung ein/ausschalten |
+| 3 | Fahrgassenmodus durchschalten (Manuell, Semi and Auto) |
+| 4 | Ändern des Fahrgassenabstands (zum Anpassen an nachfolgende Maschinen, zB Spritzen oder Streuer) |
+| 5 | Minimieren und Maximieren des HUD |
+| 6 | Spur wechseln (nur im Semi Modus) |
+| 7 | halbseitige Abschaltung ein/ausschalten |
+| 8 | akustische Signale ein/ausschalten |
+
+> **HINWEIS: Einige Funktionen / Tasten sind nur in bestimmten Modi verfügbar, in grau sind sie deaktiviert.**
+
+Darüber hinaus gibt es einige Anzeigen die dich durch den Sähprozess begleiten. Im oberen Balken werden Saatgutverbrauch und Hektarzähler angezeigt. Um diese zurückzusetzen, drücke die Reset taste.
+In der Mitte des HUD wird die Arbeitsbreite der Sähmaschine und der Status der Spurreißer angezeigt. Der große orangene Balken unten zeigt an, ob Fahrgassen aktiv oder Segmente abgeschaltet sind.
+Das HUD kann frei palziert werden und die Position wird gespeichert.
+
+### Nutzung
+
+#### Modi
+In der folgenen Tabelle werden die möglichen Modi erläutert. Sie können die Modi umschalten, indem sie auf die Pfeile (Bild 3).
+
+| Modus | Beschreibung | unterstützt Helfer |
+| ------------- | ------------------ | ------------------ |
+| Manuell | Im `Manuell` Modus kann der Spieler frei entscheiden ob er Fahrgassen erstellt oder nicht, indem er die Tasten `KEY_lstrg + KEY_r` drückt. Die Option Fahrgassenabstände einzustellen ist hier deaktivert. | nein
+| Semi | Im `Semi` Modus muss der Spieler den Fahrgassen einstellen indem er die Pfeile (Bild 4) benutzt (Abstände entsprechen einer Arbeitsbreite). Die Spuren werden beim Absenken automatisch weiter gezählt, über das HUD kannst du diese mit den Pfeile korigieren. Fahrgassen werden automaisch erstellt. | ja
+| Auto | Im `Auto` Modus muss der Spieler mit den Pfeilen (Bild 4) nur den Fahgrassenabstand einstellen (Abstände entsprechen einer Arbeitsbreite). Korigiert bei Bedarf die Arbeitsbreite im GPS und die Spuren werden automatisch vom GuidanceSteering mod weitergezählt. Fahrgassen werden automaisch erstellt. | nein
+
+> **HINWEIS: Um den `Auto` Modus zu benutzen ist [GuidanceSteering](https://www.farming-simulator.com/mod.php?mod_id=140328&title=fs2019) notwendig!**
+
+#### Wie man beginnt
+Ist die Gesamtanzahl der Spuren gerade, starte immer mit einer halben Spur. Ansonsten passt der Abstand zum Feldrand nicht.
+Beispiel: im HUD Bild oben ist die Gesamtzahl 2 `x / 2` hier sollte man also mit einer Halben Spur beginnen.
+Benutzen die halbseitge Abschaltung um die erste Spur zu erstellen.
+
+Bei Nutzung von GuidanceSteering muss die erste Spur (0) am Feldrand sein (`ALT + HOME`).
+Für die zweite Spur verschiebe die GS Spur um die halbe Arbeitsbreite Richtung Feldrand. 
+
+Eine Beschreibung von möglichen Arbeistbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: German; Page 2: English)
+
+## Copyright
+Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
+Alle Rechte vorbehalten.
