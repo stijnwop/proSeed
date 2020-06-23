@@ -55,6 +55,13 @@ S ProSeed můžete vytvořit kolejové řádky (s volitelným nastavením), vypn
 For more information and how to use it read <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">the manual on my GitHub</a>.
 ]]>
         </cz>
+        <hu>
+            <![CDATA[A ProSeed kiegészítő funkciókat ad hozzá a játékban található vetőgépekhez.
+A ProSeed használatával a vetőgép képes lesz művelőnyomok létrehozására (opcionálisan kikelés előtt is), féloldali sor elzárásra a tökéletes művelőnyom eléréséhez, műtrágya adagolás kikapcsolására, valamint hanggal történő állapotvisszajezésre.
+
+További információért, és a kezelési útmutató elolvasásához látogasd meg a <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">README oldalt a GitHub-on.</a>.
+]]>
+        </hu>
     </description>
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
