@@ -76,6 +76,13 @@ Changelog:
 - Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </cz>
+        <hu>
+            <![CDATA[A ProSeed kiegészítő funkciókat ad hozzá a játékban található vetőgépekhez.
+A ProSeed használatával a vetőgép képes lesz művelőnyomok létrehozására (opcionálisan kikelés előtt is), féloldali sor elzárásra a tökéletes művelőnyom eléréséhez, műtrágya adagolás kikapcsolására, valamint hanggal történő állapotvisszajezésre.
+
+További információért, és a kezelési útmutató elolvasásához látogasd meg a <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">README oldalt a GitHub-on.</a>.
+]]>
+        </hu>
     </description>
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
