@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>Vanquish081</translationContributors>
+
+    <texts>
+        <!--Inputs-->
+        <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: On/Off Medio Lado"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Fijar distancia de línea de paso"/>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: On/Off Cursor Ratón"/>
+
+        <!--Actions-->
+        <text name="action_toggleMouseCursor" text="On/Off Cursor Ratón"/>
+        <text name="action_toggleHalfSideShutoff" text="On/Off Medio Lado."/>
+        <text name="action_setTramlineDistance" text="Fijar distancia de línea de paso"/>
+        <text name="action_setTramline" text="Fijar línea de paso"/>
+
+        <!--Info-->
+        <text name="info_mode_header" text="Modo"/>
+        <text name="info_tramline_distance_header" text="Distancia"/>
+        <text name="info_line_number_header" text="Línea"/>
+
+        <text name="info_mode_auto" text="Auto"/>
+        <text name="info_mode_semi" text="Semi"/>
+        <text name="info_mode_manual" text="Manual"/>
+
+        <!--Warnings-->
+        <text name="warning_gpsNotActive" text="¡Este vehículo no dispone de GPS!"/>
+    </texts>
+</l10n>
