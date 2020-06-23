@@ -12,7 +12,7 @@
         <text name="action_toggleMouseCursor" text="Váltás egér kurzorra"/>
         <text name="action_toggleHalfSideShutoff" text="Váltás féloldali módra"/>
         <text name="action_setTramlineDistance" text="Művelőnyom távolság beállítása"/>
-        <text name="action_setTramline" text="Set tramline"/>
+        <text name="action_setTramline" text="Művelőnyom húzása"/>
 
         <!--Info-->
         <text name="info_mode_header" text="Mód"/>
