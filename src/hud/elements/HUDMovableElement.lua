@@ -37,8 +37,8 @@ end
 function HUDMovableElement:saveToXMLFile(xmlFile, key)
     local x, y = self:getPosition()
     if x ~= nil and y ~= nil then
-        setXMLFloat(xmlFile, key .. ".position#x", x)
-        setXMLFloat(xmlFile, key .. ".position#y", y)
+        setXMLFloat(xmlFile, key .. ".position#x", MathUtil.clamp(x, 0, 1))
+        setXMLFloat(xmlFile, key .. ".position#y", MathUtil.clamp(y, 0, 1))
     end
 end
 
