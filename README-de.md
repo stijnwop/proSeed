@@ -64,20 +64,20 @@ In der folgenen Tabelle werden die möglichen Modi erläutert. Sie können die M
 | Modus | Beschreibung | unterstützt Helfer |
 | ------------- | ------------------ | ------------------ |
 | Manuell | Im `Manuell` Modus kann der Spieler frei entscheiden ob er Fahrgassen erstellt oder nicht, indem er die Tasten `KEY_lstrg + KEY_r` drückt. Die Option Fahrgassenabstände einzustellen ist hier deaktivert. | nein
-| Semi | Im `Semi` Modus muss der Spieler den Fahrgassen einstellen indem er die Pfeile (Bild 4) benutzt (Abstände entsprechen einer Arbeitsbreite). Die Spuren werden beim Absenken automatisch weiter gezählt, über das HUD kannst du diese mit den Pfeile korigieren. Fahrgassen werden automaisch erstellt. | ja
-| Auto | Im `Auto` Modus muss der Spieler mit den Pfeilen (Bild 4) nur den Fahgrassenabstand einstellen (Abstände entsprechen einer Arbeitsbreite). Korigiert bei Bedarf die Arbeitsbreite im GPS und die Spuren werden automatisch vom GuidanceSteering mod weitergezählt. Fahrgassen werden automaisch erstellt. | nein
+| Semi | Im `Semi` Modus muss der Spieler den Fahrgassen einstellen indem er die Pfeile (Bild 4) benutzt (Abstände entsprechen einer Arbeitsbreite). Die Spuren werden beim Absenken automatisch weiter gezählt, über das HUD kannst du diese mit den Pfeile korrigieren. Fahrgassen werden automaisch erstellt. | ja
+| Auto | Im `Auto` Modus muss der Spieler mit den Pfeilen (Bild 4) nur den Fahgrassenabstand einstellen (Abstände entsprechen einer Arbeitsbreite). Korrigiert bei Bedarf die Arbeitsbreite im GPS und die Spuren werden automatisch vom GuidanceSteering mod weitergezählt. Fahrgassen werden automaisch erstellt. | nein
 
 > **HINWEIS: Um den `Auto` Modus zu benutzen ist [GuidanceSteering](https://www.farming-simulator.com/mod.php?mod_id=140328&title=fs2019) notwendig!**
 
 #### Wie man beginnt
 Ist die Gesamtanzahl der Spuren gerade, starte immer mit einer halben Spur. Ansonsten passt der Abstand zum Feldrand nicht.
 Beispiel: im HUD Bild oben ist die Gesamtzahl 2 `x / 2` hier sollte man also mit einer Halben Spur beginnen.
-Benutzen die halbseitge Abschaltung um die erste Spur zu erstellen.
+Benutze die halbseitge Abschaltung um die erste Spur zu erstellen.
 
 Bei Nutzung von GuidanceSteering muss die erste Spur (0) am Feldrand sein (`ALT + HOME`).
 Für die zweite Spur verschiebe die GS Spur um die halbe Arbeitsbreite Richtung Feldrand. 
 
-Eine Beschreibung von möglichen Arbeistbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: German; Page 2: English)
+Eine Beschreibung von möglichen Arbeistbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: Deutsch; Page 2: Englisch)
 
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
