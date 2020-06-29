@@ -306,7 +306,7 @@ end
 ---Process tramline creation on the end of work area processing.
 function ProSeedTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
     local spec = self.spec_proSeedTramLines
-    if spec.createTramLines and hasProcessed then
+    if spec.createTramLines then
         local params = self.spec_sowingMachine.workAreaParameters
 
         for _, area in ipairs(spec.tramlinesAreas) do
