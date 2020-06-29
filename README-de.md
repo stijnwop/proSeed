@@ -4,10 +4,10 @@
 ###### Readme in English can be found [here](README.md).
 
 ProSeed erweitert Sähmaschinen mit neuen Funktionen um sie weiter zu verbessern.
-Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt eine Rückmeldung durch akustische Signale.
+Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt dir Rückmeldung durch akustische Signale.
 
 ## Veröffentlichen
-Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten, oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
+Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten, oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed, die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
 
 ## Danksagung
 Besonderen Dank an gotchTOM und webalizer für die Freigabe einer Neuauflage für LS19!
@@ -59,25 +59,25 @@ Das HUD kann frei palziert werden und die Position wird gespeichert.
 ### Nutzung
 
 #### Modi
-In der folgenen Tabelle werden die möglichen Modi erläutert. Sie können die Modi umschalten, indem sie auf die Pfeile (Bild 3).
+In der folgenen Tabelle werden die möglichen Modi erläutert. Sie können die Modi umschalten, indem sie die Pfeile (Bild 3) benutzen.
 
 | Modus | Beschreibung | unterstützt Helfer |
 | ------------- | ------------------ | ------------------ |
 | Manuell | Im `Manuell` Modus kann der Spieler frei entscheiden ob er Fahrgassen erstellt oder nicht, indem er die Tasten `KEY_lstrg + KEY_r` drückt. Die Option Fahrgassenabstände einzustellen ist hier deaktivert. | nein
-| Semi | Im `Semi` Modus muss der Spieler den Fahrgassen einstellen indem er die Pfeile (Bild 4) benutzt (Abstände entsprechen einer Arbeitsbreite). Die Spuren werden beim Absenken automatisch weiter gezählt, über das HUD kannst du diese mit den Pfeile korrigieren. Fahrgassen werden automaisch erstellt. | ja
-| Auto | Im `Auto` Modus muss der Spieler mit den Pfeilen (Bild 4) nur den Fahgrassenabstand einstellen (Abstände entsprechen einer Arbeitsbreite). Korrigiert bei Bedarf die Arbeitsbreite im GPS und die Spuren werden automatisch vom GuidanceSteering mod weitergezählt. Fahrgassen werden automaisch erstellt. | nein
+| Semi | Im `Semi` Modus muss der Spieler den Fahrgassen einstellen indem er die Pfeile (Bild 4) benutzt (Abstände entsprechen einer Arbeitsbreite). Die Spuren werden beim Absenken automatisch weiter gezählt, über das HUD kannst du diese mit den Pfeile korrigieren. Fahrgassen werden automatisch erstellt. | ja
+| Auto | Im `Auto` Modus muss der Spieler mit den Pfeilen (Bild 4) nur den Fahrgassenabstand einstellen (Abstände entsprechen einer Arbeitsbreite). Korrigiert bei Bedarf die Arbeitsbreite im GPS und die Spuren werden automatisch vom GuidanceSteering Mod weitergezählt. Fahrgassen werden automatisch erstellt. | nein
 
 > **HINWEIS: Um den `Auto` Modus zu benutzen ist [GuidanceSteering](https://www.farming-simulator.com/mod.php?mod_id=140328&title=fs2019) notwendig!**
 
 #### Wie man beginnt
 Ist die Gesamtanzahl der Spuren gerade, starte immer mit einer halben Spur. Ansonsten passt der Abstand zum Feldrand nicht.
-Beispiel: im HUD Bild oben ist die Gesamtzahl 2 `x / 2` hier sollte man also mit einer Halben Spur beginnen.
+Beispiel: im HUD Bild oben ist die Gesamtzahl 2 `x / 2` hier sollte man also mit einer halben Spur beginnen.
 Benutze die halbseitge Abschaltung um die erste Spur zu erstellen.
 
 Bei Nutzung von GuidanceSteering muss die erste Spur (0) am Feldrand sein (`ALT + HOME`).
 Für die zweite Spur verschiebe die GS Spur um die halbe Arbeitsbreite Richtung Feldrand. 
 
-Eine Beschreibung von möglichen Arbeistbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: Deutsch; Page 2: Englisch)
+Eine Beschreibung von möglichen Arbeitsbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: Deutsch; Page 2: Englisch)
 
 ## Copyright
 Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
