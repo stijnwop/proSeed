@@ -3,11 +3,11 @@
 
 ###### Readme in English can be found [here](README.md).
 
-ProSeed erweitert Sähmaschinen mit neuen Funktionen um sie weiter zu verbessern.
-Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt dir Rückmeldung durch akustische Signale.
+ProSeed erweitert Sämaschinen mit neuen Funktionen um sie weiter zu verbessern.
+Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sämaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt dir Rückmeldung durch akustische Signale.
 
 ## Veröffentlichen
-Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten, oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed, die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
+Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed, die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
 
 ## Danksagung
 Besonderen Dank an gotchTOM und webalizer für die Freigabe einer Neuauflage für LS19!
@@ -34,7 +34,7 @@ Windows: Kopiere die `FS19_proSeed_rc_<version>.zip` in dein `My Games\FarmingSi
 ## Dokumentation
 
 ### Übersicht
-Sobald eine Sähmaschine angekuppelt ist, wird folgenes HUD angezeigt.
+Sobald eine Sämaschine angekuppelt ist, wird folgenes HUD angezeigt.
 ![Image](docs/images/hud.png)
 
 In der unteren Tabelle findest du eine Tastenübersicht.
@@ -52,8 +52,8 @@ In der unteren Tabelle findest du eine Tastenübersicht.
 
 > **HINWEIS: Einige Funktionen / Tasten sind nur in bestimmten Modi verfügbar, in grau sind sie deaktiviert.**
 
-Darüber hinaus gibt es einige Anzeigen die dich durch den Sähprozess begleiten. Im oberen Balken werden Saatgutverbrauch und Hektarzähler angezeigt. Um diese zurückzusetzen, drücke die Reset taste.
-In der Mitte des HUD wird die Arbeitsbreite der Sähmaschine und der Status der Spurreißer angezeigt. Der große orangene Balken unten zeigt an, ob Fahrgassen aktiv oder Segmente abgeschaltet sind.
+Darüber hinaus gibt es einige Anzeigen die dich durch den Säprozess begleiten. Im oberen Balken werden Saatgutverbrauch und Hektarzähler angezeigt. Um diese zurückzusetzen, drücke die Reset taste.
+In der Mitte des HUD wird die Arbeitsbreite der Sämaschine und der Status der Spurreißer angezeigt. Der große orangene Balken unten zeigt an, ob Fahrgassen aktiv oder Segmente abgeschaltet sind.
 Das HUD kann frei palziert werden und die Position wird gespeichert.
 
 ### Nutzung
