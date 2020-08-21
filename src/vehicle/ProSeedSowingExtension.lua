@@ -207,97 +207,114 @@ end
 function ProSeedSowingExtension:onUpdate(dt)
     local spec = self.spec_proSeedSowingExtension
 
-    if self.isClient and spec.allowSound and self:getIsActiveForInput(true) then
-        local specTramLines = self.spec_proSeedTramLines
-        if specTramLines ~= nil then
-            if not spec.playedTramline then
-                if specTramLines.createTramLines then
-                    g_soundManager:playSample(spec.samples.tramline, 1)
-                    spec.playedTramline = true
-                    spec.playedTramlineTimer = 0
-                end
-            else
-                if specTramLines.createTramLines then
-                    spec.playedTramlineTimer = spec.playedTramlineTimer + dt
-
-                    if spec.playedTramlineTimer > spec.playedTramlineTimerInterval then
-                        spec.playedTramlineTimer = 0
+    local hud = g_proSeed.hud
+    if self.isClient and self:getIsActiveForInput(true, true) then
+        if spec.allowSound then
+            local specTramLines = self.spec_proSeedTramLines
+            if specTramLines ~= nil then
+                if not spec.playedTramline then
+                    if specTramLines.createTramLines then
                         g_soundManager:playSample(spec.samples.tramline, 1)
+                        spec.playedTramline = true
+                        spec.playedTramlineTimer = 0
+                    end
+                else
+                    if specTramLines.createTramLines then
+                        spec.playedTramlineTimer = spec.playedTramlineTimer + dt
+
+                        if spec.playedTramlineTimer > spec.playedTramlineTimerInterval then
+                            spec.playedTramlineTimer = 0
+                            g_soundManager:playSample(spec.samples.tramline, 1)
+                        end
+                    end
+
+                    if not specTramLines.createTramLines then
+                        spec.playedTramline = false
+                    end
+                end
+            end
+
+            if self:getIsTurnedOn() then
+                local isLowered = self:getIsImplementChainLowered()
+
+                if not spec.playedLowered then
+                    if isLowered then
+                        g_soundManager:playSample(spec.samples.lowered, 1)
+                        spec.playedLowered = true
+                    end
+                else
+                    if not isLowered then
+                        spec.playedLowered = false
                     end
                 end
 
-                if not specTramLines.createTramLines then
-                    spec.playedTramline = false
+                if not isLowered then
+                    if not g_soundManager:getIsSamplePlaying(spec.samples.highered) then
+                        g_soundManager:playSample(spec.samples.highered)
+                    end
+                else
+                    if g_soundManager:getIsSamplePlaying(spec.samples.highered) then
+                        g_soundManager:stopSample(spec.samples.highered)
+                    end
+                end
+
+                local desc = spec.fillUnitsToCheck[math.min(spec.fillUnitIndexForFrame, #spec.fillUnitsToCheck)]
+                local fillPercentage = MathUtil.round(self:getFillUnitFillLevelPercentage(desc.fillUnitIndex) * 100)
+                local isAlmostEmpty = fillPercentage == 5 or fillPercentage == 1
+
+                local canPlayEmptySound = spec.activeFillUnitIndexEmptySound == desc.fillUnitIndex or spec.activeFillUnitIndexEmptySound == nil
+                local isEmpty = fillPercentage == 0
+
+                if not spec.allowFertilizer and not self:getFillUnitSupportsFillType(desc.fillUnitIndex, FillType.SEEDS) then
+                    canPlayEmptySound = false
+                    isAlmostEmpty = false
+                end
+
+                --Warning when empty.
+                if isEmpty and canPlayEmptySound then
+                    if not g_soundManager:getIsSamplePlaying(spec.samples.empty) then
+                        g_soundManager:playSample(spec.samples.empty)
+                        spec.activeFillUnitIndexEmptySound = desc.fillUnitIndex
+                    end
+                elseif not isAlmostEmpty and canPlayEmptySound then
+                    if g_soundManager:getIsSamplePlaying(spec.samples.empty) then
+                        g_soundManager:stopSample(spec.samples.empty)
+                        spec.activeFillUnitIndexEmptySound = nil
+                    end
+                end
+
+                --Headsup warning when almost empty.
+                if not desc.didPlay then
+                    if isAlmostEmpty then
+                        g_soundManager:playSample(spec.samples.empty, 1)
+                        desc.didPlay = true
+                    end
+                else
+                    if not isAlmostEmpty then
+                        desc.didPlay = false
+                    end
+                end
+
+                -- We only check one per frame.
+                spec.fillUnitIndexForFrame = spec.fillUnitIndexForFrame + 1
+                if spec.fillUnitIndexForFrame > #spec.fillUnitsToCheck then
+                    spec.fillUnitIndexForFrame = 1
                 end
             end
         end
 
-        if self:getIsTurnedOn() then
-            local isLowered = self:getIsImplementChainLowered()
-
-            if not spec.playedLowered then
-                if isLowered then
-                    g_soundManager:playSample(spec.samples.lowered, 1)
-                    spec.playedLowered = true
-                end
-            else
-                if not isLowered then
-                    spec.playedLowered = false
-                end
+        if self:getAttacherVehicle() == g_currentMission.controlledVehicle then
+            if not hud:isVehicleActive(self) then
+                hud:setVehicle(self)
             end
-
-            if not isLowered then
-                if not g_soundManager:getIsSamplePlaying(spec.samples.highered) then
-                    g_soundManager:playSample(spec.samples.highered)
-                end
-            else
-                if g_soundManager:getIsSamplePlaying(spec.samples.highered) then
-                    g_soundManager:stopSample(spec.samples.highered)
-                end
+        else
+            if hud:isVehicleActive(self) then
+                hud:setVehicle(nil)
             end
-
-            local desc = spec.fillUnitsToCheck[math.min(spec.fillUnitIndexForFrame, #spec.fillUnitsToCheck)]
-            local fillPercentage = MathUtil.round(self:getFillUnitFillLevelPercentage(desc.fillUnitIndex) * 100)
-            local isAlmostEmpty = fillPercentage == 5 or fillPercentage == 1
-
-            local canPlayEmptySound = spec.activeFillUnitIndexEmptySound == desc.fillUnitIndex or spec.activeFillUnitIndexEmptySound == nil
-            local isEmpty = fillPercentage == 0
-
-            if not spec.allowFertilizer and not self:getFillUnitSupportsFillType(desc.fillUnitIndex, FillType.SEEDS) then
-                canPlayEmptySound = false
-                isAlmostEmpty = false
-            end
-
-            --Warning when empty.
-            if isEmpty and canPlayEmptySound then
-                if not g_soundManager:getIsSamplePlaying(spec.samples.empty) then
-                    g_soundManager:playSample(spec.samples.empty)
-                    spec.activeFillUnitIndexEmptySound = desc.fillUnitIndex
-                end
-            elseif not isAlmostEmpty and canPlayEmptySound then
-                if g_soundManager:getIsSamplePlaying(spec.samples.empty) then
-                    g_soundManager:stopSample(spec.samples.empty)
-                    spec.activeFillUnitIndexEmptySound = nil
-                end
-            end
-
-            --Headsup warning when almost empty.
-            if not desc.didPlay then
-                if isAlmostEmpty then
-                    g_soundManager:playSample(spec.samples.empty, 1)
-                    desc.didPlay = true
-                end
-            else
-                if not isAlmostEmpty then
-                    desc.didPlay = false
-                end
-            end
-
-            -- We only check one per frame.
-            spec.fillUnitIndexForFrame = spec.fillUnitIndexForFrame + 1
-            if spec.fillUnitIndexForFrame > #spec.fillUnitsToCheck then
-                spec.fillUnitIndexForFrame = 1
-            end
+        end
+    else
+        if hud:isVehicleActive(self) then
+            hud:setVehicle(nil)
         end
     end
 end
@@ -420,10 +437,6 @@ function ProSeedSowingExtension:onRegisterActionEvents(isActiveForInput, isActiv
         self:clearActionEventsTable(spec.actionEvents)
 
         if isActiveForInputIgnoreSelection then
-            --TODO: add if active
-            local hud = g_proSeed.hud
-            hud:setVehicle(self)
-
             local _, actionEventToggleMouseCursor = self:addActionEvent(spec.actionEvents, InputAction.PS_TOGGLE_MOUSE_CURSOR, self, ProSeedSowingExtension.actionEventToggleMouseCursor, false, true, false, true, nil, nil, true)
             g_inputBinding:setActionEventText(actionEventToggleMouseCursor, g_i18n:getText("action_toggleMouseCursor"))
             g_inputBinding:setActionEventTextVisibility(actionEventToggleMouseCursor, true)
