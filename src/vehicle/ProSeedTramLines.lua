@@ -307,9 +307,27 @@ end
 function ProSeedTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
     local spec = self.spec_proSeedTramLines
     if spec.createTramLines then
+        local canActivateTramlines = hasProcessed
+        local farmId = self:getActiveFarm() or AccessHandler.EVERYONE
         local params = self.spec_sowingMachine.workAreaParameters
 
+        local function canAccess(area, identifier)
+            local xs, _, zs = getWorldTranslation(area[identifier])
+            local isAccessible = self:getIsAccessibleAtWorldPosition(farmId, xs, zs, area.type)
+
+            if not isAccessible and not identifier == 'height' then
+                return canAccess(area, identifier == 'start' and 'width' or 'height')
+            end
+            return isAccessible
+        end
+
         for _, area in ipairs(spec.tramlinesAreas) do
+            if not canActivateTramlines then
+                if not self:getIsImplementChainLowered() or not canAccess(area, 'start') then
+                    return
+                end
+            end
+
             local xs, _, zs = getWorldTranslation(area.start)
             local xw, _, zw = getWorldTranslation(area.width)
             local xh, _, zh = getWorldTranslation(area.height)
@@ -423,7 +441,7 @@ function ProSeedTramLines:createTramLineAreas(center, workAreaIndex)
         x = x - ProSeedTramLines.TRAMELINE_WIDTH
         local widthNode = createGuideNode(("widthNode(%d)"):format(i), linkNode, x, y, hz)
         x = center - (ProSeedTramLines.TRAMLINE_SPACING - ProSeedTramLines.TRAMELINE_WIDTH)
-        table.insert(lineAreas, { start = startNode, height = heightNode, width = widthNode })
+        table.insert(lineAreas, { start = startNode, height = heightNode, width = widthNode, groundReferenceNode = workArea.groundReferenceNode, disableBackwards = false, type = WorkAreaType.CULTIVATOR })
     end
 
     return lineAreas, workArea.index
