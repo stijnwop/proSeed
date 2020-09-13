@@ -377,6 +377,8 @@ function ProSeedSowingExtension:resetVehicleHectareSession(noEventSend)
     local spec = self.spec_proSeedSowingExtension
     ProSeedResetHectareSessionEvent.sendEvent(self, noEventSend)
     spec.sessionHectares = 0
+    spec.hectarePerHour = 0
+    spec.hectareTime = 0
 end
 
 ---Overwrite sowing area processing to block fertilizer when set.
