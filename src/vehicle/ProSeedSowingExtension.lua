@@ -303,7 +303,8 @@ function ProSeedSowingExtension:onUpdate(dt)
             end
         end
 
-        if self:getAttacherVehicle() == g_currentMission.controlledVehicle then
+        local rootVehicle = self:getRootVehicle()
+        if rootVehicle == g_currentMission.controlledVehicle then
             if not hud:isVehicleActive(self) then
                 hud:setVehicle(self)
             end
