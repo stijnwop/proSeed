@@ -142,6 +142,9 @@ function ProSeedTramLines:onLoad(savegame)
             self.spec_sowingMachine.useDirectPlanting = true
         end
     end
+    
+    spec.tramLinesAnimation = getXMLString(self.xmlFile, "vehicle.proSeed.tramLinesAnimation#name")
+	spec.tramLinesAnimationSpeed = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.proSeed.tramLinesAnimation#speed"), 1)
 
     delete(node)
 
@@ -166,6 +169,15 @@ function ProSeedTramLines:onPostLoad(savegame)
 
         local tramLineMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#tramLineMode"), spec.tramLineMode)
         self:setTramLineMode(tramLineMode, true)
+        
+        if spec.tramLinesAnimation ~= nil and self.playAnimation ~= nil then
+            local tramLinesAnimTime = 0
+			if spec.createTramLines then
+				tramLinesAnimTime = 1
+			end
+            self:setAnimationTime(spec.tramLinesAnimation, tramLinesAnimTime)
+            AnimatedVehicle.updateAnimationByName(self, spec.tramLinesAnimation, 9999999)
+        end
 
         local shutoffMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#shutoffMode"), spec.shutoffMode)
         self:setHalfSideShutoffMode(shutoffMode, true)
@@ -292,6 +304,14 @@ function ProSeedTramLines:onUpdateTick(dt)
             --Turnoff half side shutoff when we create tramlines.
             if self:isHalfSideShutoffActive() then
                 self:setHalfSideShutoffMode(ProSeedTramLines.SHUTOFF_MODE_OFF)
+            end
+        end
+        
+        if spec.tramLinesAnimation ~= nil and self.playAnimation ~= nil then
+            if spec.createTramLines then
+                self:playAnimation(spec.tramLinesAnimation, spec.tramLinesAnimationSpeed, nil, true)
+            else
+                self:playAnimation(spec.tramLinesAnimation, -spec.tramLinesAnimationSpeed, nil, true)
             end
         end
 
