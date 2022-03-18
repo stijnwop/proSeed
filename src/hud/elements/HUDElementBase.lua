@@ -14,7 +14,7 @@ local HUDElementBase_mt = Class(HUDElementBase, HUDElement)
 ---Creates a new instance of the HUDElementBase.
 ---@return HUDElementBase
 function HUDElementBase:new(overlay, mt)
-    local instance = HUDElement.new(mt or HUDElementBase_mt, overlay)
+    local instance = HUDElement.new(overlay, nil, mt or HUDElementBase_mt)
 
     instance.isElementActive = true
 
@@ -104,16 +104,16 @@ function HUDElementBase:setBorders(thickness, color)
     self.borderThickness = GuiUtils.getNormalizedValues(thickness)
     self.borderColor = color
 
-    local leftOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    local leftOverlay = Overlay.new(g_baseUIFilename, 0, 0, 1, 1)
     leftOverlay:setColor(unpack(self.borderColor))
     leftOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_LEFT)
-    local topOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    local topOverlay = Overlay.new(g_baseUIFilename, 0, 0, 1, 1)
     topOverlay:setColor(unpack(self.borderColor))
     topOverlay:setAlignment(Overlay.ALIGN_VERTICAL_TOP, Overlay.ALIGN_HORIZONTAL_LEFT)
-    local rightOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    local rightOverlay = Overlay.new(g_baseUIFilename, 0, 0, 1, 1)
     rightOverlay:setColor(unpack(self.borderColor))
     rightOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_RIGHT)
-    local bottomOverlay = Overlay:new(g_baseUIFilename, 0, 0, 1, 1)
+    local bottomOverlay = Overlay.new(g_baseUIFilename, 0, 0, 1, 1)
     bottomOverlay:setColor(unpack(self.borderColor))
     bottomOverlay:setAlignment(Overlay.ALIGN_VERTICAL_BOTTOM, Overlay.ALIGN_HORIZONTAL_LEFT)
 

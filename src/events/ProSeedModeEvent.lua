@@ -15,7 +15,7 @@ InitEventClass(ProSeedModeEvent, "ProSeedModeEvent")
 
 ---@return ProSeedModeEvent
 function ProSeedModeEvent:emptyNew()
-    local self = Event:new(ProSeedModeEvent_mt)
+    local self = Event.new(ProSeedModeEvent_mt)
     return self
 end
 

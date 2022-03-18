@@ -15,7 +15,7 @@ InitEventClass(ProSeedTramLineDataEvent, "ProSeedTramLineDataEvent")
 
 ---@return ProSeedTramLineDataEvent
 function ProSeedTramLineDataEvent:emptyNew()
-    local self = Event:new(ProSeedTramLineDataEvent_mt)
+    local self = Event.new(ProSeedTramLineDataEvent_mt)
     return self
 end
 

@@ -14,7 +14,7 @@ local HUDTextElement_mt = Class(HUDTextElement, HUDElementBase)
 ---Creates a new instance of the HUDTextElement.
 ---@return HUDTextElement
 function HUDTextElement:new(posX, posY, textSize, textAlignment, textColor, textBold)
-    local backgroundOverlay = Overlay:new(nil, 0, 0, 0, 0)
+    local backgroundOverlay = Overlay.new(nil, 0, 0, 0, 0)
     backgroundOverlay:setColor(1, 1, 1, 1)
 
     local instance = HUDElementBase:new(backgroundOverlay, HUDTextElement_mt)

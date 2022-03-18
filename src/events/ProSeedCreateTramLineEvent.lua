@@ -15,7 +15,7 @@ InitEventClass(ProSeedCreateTramLineEvent, "ProSeedCreateTramLineEvent")
 
 ---@return ProSeedCreateTramLineEvent
 function ProSeedCreateTramLineEvent:emptyNew()
-    local self = Event:new(ProSeedCreateTramLineEvent_mt)
+    local self = Event.new(ProSeedCreateTramLineEvent_mt)
     return self
 end
 

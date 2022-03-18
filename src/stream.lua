@@ -40,11 +40,6 @@ function BaseStream:map(predicate)
     return self
 end
 
----Returns current stream with the list consisting of the filtered results
----@param predicate table
-function BaseStream:filter(predicate)
-end
-
 ---Returns first element of the list
 function BaseStream:first()
     if self.list[1] ~= nil then

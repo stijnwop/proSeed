@@ -15,7 +15,7 @@ InitEventClass(ProSeedDataEvent, "ProSeedDataEvent")
 
 ---@return ProSeedDataEvent
 function ProSeedDataEvent:emptyNew()
-    local self = Event:new(ProSeedDataEvent_mt)
+    local self = Event.new(ProSeedDataEvent_mt)
     return self
 end
 

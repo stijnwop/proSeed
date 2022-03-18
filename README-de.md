@@ -1,5 +1,5 @@
-# ProSeed for Farming Simulator 19
-![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-19-FF7C00.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
+# ProSeed for Farming Simulator 22
+![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-22-10BEFF.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
 
 ###### Readme in English can be found [here](README.md).
 
@@ -10,7 +10,7 @@ Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), 
 Nur Wopster darf jeglichen Code als Mod auf anderen Modseiten oder Dateihostern veröffentlichen. Der Code ist offen für die eigene Nutzung, benenne Mich in den Credits. Ich gebe keine Unterstützung von irgendeiner 'Version' von ProSeed, die von einer dubiosen Modseite kommt. Versionen werden von Mir bestimmt und nicht von irgendeiner anderen Seite. Dies verwirrt nur und hindert die Entwicklung, was mir keinen Spaß macht!
 
 ## Danksagung
-Besonderen Dank an gotchTOM und webalizer für die Freigabe einer Neuauflage für LS19!
+Besonderen Dank an gotchTOM und webalizer für die Freigabe einer Neuauflage für LS19/LS22!
 
 ## Warnung!
 Bedenke, dies ist eine ***ENTWICKLER VERSION***!
@@ -29,7 +29,7 @@ Alle offiziellen Veröffentlichungen werden im offizeillen ModHub verfügbar sei
 
 Zur Installation:
 
-Windows: Kopiere die `FS19_proSeed_rc_<version>.zip` in dein `My Games\FarmingSimulator2019\mods` Verzeichnis.
+Windows: Kopiere die `FS22_proSeed.zip` in dein `My Games\FarmingSimulator2022\mods` Verzeichnis.
 
 ## Dokumentation
 
@@ -75,10 +75,27 @@ Beispiel: im HUD Bild oben ist die Gesamtzahl 2 `x / 2` hier sollte man also mit
 Benutze die halbseitge Abschaltung um die erste Spur zu erstellen.
 
 Bei Nutzung von GuidanceSteering muss die erste Spur (0) am Feldrand sein (`ALT + HOME`).
-Für die zweite Spur verschiebe die GS Spur um die halbe Arbeitsbreite Richtung Feldrand. 
+Für die zweite Spur verschiebe die GS Spur um die halbe Arbeitsbreite Richtung Feldrand.
 
 Eine Beschreibung von möglichen Arbeitsbreiten und Abständen findest du in diesen PDF Dokumenten: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: Deutsch; Page 2: Englisch)
 
+#### Using tramline animation
+You can trigger an animation once the tramlines are active like so:
+
+```xml
+<vehicle>
+    <proSeed>
+       <tramLinesAnimation name="tramLines" speed="1"/>
+    </proSeed>
+
+    <animations>
+       <animation name="tramLines">
+          <part node="NODE_NAME" startTime="0" endTime="1" startTrans="0 1 0" endTrans="0 0 0" />
+       </animation>
+    </animations>
+</vehicle>
+```
+
 ## Copyright
-Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
+Copyright (c) 2022 [Wopster](https://github.com/stijnwop).
 Alle Rechte vorbehalten.

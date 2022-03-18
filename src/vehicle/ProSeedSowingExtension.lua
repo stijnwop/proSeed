@@ -14,6 +14,19 @@ function ProSeedSowingExtension.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
 end
 
+function ProSeedSowingExtension.initSpecialization()
+    local schemaSavegame = Vehicle.xmlSchemaSavegame
+
+    schemaSavegame:register(XMLValueType.BOOL, ("vehicles.vehicle(?).%s.proSeedSowingExtension#allowSound"):format(g_proSeedModName), "Allow extension sounds")
+    schemaSavegame:register(XMLValueType.BOOL, ("vehicles.vehicle(?).%s.proSeedSowingExtension#allowFertilizer"):format(g_proSeedModName), "Allow fertilizer usage")
+
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedSowingExtension#sessionHectares"):format(g_proSeedModName), "Session hectares count")
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedSowingExtension#totalHectares"):format(g_proSeedModName), "Total hectares count")
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedSowingExtension#seedUsage"):format(g_proSeedModName), "Seed usage")
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedSowingExtension#hectareTime"):format(g_proSeedModName), "Total hectare time")
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedSowingExtension#hectarePerHour"):format(g_proSeedModName), "Hectares per hour count")
+end
+
 function ProSeedSowingExtension.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingSounds", ProSeedSowingExtension.toggleSowingSounds)
     SpecializationUtil.registerFunction(vehicleType, "toggleSowingFertilizer", ProSeedSowingExtension.toggleSowingFertilizer)
@@ -42,7 +55,7 @@ end
 
 ---Called on load.
 function ProSeedSowingExtension:onLoad(savegame)
-    self.spec_proSeedSowingExtension = self[("spec_%s.proSeedSowingExtension"):format(g_proSeed.modName)]
+    self.spec_proSeedSowingExtension = self[("spec_%s.proSeedSowingExtension"):format(g_proSeedModName)]
     local spec = self.spec_proSeedSowingExtension
 
     spec.fillUnitsToCheck = {}
@@ -70,8 +83,8 @@ function ProSeedSowingExtension:onLoad(savegame)
     spec.sessionHectaresSent = 0
     spec.totalHectaresSent = 0
 
-    spec.allowSound = false
-    spec.allowFertilizer = false
+    spec.allowSound = true
+    spec.allowFertilizer = true
 
     if self.isClient then
         local linkNode = self.components[1].node
@@ -84,9 +97,9 @@ function ProSeedSowingExtension:onLoad(savegame)
 
         spec.samples = {}
         local function loadSample(name)
-            local sample = g_soundManager:loadSample2DFromXML(self.xmlFile, "vehicle.proSeed.sounds", name, self.baseDirectory, 1, AudioGroup.VEHICLE, nil, nil)
+            local sample = g_soundManager:loadSample2DFromXML(self.xmlFile.handle, "vehicle.proSeed.sounds", name, self.baseDirectory, 1, AudioGroup.VEHICLE, nil, nil)
             if sample == nil then
-                sample = g_soundManager:cloneSample2D(g_proSeed.samples[name], self)
+                sample = g_soundManager:cloneSample2D(g_currentMission.proSeed.samples[name], self)
             end
 
             return sample
@@ -113,15 +126,15 @@ function ProSeedSowingExtension:onPostLoad(savegame)
     local spec = self.spec_proSeedSowingExtension
 
     if savegame ~= nil and not savegame.resetVehicles then
-        local key = ("%s.%s.proSeedSowingExtension"):format(savegame.key, g_proSeed.modName)
-        spec.allowSound = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowSound"), spec.allowSound)
-        spec.allowFertilizer = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#allowFertilizer"), spec.allowFertilizer)
+        local key = ("%s.%s.proSeedSowingExtension"):format(savegame.key, g_proSeedModName)
+        spec.allowSound = savegame.xmlFile:getValue(key .. "#allowSound", spec.allowSound)
+        spec.allowFertilizer = savegame.xmlFile:getValue(key .. "#allowFertilizer", spec.allowFertilizer)
 
-        spec.sessionHectares = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#sessionHectares"), spec.sessionHectares)
-        spec.totalHectares = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#totalHectares"), spec.totalHectares)
-        spec.seedUsage = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#seedUsage"), spec.seedUsage)
-        spec.hectareTime = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#hectareTime"), spec.hectareTime)
-        spec.hectarePerHour = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#hectarePerHour"), spec.hectarePerHour)
+        spec.sessionHectares = savegame.xmlFile:getValue(key .. "#sessionHectares", spec.sessionHectares)
+        spec.totalHectares = savegame.xmlFile:getValue(key .. "#totalHectares", spec.totalHectares)
+        spec.seedUsage = savegame.xmlFile:getValue(key .. "#seedUsage", spec.seedUsage)
+        spec.hectareTime = savegame.xmlFile:getValue(key .. "#hectareTime", spec.hectareTime)
+        spec.hectarePerHour = savegame.xmlFile:getValue(key .. "#hectarePerHour", spec.hectarePerHour)
     end
 end
 
@@ -138,14 +151,13 @@ end
 function ProSeedSowingExtension:saveToXMLFile(xmlFile, key, usedModNames)
     local spec = self.spec_proSeedSowingExtension
 
-    setXMLBool(xmlFile, key .. "#allowSound", spec.allowSound)
-    setXMLBool(xmlFile, key .. "#allowFertilizer", spec.allowFertilizer)
-
-    setXMLFloat(xmlFile, key .. "#sessionHectares", spec.sessionHectares)
-    setXMLFloat(xmlFile, key .. "#totalHectares", spec.totalHectares)
-    setXMLFloat(xmlFile, key .. "#seedUsage", spec.seedUsage)
-    setXMLFloat(xmlFile, key .. "#hectareTime", spec.hectareTime)
-    setXMLFloat(xmlFile, key .. "#hectarePerHour", spec.hectarePerHour)
+    xmlFile:setValue(key .. "#allowSound", spec.allowSound)
+    xmlFile:setValue(key .. "#allowFertilizer", spec.allowFertilizer)
+    xmlFile:setValue(key .. "#sessionHectares", spec.sessionHectares)
+    xmlFile:setValue(key .. "#totalHectares", spec.totalHectares)
+    xmlFile:setValue(key .. "#seedUsage", spec.seedUsage)
+    xmlFile:setValue(key .. "#hectareTime", spec.hectareTime)
+    xmlFile:setValue(key .. "#hectarePerHour", spec.hectarePerHour)
 end
 
 ---Called on read stream.
@@ -207,7 +219,7 @@ end
 function ProSeedSowingExtension:onUpdate(dt)
     local spec = self.spec_proSeedSowingExtension
 
-    local hud = g_proSeed.hud
+    local hud = g_currentMission.proSeed.hud
     if self.isClient and self:getIsActiveForInput(true, true) then
         if spec.allowSound then
             local specTramLines = self.spec_proSeedTramLines
@@ -330,7 +342,7 @@ function ProSeedSowingExtension:onDeactivate()
 end
 
 function ProSeedSowingExtension:removeActionEvents(superFunc, ...)
-    local hud = g_proSeed.hud
+    local hud = g_currentMission.proSeed.hud
     if hud:isVehicleActive(self) then
         hud:setVehicle(nil)
     end
@@ -450,5 +462,5 @@ end
 
 function ProSeedSowingExtension.actionEventToggleMouseCursor(self, actionName, inputValue, callbackState, isAnalog)
     --We need to trigger the cursor somewhere.
-    g_proSeed.hud:toggleMouseCursor()
+    g_currentMission.proSeed.hud:toggleMouseCursor()
 end

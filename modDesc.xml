@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="51">
+<modDesc descVersion="64">
     <author>Wopster</author>
-    <version>1.0.0.1</version>
+    <version>2.0.0.0</version>
     <title>
         <en>ProSeed</en>
     </title>
@@ -10,20 +10,16 @@
             <![CDATA[ProSeed adds a bundle of functionality to enhance sowing machines in the game.
 With ProSeed you're able to create tramlines (with optional pre-emergence marking), halfside shutoff for creating the perfect tramlines, fertilizer shutoff and active feedback with sounds.
 
+NOTE: In order to use the mode "Auto" the Guidance Steering mod is required!
 For more information and how to use it read <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">the manual on my GitHub</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </en>
         <de>
-            <![CDATA[ProSeed erweitert Sähmaschinen mit neuen Funktionen um sie zu weiter zu verbessern.
-Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sähmaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können, die Unterfußdüngung kann optional deaktiviert werden und es gibt aktives feedback mit Sounds.
+            <![CDATA[ProSeed erweitert Sämaschinen mit neuen Funktionen um sie zu weiter zu verbessern.
+Mit ProSeed kannst du Fahrgassen erstellen (optional mit Vorauflaufmarkierung), Sämaschinen halbseitig abschalten um perfekte Fahrgassen erstellen zu können. Die Unterfußdüngung kann optional deaktiviert werden und es gibt dir Rückmeldung durch akustische Signale.
 
+HINWEIS: Um den "Auto" Modus zu verwenden, ist der Mod Guidance Steering notwendig!
 Für weitere Informationen, lese dir die <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">manual aus dem Github durch</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </de>
         <fr>
@@ -31,9 +27,6 @@ Changelog:
 Avec ProSeed, vous pouvez créer des lignes de passage (avec marquage de pré-levée en option), une fermeture à mi-chemin pour créer des lignes de passage parfaites, une coupure des fertilisants et un retour d'information actif avec des sons.
 
 Pour plus d'informations, veuillez lire le manuel sur mon <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">Github</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </fr>
         <nl>
@@ -41,9 +34,6 @@ Changelog:
 Met ProSeed heb je de mogelijkheid om rijpaden te maken (met optionele voor-opkomst markering), halfzijdige uitschakeling om perfecte rijpaden te creëren, bemesting van kunstmest uit te schakelen en actieve feedback met geluid.
 
 Voor meer informatie, lees de handleiding op mijn <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">GitHub</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </nl>
         <it>
@@ -51,9 +41,6 @@ Changelog:
 Con ProSeed è possibile creare delle carreggiate (opzionalmente per trattamenti di pre-emergenza), spegnere elementi di semina, disattivare il fertilizzante e avere un feedback sonoro.
 
 For more information and how to use it read <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">the manual on my GitHub</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </it>
         <ru>
@@ -61,9 +48,6 @@ Changelog:
 С помощью ProSeed вы можете создавать технологические колеи (с опциональной маркировкой до появления всходов), отключение половины сеялки для создания идеальных технологических колей, отключение подачи удобрения и активную обратную связь со звуками.
 
 For more information and how to use it read <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">the manual on my GitHub</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </ru>
         <cz>
@@ -71,9 +55,6 @@ Changelog:
 S ProSeed můžete vytvořit kolejové řádky (s volitelným nastavením), vypnout polovinu secího stroje pro vytvoření dokonalého kolejového řádku, vypnout přihnojování hnojivem a aktivovat zpětnou vazbu se zvuky.
 
 For more information and how to use it read <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">the manual on my GitHub</a>.
-
-Changelog:
-- Hotfix for tramline activation on wrong track number for even amount of lanes.
 ]]>
         </cz>
         <hu>
@@ -88,7 +69,7 @@ További információért, és a kezelési útmutató elolvasásához látogasd 
     <multiplayer supported="true"/>
 
     <extraSourceFiles>
-        <sourceFile filename="src/loader.lua"/>
+        <sourceFile filename="src/main.lua"/>
     </extraSourceFiles>
 
     <actions>

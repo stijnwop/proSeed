@@ -15,7 +15,7 @@ InitEventClass(ProSeedHalfSideShutoffEvent, "ProSeedHalfSideShutoffEvent")
 
 ---@return ProSeedHalfSideShutoffEvent
 function ProSeedHalfSideShutoffEvent:emptyNew()
-    local self = Event:new(ProSeedHalfSideShutoffEvent_mt)
+    local self = Event.new(ProSeedHalfSideShutoffEvent_mt)
     return self
 end
 

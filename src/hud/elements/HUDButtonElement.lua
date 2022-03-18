@@ -43,7 +43,7 @@ function HUDButtonElement:loadOverlayColors(overlay)
         overlay.colorPressed = color
     end
 
-    local color = { 0.9910, 0.3865, 0.0100, 1 }
+    local color = { 0.0003, 0.5647, 0.9822, 1 }
     if color ~= nil then
         overlay.colorSelected = color
     end
@@ -53,7 +53,7 @@ function HUDButtonElement:loadOverlayColors(overlay)
         overlay.colorDisabled = color
     end
 
-    local color = { 0.9910, 0.3865, 0.0100, 1 }
+    local color = { 0.0003, 0.5647, 0.9822, 1 }
     if color ~= nil then
         overlay.colorHighlighted = color
     end

@@ -37,6 +37,7 @@ function HUDMovableElement:loadFromXMLFile(xmlFile, key)
         self:setPosition(x, y + (height * 0.5) + parentY - marginHeight)
     end
 end
+
 function HUDMovableElement:saveToXMLFile(xmlFile, key)
     local x, y = self:getPosition()
     if x ~= nil and y ~= nil then
@@ -90,12 +91,12 @@ function HUDMovableElement:setPositionByMousePosition(mouseX, mouseY)
         local x, y = self:getPosition()
         local boundaryMin = 0
         local boundaryMax = 1
-        local nexX = MathUtil.clamp(x + moveX, boundaryMin, boundaryMax)
+        local newX = MathUtil.clamp(x + moveX, boundaryMin, boundaryMax)
         local newY = MathUtil.clamp(y + moveY, boundaryMin, boundaryMax)
 
         local width = self:getWidth()
-        if nexX + width > boundaryMax then
-            nexX = boundaryMax - width
+        if newX + width > boundaryMax then
+            newX = boundaryMax - width
         end
 
         local height = self:getHeight()
@@ -103,7 +104,7 @@ function HUDMovableElement:setPositionByMousePosition(mouseX, mouseY)
             newY = boundaryMax - height
         end
 
-        self:setPosition(nexX, newY)
+        self:setPosition(newX, newY)
         self.currentMouseX = mouseX
         self.currentMouseY = mouseY
     end

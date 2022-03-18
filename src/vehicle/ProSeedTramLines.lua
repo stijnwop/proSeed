@@ -70,6 +70,26 @@ function ProSeedTramLines.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(SowingMachine, specializations)
 end
 
+function ProSeedTramLines.initSpecialization()
+    local schema = Vehicle.xmlSchema
+    schema:setXMLSpecializationType("ProSeedTramLines")
+    schema:register(XMLValueType.STRING, "vehicle.proSeed.tramLinesAnimation#name", "The tramline animation name")
+    schema:register(XMLValueType.FLOAT, "vehicle.proSeed.tramLinesAnimation#speed", "The tramline animation speed")
+    schema:setXMLSpecializationType()
+
+    local schemaSavegame = Vehicle.xmlSchemaSavegame
+
+    schemaSavegame:register(XMLValueType.BOOL, ("vehicles.vehicle(?).%s.proSeedTramLines#isLowered"):format(g_proSeedModName), "Seeder is lowered")
+    schemaSavegame:register(XMLValueType.BOOL, ("vehicles.vehicle(?).%s.proSeedTramLines#createTramLines"):format(g_proSeedModName), "Create tramlines")
+    schemaSavegame:register(XMLValueType.INT, ("vehicles.vehicle(?).%s.proSeedTramLines#currentLane"):format(g_proSeedModName), "Current tramline")
+    schemaSavegame:register(XMLValueType.FLOAT, ("vehicles.vehicle(?).%s.proSeedTramLines#tramLineDistance"):format(g_proSeedModName), "Current tramline distance")
+    schemaSavegame:register(XMLValueType.INT, ("vehicles.vehicle(?).%s.proSeedTramLines#tramLinePeriodicSequence"):format(g_proSeedModName), "Periodic sequence")
+    schemaSavegame:register(XMLValueType.BOOL, ("vehicles.vehicle(?).%s.proSeedTramLines#createPreMarkedTramLines"):format(g_proSeedModName), "Create premarked tramlines")
+
+    schemaSavegame:register(XMLValueType.INT, ("vehicles.vehicle(?).%s.proSeedTramLines#tramLineMode"):format(g_proSeedModName), "Tramline mode")
+    schemaSavegame:register(XMLValueType.INT, ("vehicles.vehicle(?).%s.proSeedTramLines#shutoffMode"):format(g_proSeedModName), "Shutoff mode")
+end
+
 function ProSeedTramLines.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "createTramLineAreas", ProSeedTramLines.createTramLineAreas)
     SpecializationUtil.registerFunction(vehicleType, "setTramLineDistance", ProSeedTramLines.setTramLineDistance)
@@ -97,7 +117,7 @@ end
 
 ---Called on load.
 function ProSeedTramLines:onLoad(savegame)
-    self.spec_proSeedTramLines = self[("spec_%s.proSeedTramLines"):format(g_proSeed.modName)]
+    self.spec_proSeedTramLines = self[("spec_%s.proSeedTramLines"):format(g_proSeedModName)]
     local spec = self.spec_proSeedTramLines
 
     local width, center, workAreaIndex = ProSeedTramLines.getMaxWorkAreaWidth(self)
@@ -113,7 +133,7 @@ function ProSeedTramLines:onLoad(savegame)
 
     spec.currentLane = 1
     spec.shutoffMode = ProSeedTramLines.SHUTOFF_MODE_OFF
-    spec.tramLineMode = ProSeedTramLines.TRAMLINE_MODE_AUTO
+    spec.tramLineMode = ProSeedTramLines.TRAMLINE_MODE_MANUAL
 
     spec.isLowered = false
 
@@ -134,19 +154,19 @@ function ProSeedTramLines:onLoad(savegame)
         end
     end
 
+    delete(node)
+
     --Set direct planting on vanilla planters (as they all support that IRL e.g. downforce).
-    local useDirectPlanting = Utils.getNoNil(getXMLBool(self.xmlFile, "vehicle.sowingMachine.useDirectPlanting#value"), true)
+    local useDirectPlanting = self.xmlFile:getValue("vehicle.sowingMachine.useDirectPlanting#value", true)
     if useDirectPlanting or self.customEnvironment == nil then
         local storeItem = g_storeManager:getItemByXMLFilename(self.configFileName)
         if storeItem.categoryName ~= nil and storeItem.categoryName == "PLANTERS" then
             self.spec_sowingMachine.useDirectPlanting = true
         end
     end
-    
-    spec.tramLinesAnimation = getXMLString(self.xmlFile, "vehicle.proSeed.tramLinesAnimation#name")
-	spec.tramLinesAnimationSpeed = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.proSeed.tramLinesAnimation#speed"), 1)
 
-    delete(node)
+    spec.tramLinesAnimation = self.xmlFile:getValue("vehicle.proSeed.tramLinesAnimation#name")
+    spec.tramLinesAnimationSpeed = self.xmlFile:getValue("vehicle.proSeed.tramLinesAnimation#speed", 1)
 
     spec.originalAreas = originalAreas
     spec.dirtyFlag = self:getNextDirtyFlag()
@@ -157,29 +177,27 @@ function ProSeedTramLines:onPostLoad(savegame)
     local spec = self.spec_proSeedTramLines
 
     if savegame ~= nil and not savegame.resetVehicles then
-        local key = ("%s.%s.proSeedTramLines"):format(savegame.key, g_proSeed.modName)
-        spec.isLowered = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#isLowered"), spec.isLowered)
-        spec.createTramLines = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#createTramLines"), spec.createTramLines)
-        spec.currentLane = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#currentLane"), spec.currentLane)
+        local key = ("%s.%s.proSeedTramLines"):format(savegame.key, g_proSeedModName)
 
-        local tramLineDistance = Utils.getNoNil(getXMLFloat(savegame.xmlFile, key .. "#tramLineDistance"), spec.tramLineDistance)
-        local tramLinePeriodicSequence = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#tramLinePeriodicSequence"), spec.tramLinePeriodicSequence)
-        local createPreMarkedTramLines = Utils.getNoNil(getXMLBool(savegame.xmlFile, key .. "#createPreMarkedTramLines"), spec.createPreMarkedTramLines)
+        spec.isLowered = savegame.xmlFile:getValue(key .. "#isLowered", spec.isLowered)
+        spec.createTramLines = savegame.xmlFile:getValue(key .. "#createTramLines", spec.createTramLines)
+        spec.currentLane = savegame.xmlFile:getValue(key .. "#currentLane", spec.currentLane)
+
+        local tramLineDistance = savegame.xmlFile:getValue(key .. "#tramLineDistance", spec.tramLineDistance)
+        local tramLinePeriodicSequence = savegame.xmlFile:getValue(key .. "#tramLinePeriodicSequence", spec.tramLinePeriodicSequence)
+        local createPreMarkedTramLines = savegame.xmlFile:getValue(key .. "#createPreMarkedTramLines", spec.createPreMarkedTramLines)
         self:setTramLineData(tramLineDistance, tramLinePeriodicSequence, createPreMarkedTramLines, true)
 
-        local tramLineMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#tramLineMode"), spec.tramLineMode)
+        local tramLineMode = savegame.xmlFile:getValue(key .. "#tramLineMode", spec.tramLineMode)
         self:setTramLineMode(tramLineMode, true)
-        
+
         if spec.tramLinesAnimation ~= nil and self.playAnimation ~= nil then
-            local tramLinesAnimTime = 0
-			if spec.createTramLines then
-				tramLinesAnimTime = 1
-			end
-            self:setAnimationTime(spec.tramLinesAnimation, tramLinesAnimTime)
+            local animationTime = spec.createTramLines and 1 or 0
+            self:setAnimationTime(spec.tramLinesAnimation, animationTime)
             AnimatedVehicle.updateAnimationByName(self, spec.tramLinesAnimation, 9999999)
         end
 
-        local shutoffMode = Utils.getNoNil(getXMLInt(savegame.xmlFile, key .. "#shutoffMode"), spec.shutoffMode)
+        local shutoffMode = savegame.xmlFile:getValue(key .. "#shutoffMode", spec.shutoffMode)
         self:setHalfSideShutoffMode(shutoffMode, true)
     end
 end
@@ -188,16 +206,14 @@ end
 function ProSeedTramLines:saveToXMLFile(xmlFile, key, usedModNames)
     local spec = self.spec_proSeedTramLines
 
-    setXMLBool(xmlFile, key .. "#isLowered", spec.isLowered)
-    setXMLBool(xmlFile, key .. "#createTramLines", spec.createTramLines)
-    setXMLInt(xmlFile, key .. "#currentLane", spec.currentLane)
-
-    setXMLFloat(xmlFile, key .. "#tramLineDistance", spec.tramLineDistance)
-    setXMLInt(xmlFile, key .. "#tramLinePeriodicSequence", spec.tramLinePeriodicSequence)
-    setXMLBool(xmlFile, key .. "#createPreMarkedTramLines", spec.createPreMarkedTramLines)
-
-    setXMLInt(xmlFile, key .. "#tramLineMode", spec.tramLineMode)
-    setXMLInt(xmlFile, key .. "#shutoffMode", spec.shutoffMode)
+    xmlFile:setValue(key .. "#isLowered", spec.isLowered)
+    xmlFile:setValue(key .. "#createTramLines", spec.createTramLines)
+    xmlFile:setValue(key .. "#currentLane", spec.currentLane)
+    xmlFile:setValue(key .. "#tramLineDistance", spec.tramLineDistance)
+    xmlFile:setValue(key .. "#tramLinePeriodicSequence", spec.tramLinePeriodicSequence)
+    xmlFile:setValue(key .. "#createPreMarkedTramLines", spec.createPreMarkedTramLines)
+    xmlFile:setValue(key .. "#tramLineMode", spec.tramLineMode)
+    xmlFile:setValue(key .. "#shutoffMode", spec.shutoffMode)
 end
 
 ---Called on read stream.
@@ -306,13 +322,10 @@ function ProSeedTramLines:onUpdateTick(dt)
                 self:setHalfSideShutoffMode(ProSeedTramLines.SHUTOFF_MODE_OFF)
             end
         end
-        
+
         if spec.tramLinesAnimation ~= nil and self.playAnimation ~= nil then
-            if spec.createTramLines then
-                self:playAnimation(spec.tramLinesAnimation, spec.tramLinesAnimationSpeed, nil, true)
-            else
-                self:playAnimation(spec.tramLinesAnimation, -spec.tramLinesAnimationSpeed, nil, true)
-            end
+            local speed = spec.createTramLines and spec.tramLinesAnimationSpeed or -spec.tramLinesAnimationSpeed
+            self:playAnimation(spec.tramLinesAnimation, speed, nil, true)
         end
 
         if spec.createTramLines ~= spec.createTramLinesSent
@@ -354,7 +367,7 @@ function ProSeedTramLines:onEndWorkAreaProcessing(dt, hasProcessed)
             local xh, _, zh = getWorldTranslation(area.height)
 
             if spec.createPreMarkedTramLines then
-                FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
+                FSDensityMapUtil.updateCultivatorArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil, false, true)
             else
                 FSDensityMapUtil.updateDestroyCommonArea(xs, zs, xw, zw, xh, zh, false, false, params.angle, nil)
             end
@@ -377,12 +390,10 @@ function ProSeedTramLines:setTramLineMode(mode, noEventSend)
         if spec.actionEvents ~= nil then
             local actionEvent = spec.actionEvents[InputAction.PS_SET_LANES_TILL_TRAMLINE]
             if actionEvent ~= nil then
-                local text = g_i18n:getText("action_setTramlineDistance")
-                if spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_MANUAL then
-                    text = g_i18n:getText("action_setTramline")
-                end
+                local isInManual = spec.tramLineMode == ProSeedTramLines.TRAMLINE_MODE_MANUAL
+                local key = isInManual and "action_setTramline" or "action_setTramlineDistance"
 
-                g_inputBinding:setActionEventText(actionEvent.actionEventId, text)
+                g_inputBinding:setActionEventText(actionEvent.actionEventId, g_i18n:getText(key))
             end
         end
     end

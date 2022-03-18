@@ -11,7 +11,7 @@ ProSeed = {}
 
 local ProSeed_mt = Class(ProSeed)
 
-function ProSeed:new(mission, i18n, inputBinding, gui, soundManager, modDirectory, modName)
+function ProSeed.new(mission, i18n, inputBinding, gui, soundManager, modDirectory, modName)
     local self = setmetatable({}, ProSeed_mt)
 
     self.version = 1.0
@@ -27,7 +27,7 @@ function ProSeed:new(mission, i18n, inputBinding, gui, soundManager, modDirector
     self.soundManager = soundManager
 
     local uiFilename = Utils.getFilename("resources/hud/proSeed.png", modDirectory)
-    self.hud = InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
+    self.hud = InteractiveHUD.new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
 
     self:loadSamples()
 
@@ -79,7 +79,7 @@ function ProSeed.installSpecializations(vehicleTypeManager, specializationManage
     specializationManager:addSpecialization("proSeedTramLines", "ProSeedTramLines", Utils.getFilename("src/vehicle/ProSeedTramLines.lua", modDirectory), nil)
     specializationManager:addSpecialization("proSeedSowingExtension", "ProSeedSowingExtension", Utils.getFilename("src/vehicle/ProSeedSowingExtension.lua", modDirectory), nil)
 
-    for typeName, typeEntry in pairs(vehicleTypeManager:getVehicleTypes()) do
+    for typeName, typeEntry in pairs(vehicleTypeManager:getTypes()) do
         if SpecializationUtil.hasSpecialization(SowingMachine, typeEntry.specializations) then
             vehicleTypeManager:addSpecialization(typeName, modName .. ".proSeedTramLines")
             vehicleTypeManager:addSpecialization(typeName, modName .. ".proSeedSowingExtension")

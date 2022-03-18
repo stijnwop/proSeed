@@ -18,7 +18,7 @@ end
 
 ---Creates a new instance of the InteractiveHUD.
 ---@return InteractiveHUD
-function InteractiveHUD:new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
+function InteractiveHUD.new(mission, i18n, inputBinding, gui, modDirectory, uiFilename)
     local instance = setmetatable({}, InteractiveHUD_mt)
 
     instance.mission = mission
@@ -208,7 +208,7 @@ function InteractiveHUD:mouseEvent(posX, posY, isDown, isUp, button)
 end
 
 function InteractiveHUD:getNormalizedUVs(uvs)
-    return getNormalizedUVs(uvs, self.atlasRefSize)
+    return GuiUtils.getUVs(uvs, self.atlasRefSize)
 end
 
 function InteractiveHUD:getUIScale()
@@ -411,14 +411,14 @@ function InteractiveHUD:createElements()
 
     local headerWidth, headerHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.HEADER)
     local headerY = posY + (boxHeight - headerHeight)
-    self.buttonHeader = HUDButtonElement:new(Overlay:new(nil, posX, headerY, headerWidth, headerHeight))
+    self.buttonHeader = HUDButtonElement:new(Overlay.new(nil, posX, headerY, headerWidth, headerHeight))
     self.buttonHeader:setBorders("0dp 0dp 0dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.base:addChild(self.buttonHeader)
 
     local headerTopWidth, headerTopHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.HEADER_TOP)
     local headerTopY = headerY + headerHeight - paddingHeight - headerTopHeight
 
-    local headerTopOverlay = Overlay:new(self.uiFilename, posX, headerTopY, headerTopWidth, headerTopHeight)
+    local headerTopOverlay = Overlay.new(self.uiFilename, posX, headerTopY, headerTopWidth, headerTopHeight)
     self.buttonTopHeader = HUDElementBase:new(headerTopOverlay)
     self.buttonTopHeader:setBorders("1dp 1dp 1dp 1dp", InteractiveHUD.COLOR.BORDER)
     self.buttonTopHeader:setUVs(self:getNormalizedUVs(InteractiveHUD.UV.FILL))
@@ -440,7 +440,7 @@ function InteractiveHUD:createElements()
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.SMALL)
 
     self.iconSeederSeedUsage = self:createIcon(self.uiFilename, posX, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.SEED_USAGE)
-    self.seederSeedUsage = HUDElement:new(self.iconSeederSeedUsage)
+    self.seederSeedUsage = HUDElement.new(self.iconSeederSeedUsage)
 
     self.textElementSeedUsage = HUDTextElement:new(posX + iconSmallWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementSeedUsage:setText("0l")
@@ -449,7 +449,7 @@ function InteractiveHUD:createElements()
     seedUsagePosX = seedUsagePosX + iconSmallWidth + iconSmallMarginWidth
 
     self.iconSeederTotalWorkedHA = self:createIcon(self.uiFilename, seedUsagePosX, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.TOTAL_WORKED_HA)
-    self.seederTotalWorkedHA = HUDElement:new(self.iconSeederTotalWorkedHA)
+    self.seederTotalWorkedHA = HUDElement.new(self.iconSeederTotalWorkedHA)
 
     self.textElementTotalWorkedHA = HUDTextElement:new(seedUsagePosX + iconSmallWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementTotalWorkedHA:setText("0ha")
@@ -458,7 +458,7 @@ function InteractiveHUD:createElements()
     totalWorkedHaPosX = totalWorkedHaPosX + iconSmallMarginWidth
 
     self.iconSeederWorkedHA = self:createIcon(self.uiFilename, totalWorkedHaPosX + iconSmallWidth + iconSmallMarginWidth, textY, iconSmallWidth, iconSmallHeight, InteractiveHUD.UV.WORKED_HA)
-    self.seederWorkedHA = HUDElement:new(self.iconSeederWorkedHA)
+    self.seederWorkedHA = HUDElement.new(self.iconSeederWorkedHA)
 
     self.textElementWorkedHA = HUDTextElement:new(totalWorkedHaPosX + iconSmallWidth + iconSmallWidth + iconSmallMarginWidth, textY + iconSmallHeight * 0.33, textSize, RenderText.ALIGN_LEFT, InteractiveHUD.COLOR.TEXT_WHITE, false)
     self.textElementWorkedHA:setText("0ha (0.0 ha/h)")
@@ -490,7 +490,7 @@ end
 function InteractiveHUD:createMainBox(hudAtlasPath, x, y)
     local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
     local posX = x - boxWidth
-    local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
+    local boxOverlay = Overlay.new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDMovableElement:new(boxOverlay)
 
     boxElement:setVisible(true)
@@ -502,7 +502,7 @@ end
 function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
     local boxWidth, boxHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX)
     local posX = x - boxWidth
-    local boxOverlay = Overlay:new(hudAtlasPath, posX, y, boxWidth, boxHeight)
+    local boxOverlay = Overlay.new(hudAtlasPath, posX, y, boxWidth, boxHeight)
     local boxElement = HUDElementBase:new(boxOverlay)
 
     boxElement:setColor(unpack(InteractiveHUD.COLOR.MEDIUM_GLASS))
@@ -514,7 +514,7 @@ function InteractiveHUD:createBaseBox(hudAtlasPath, x, y)
 end
 
 function InteractiveHUD:createIcon(imagePath, baseX, baseY, width, height, uvs)
-    local iconOverlay = Overlay:new(imagePath, baseX, baseY, width, height)
+    local iconOverlay = Overlay.new(imagePath, baseX, baseY, width, height)
     iconOverlay:setColor(unpack(InteractiveHUD.COLOR.INACTIVE))
     iconOverlay:setUVs(self:getNormalizedUVs(uvs))
     iconOverlay:setIsVisible(true)
@@ -527,14 +527,14 @@ function InteractiveHUD:createSeederIcon(posX, posY)
     local seederMarginWidth, seederMarginHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.SEEDER_MARGIN)
     self.iconSeeder = self:createIcon(self.uiFilename, posX + seederMarginWidth, posY + seederMarginHeight, seederWidth, seederHeight, InteractiveHUD.UV.SEEDER)
 
-    self.buttonSeeder = HUDElement:new(self.iconSeeder)
+    self.buttonSeeder = HUDElement.new(self.iconSeeder)
 
     local seederWidthWidth, seederWidthHeight = self:scalePixelToScreenVector(InteractiveHUD.SIZE.WIDTH)
     self.iconSeederWidth = self:createIcon(self.uiFilename, posX, posY + seederHeight + (seederWidthHeight * 0.25), seederWidthWidth, seederWidthHeight, InteractiveHUD.UV.WIDTH)
 
     local textX = posX + seederMarginWidth + (seederWidth * 0.5)
     local textY = posY + seederHeight + (seederWidthHeight * 0.5)
-    self.seederWidth = HUDElement:new(self.iconSeederWidth)
+    self.seederWidth = HUDElement.new(self.iconSeederWidth)
 
     local textSize = self:getCorrectedTextSize(InteractiveHUD.TEXT_SIZE.HIGHLIGHT)
     self.textElementWorkingWidth = HUDTextElement:new(textX, textY, textSize, RenderText.ALIGN_CENTER, InteractiveHUD.COLOR.TEXT_WHITE, true)
@@ -566,7 +566,7 @@ function InteractiveHUD:createMarker(posX, posY, invert)
         markerIcon:setInvertX(true)
     end
 
-    return HUDElement:new(markerIcon)
+    return HUDElement.new(markerIcon)
 end
 
 function InteractiveHUD:setMarkerUVs(marker, uvs, invert)
@@ -584,7 +584,7 @@ function InteractiveHUD:createWorkingAreaSegments(posX, posY)
         local segmentX = posX + ((fillWidth + segmentMarginWidth) * (i - 1))
         local icon = self:createIcon(self.uiFilename, segmentX, posY + segmentMarginHeight, fillWidth, fillHeight, InteractiveHUD.UV.FILL)
 
-        local element = HUDElement:new(icon)
+        local element = HUDElement.new(icon)
         element:setColor(unpack(InteractiveHUD.COLOR.ACTIVE))
 
         table.insert(self.segments, element)
@@ -652,15 +652,17 @@ end
 function InteractiveHUD:visualizeRidgeMarkerState(vehicle)
     local spec_ridgeMarker = vehicle.spec_ridgeMarker
 
-    if not (spec_ridgeMarker.numRigdeMarkers > 0) then
-        local attacherVehicle = vehicle:getAttacherVehicle()
+    if spec_ridgeMarker ~= nil then
+        if not (spec_ridgeMarker.numRigdeMarkers > 0) then
+            local attacherVehicle = vehicle:getAttacherVehicle()
 
-        if attacherVehicle ~= nil and attacherVehicle.spec_ridgeMarker ~= nil then
-            spec_ridgeMarker = attacherVehicle.spec_ridgeMarker
+            if attacherVehicle ~= nil and attacherVehicle.spec_ridgeMarker ~= nil then
+                spec_ridgeMarker = attacherVehicle.spec_ridgeMarker
+            end
         end
     end
 
-    local state = spec_ridgeMarker.ridgeMarkerState
+    local state = spec_ridgeMarker ~= nil and spec_ridgeMarker.ridgeMarkerState or 0
 
     if state ~= self.ridgeMarkerVisualState then
         local isLeft = state == 1
@@ -886,7 +888,7 @@ InteractiveHUD.COLOR = {
     TEXT = { 0, 0, 0, 1 },
     TEXT_WHITE = { 1, 1, 1, 0.75 },
     INACTIVE = { 1, 1, 1, 0.75 },
-    ACTIVE = { 0.9910, 0.3865, 0.0100, 1 },
+    ACTIVE = { 0.0003, 0.5647, 0.9822, 1 },
     BORDER = { 0.718, 0.716, 0.715, 0.25 },
     RED = { 0.718, 0, 0, 0.75 },
     DARK_GLASS = { 0.018, 0.016, 0.015, 0.9 },

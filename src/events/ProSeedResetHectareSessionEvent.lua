@@ -15,7 +15,7 @@ InitEventClass(ProSeedResetHectareSessionEvent, "ProSeedResetHectareSessionEvent
 
 ---@return ProSeedResetHectareSessionEvent
 function ProSeedResetHectareSessionEvent:emptyNew()
-    local self = Event:new(ProSeedResetHectareSessionEvent_mt)
+    local self = Event.new(ProSeedResetHectareSessionEvent_mt)
     return self
 end
 

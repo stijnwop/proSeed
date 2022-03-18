@@ -1,5 +1,5 @@
-# ProSeed for Farming Simulator 19
-![For Farming Simulator 19](https://img.shields.io/badge/Farming%20Simulator-19-FF7C00.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
+# ProSeed for Farming Simulator 22
+![For Farming Simulator 22](https://img.shields.io/badge/Farming%20Simulator-22-10BEFF.svg) [![Releases](https://img.shields.io/github/release/stijnwop/proSeed.svg)](https://github.com/stijnwop/proSeed/releases)
 
 ###### Readme in German can be found [here](README-de.md).
 
@@ -11,7 +11,7 @@ Only Wopster is allowed to publish any of this code as a mod to any mod site, or
 
 
 ## Special thanks to
-Special thanks to gotchTOM and webalizer for allowing me to redo the mod for FS19!
+Special thanks to gotchTOM and webalizer for allowing me to redo the mod for FS19/FS22!
 
 ## Warning!
 Please be aware that this is a ***DEVELOPMENT VERSION***!
@@ -30,7 +30,7 @@ All official releases will be available at the offical Farming Simulator ModHub.
 
 For installing the release:
 
-Windows: Copy the `FS19_proSeed_rc_<version>.zip` into your `My Games\FarmingSimulator2019\mods` directory.
+Windows: Copy the `FS22_proSeed.zip` into your `My Games\FarmingSimulator2022\mods` directory.
 
 ## Documentation
 
@@ -72,14 +72,32 @@ In the table below the possible modes are explained. You can toggle the modes by
 > **NOTE: In order to use the mode `Auto` the [GuidanceSteering](https://www.farming-simulator.com/mod.php?mod_id=140328&title=fs2019) mod is required!**
 
 #### How to start
-If the number of total amount of lanes is even, always start with a half track otherwise the distance to the edge of the field will not be valid. 
+If the number of total amount of lanes is even, always start with a half track otherwise the distance to the edge of the field will not be valid.
 E.g. in the HUD above you have a total of 2 lanes `x / 2` so in this case you start with a half line.
 
-Use the halfside shutoff function for creating the first track. 
-When using GuidanceSteering, the first track of GS must be aligned at the edge of the field and set to zero (`ALT + HOME`). 
+Use the halfside shutoff function for creating the first track.
+When using GuidanceSteering, the first track of GS must be aligned at the edge of the field and set to zero (`ALT + HOME`).
 For the second track shift the GS track by half the working width towards the field edge.
 
 A description of possible working widths and distances is given in this neat PDF file: [proSeed.pdf](https://github.com/stijnwop/proSeed/raw/master/docs/ProSeed.pdf) (Page 1: German; Page 2: English)
+
+#### Using tramline animation
+You can trigger an animation once the tramlines are active like so:
+
+```xml
+<vehicle>
+    <proSeed>
+       <tramLinesAnimation name="tramLines" speed="1"/>
+    </proSeed>
+
+    <animations>
+       <animation name="tramLines">
+          <part node="NODE_NAME" startTime="0" endTime="1" startTrans="0 1 0" endTrans="0 0 0" />
+       </animation>
+    </animations>
+</vehicle>
+```
+
 ## Copyright
-Copyright (c) 2020 [Wopster](https://github.com/stijnwop).
+Copyright (c) 2022 [Wopster](https://github.com/stijnwop).
 All rights reserved.
