@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>PhénixNoir</translationContributors>
+
+    <texts>
+        <!--Inputs-->
+        <text name="input_PS_SET_HALF_SIDE_SHUTOFF" text="PS: Yarım-ekim'i çalıştır/kapat"/>
+        <text name="input_PS_SET_LANES_TILL_TRAMLINE" text="PS: Sürme izi mesafesini ayarla"/>
+        <text name="input_PS_TOGGLE_MOUSE_CURSOR" text="PS: Mouse imlecini etkinleştir"/>
+
+        <!--Actions-->
+        <text name="action_toggleMouseCursor" text="Mouse imlecini etkinleştir"/>
+        <text name="action_toggleHalfSideShutoff" text="Yarım-ekim'i çalıştır"/>
+        <text name="action_setTramlineDistance" text="Sürme izi mesafesini ayarla"/>
+        <text name="action_setTramline" text="Sürme izini ayarla"/>
+
+        <!--Info-->
+        <text name="info_mode_header" text="Mod"/>
+        <text name="info_tramline_distance_header" text="Mesafe"/>
+        <text name="info_line_number_header" text="Hat"/>
+
+        <text name="info_mode_auto" text="Otomatik"/>
+        <text name="info_mode_semi" text="Yarı-otomatik"/>
+        <text name="info_mode_manual" text="El ile"/>
+
+        <!--Warnings-->
+        <text name="warning_gpsNotActive" text="Bu araçta GPS mevcut değil!"/>
+    </texts>
+</l10n>
