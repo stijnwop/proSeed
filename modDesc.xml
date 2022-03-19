@@ -64,6 +64,13 @@ A ProSeed használatával a vetőgép képes lesz művelőnyomok létrehozásár
 További információért, és a kezelési útmutató elolvasásához látogasd meg a <a href="https://github.com/stijnwop/proSeed/blob/master/README.md">README oldalt a GitHub-on</a>. (csak angolul elérhető)
 ]]>
         </hu>
+        <tr>
+            <![CDATA[ProSeed modu oyunda bulunan ekim aletlerine bir takım ek özellikler ekler.
+ProSeed Modu ile tarlanızda sürme izleri(Tram Lines) yapabilir, doğru sürme izleri için ekicinin yarısını kapatabilir, yeni geri-bildirim seslerine sahip olabilir ve eğer mevcut ise ekicinin gübre fonksiyonunu kapatıp açabilirsiniz.
+NOT: Otomatik modunu kullanabilmek için Wopster'ın GPS moduna sahip olmanız gerekir!
+Daha detaylı bilgi ve kullanım aşamaları için GitHub'daki kılavuzuma erişebilirsiniz: <a href="https://github.com/stijnwop/proSeed/blob/master/README.md"> </a>.
+]]>
+        </tr>
     </description>
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
