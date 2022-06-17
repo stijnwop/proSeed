@@ -26,23 +26,28 @@ function HUDMovableElement:loadFromXMLFile(xmlFile, key)
     local y = getXMLFloat(xmlFile, key .. ".position#y")
 
     if x ~= nil and y ~= nil then
-        x = MathUtil.clamp(x, 0, 1)
-        y = MathUtil.clamp(y, 0, 1)
+        x = MathUtil.clamp(x, 0, 0.8556) -- max coursor posX: 0.85562500490031
+        y = MathUtil.clamp(y, 0, 0.8366) -- max coursor posY: 0.83666667099352
+        local correction = 0.2466 
+        local add_corr = 0.0236 -- error 51px (+0.02361) at 4K
 
-        local height = self:getHeight()
-        local _, parentY = self.parent:getPosition()
-        local _, marginHeight = self.parent:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX_MARGIN)
+        -- local height = self:getHeight()
+        -- local _, parentY = self.parent:getPosition()
+        -- local _, marginHeight = self.parent:scalePixelToScreenVector(InteractiveHUD.SIZE.BOX_MARGIN)
 
         --Do height correction based on the parent position.
-        self:setPosition(x, y + (height * 0.5) + parentY - marginHeight)
+        -- self:setPosition(x, y + (height * 0.5) + parentY - marginHeight)
+        
+        -- self:setPosition(x, y - correction - add_corr) -- not good for FHD
+        self:setPosition(x, y - correction)
     end
 end
 
 function HUDMovableElement:saveToXMLFile(xmlFile, key)
     local x, y = self:getPosition()
     if x ~= nil and y ~= nil then
-        setXMLFloat(xmlFile, key .. ".position#x", MathUtil.clamp(x, 0, 1))
-        setXMLFloat(xmlFile, key .. ".position#y", MathUtil.clamp(y, 0, 1))
+        setXMLFloat(xmlFile, key .. ".position#x", MathUtil.clamp(x, 0, 0.8556))
+        setXMLFloat(xmlFile, key .. ".position#y", MathUtil.clamp(y, 0, 0.8366))
     end
 end
 
@@ -105,6 +110,7 @@ function HUDMovableElement:setPositionByMousePosition(mouseX, mouseY)
         end
 
         self:setPosition(newX, newY)
+        -- log("New pos", newX, newY) -- DEV
         self.currentMouseX = mouseX
         self.currentMouseY = mouseY
     end
