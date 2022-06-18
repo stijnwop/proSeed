@@ -26,8 +26,8 @@ function HUDMovableElement:loadFromXMLFile(xmlFile, key)
     local y = getXMLFloat(xmlFile, key .. ".position#y")
 
     if x ~= nil and y ~= nil then
-        x = MathUtil.clamp(x, 0, 0.8556) -- max coursor posX: 0.85562500490031
-        y = MathUtil.clamp(y, 0, 0.8366) -- max coursor posY: 0.83666667099352
+        x = MathUtil.clamp(x, 0, 0.8556) -- max cursor posX: 0.85562500490031
+        y = MathUtil.clamp(y, 0, 0.8366) -- max cursor posY: 0.83666667099352
         local correction = 0.2466 
         local add_corr = 0.0236 -- error 51px (+0.02361) at 4K
 
